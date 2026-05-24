@@ -113,9 +113,9 @@ The condition type discriminator is field 1. The complete enum (from
 | 3 | Codex Upgrade Check | `CodexCondition` | ✅ fully modelled |
 | 4 | Greater Affix Check | `GreaterAffixCondition` | ✅ fully modelled |
 | 5 | Item Type Match | `ItemTypeCondition` | ✅ fully modelled |
-| 6 | Has Required Affixes | `AffixCondition` | ✅ fully modelled (params2 not decoded) |
-| 7 | Has Optional Affixes | `OptionalAffixCondition` | ✅ fully modelled |
-| 8 | Is Specific Unique | `SpecificUniqueCondition` | ✅ fully modelled (10 IDs catalogued in UniqueItemDatabase) |
+| 6 | Has Required Affixes | `AffixCondition` | ✅ fully modelled (GA pairs decoded; Field5 semantics unknown) |
+| 7 | Has Optional Affixes | `OptionalAffixCondition` | ✅ fully modelled (GA pairs decoded; Field5 semantics unknown) |
+| 8 | Is Specific Unique | `SpecificUniqueCondition` | ✅ modelled (~900 IDs, all internal names — no player-friendly labels) |
 | 9 | Talisman Set Bonus | `UnknownCondition` | Field layout known; set/item IDs not catalogued |
 
 > **Correction — fnuecke type mapping reversed for types 3 and 4.** The original
@@ -230,8 +230,9 @@ field 3  (LEN, repeated)    = params2  — GA pairs: { fixed32 affix_id1, fixed3
 field 4  (varint)           = minimum_count
 ```
 
-`params2` encodes Greater Affix requirements as pairs of affix hash IDs. Codec currently
-ignores field 3 on decode (round-trip safe via `UnknownCondition` if field 3 is present).
+`params2` encodes Greater Affix requirements as pairs of affix hash IDs. Codec decodes
+field 3 into `GreaterEntries` on `AffixCondition`. Note: Field 5 (`Value3`) is preserved
+on decode (`AffixCondition.Field5`) but its semantics are not yet understood.
 
 ---
 
@@ -241,18 +242,22 @@ Same field layout as Type 6.
 ```
 
 Items match if they have *any* of the listed affixes (OR semantics vs Type 6's AND/count).
-Model class pending; codec preserves as `UnknownCondition`.
+Model class: `OptionalAffixCondition` — structurally identical to `AffixCondition`
+(AffixIds, MinimumCount, GreaterEntries, Field5) with a different type discriminator.
+Field 5 semantics unknown (same as Type 6).
 
 ---
 
 ### Type 8 — Is Specific Unique
 ```
 field 1  (varint)           = 8
-field 2  (fixed32, repeated) = unique_item_hash_id
+field 2  (fixed32, repeated) = unique_item_sno_id
 ```
 
-Matches specific named Unique items by hash ID. IDs are in fnuecke's `names.json` but not
-yet catalogued in this project. Codec preserves as `UnknownCondition`.
+Matches specific named Unique items by SNOName ID. Model class: `SpecificUniqueCondition`.
+`UniqueItemDatabase` contains ~900 entries from `CoreTOC_flat.json` but all with internal
+non-friendly names (e.g. `Gloves_Unique_Generic_002`). Adding player-friendly display
+names requires cross-referencing against community databases or in-game data.
 
 ---
 
@@ -367,6 +372,8 @@ against fnuecke/diablo4-loot-filter-viewer `names.json` (`S04_CooldownReductionC
 
 All IDs datamined from DiabloTools/d4data `CoreTOC_flat.json` (build 3.0.2.71886, updated May 2026).
 **None have been verified in-game** (InGameVerified=false in `SkillDatabase`).
+Sorcerer basic skill display names (Spark, Fire Bolt, Frost Bolt, Arc Lash) are resolved in
+`d4-data.json` using the CoreTOC mapping.
 
 > **Warning — Upsilon72 labels were incorrect:** Upsilon72's original Warlock confirmations
 > mis-identified most skill names. Do NOT use the Season 13 Upsilon72 labels; use `SkillDatabase`
@@ -516,10 +523,10 @@ All IDs datamined from DiabloTools/d4data `CoreTOC_flat.json` (build 3.0.2.71886
 ### Sorcerer
 | Skill | Hash | Notes |
 |-------|------|-------|
-| Basic Skill 1 | `0x001d674b` | CoreTOC stores as Basic_1; display name unresolved |
-| Basic Skill 2 | `0x001d674d` | CoreTOC stores as Basic_2; display name unresolved |
-| Basic Skill 3 | `0x001d6750` | CoreTOC stores as Basic_3; display name unresolved |
-| Basic Skill 4 | `0x001d6752` | CoreTOC stores as Basic_4; display name unresolved |
+| Spark | `0x001d674b` | Formerly Basic_1; confirmed in d4-data.json |
+| Fire Bolt | `0x001d674d` | Formerly Basic_2; confirmed in d4-data.json |
+| Frost Bolt | `0x001d6750` | Formerly Basic_3; confirmed in d4-data.json |
+| Arc Lash | `0x001d6752` | Formerly Basic_4; confirmed in d4-data.json |
 | Fireball | `0x001d673f` | |
 | Ice Shards | `0x001d6741` | |
 | Chain Lightning | `0x001d6743` | |
@@ -608,6 +615,8 @@ All individual skills use `X1_` prefix (Vessel of Hatred DLC). Guardian category
 | Juggernaut Skills | `0x00280b9f` |
 
 ### Warlock
+`Rampage` (`0x0026ad7e`) is documented here but missing from `d4-data.json` (CoreTOC extraction gap).
+
 | Skill | Hash |
 |-------|------|
 | Command Fallen | `0x0026ad4d` |

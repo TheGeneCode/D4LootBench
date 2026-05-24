@@ -19,11 +19,14 @@ D4Loot.slnx
 │   │   └── ProtoWriter.cs             # Manual protobuf wire format writer (42 lines)
 │   ├── Data/
 │   │   ├── AffixDatabase.cs            # 63 affix hash IDs → display names, GetDisplayName()
+│   │   ├── d4-data.json                # JSON data store (affixes, skills, itemTypes, uniques)
 │   │   ├── FilterColors.cs             # Named ABGR color constants (Blue, Cyan, Green, Orange, Gold)
-│   │   ├── ItemTypeDatabase.cs         # 25 item type entries with hash/name/internalName
-│   │   └── SkillDatabase.cs            # ~200 skill entries for all 9 classes, mixed verified/datamined
+│   │   ├── FilterDataStore.cs          # Embeds/finds d4-data.json at runtime
+│   │   ├── ItemTypeDatabase.cs         # 27 item type entries with hash/name/internalName
+│   │   ├── SkillDatabase.cs            # ~200 skill entries for all 9 classes, mixed verified/datamined
+│   │   └── UniqueItemDatabase.cs       # ~900 unique entries (internal names only, no player-friendly names)
 │   ├── Models/
-│   │   ├── Condition.cs                # 8 concrete records + UnknownCondition, GreaterAffixEntry
+│   │   ├── Condition.cs                # 9 concrete records + UnknownCondition, GreaterAffixEntry
 │   │   ├── Enums.cs                    # Visibility (Show/Recolor/HideAll), RarityFlags [Flags]
 │   │   ├── FilterRule.cs               # Name, Visibility, Color, Conditions list, IsEnabled
 │   │   └── FilterRuleset.cs            # Rules list, Name, Count, Version=1
@@ -88,11 +91,11 @@ Full spec is in `docs/filter-format.md`. Key points:
 - **Filter** → repeated Rule messages (field 1) + name (field 2) + count (field 3) + version=1 (field 4)
 - **Rule** → name (1), visibility/enum (2), color/ABGR-uint32 (3), repeated Condition (4), enabled (5)
 - **Condition** types (all 10 known): Item Power (0), Rarity (1), Item Properties (2), Greater Affix (3), Codex (4), Item Type (5), Required Affixes (6), Optional Affixes (7), Specific Unique (8), Talisman Set (9)
-- Types 0–7 are fully modelled; types 8–9 round-trip as `UnknownCondition` (IDs not yet catalogued)
+- Types 0–8 are fully modelled; type 9 round-trips as `UnknownCondition` (set/item IDs not catalogued)
 - Color format: packed ABGR `uint32` little-endian — `makeColor(r,g,b)` = `(a<<24)|(b<<16)|(g<<8)|r`
 - Rules are written in **reverse display order** (lowest-priority rule first in binary)
 - **Maximum 25 rules per filter** — game-enforced limit; editor must validate on export
-- 63 confirmed affix hash IDs in `AffixDatabase`; full skill IDs for all 9 classes in `SkillDatabase` (4 Sorcerer basic skills pending in-game name verification)
+- 63 confirmed affix hash IDs in `AffixDatabase`; full skill IDs for all 9 classes in `SkillDatabase` (4 Sorcerer basic names resolved: Spark, Fire Bolt, Frost Bolt, Arc Lash)
 - Item type IDs fully catalogued (25 types): Charm = `0x0022ed05`, Seal = `0x00237e80`
 
 Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-viewer (.proto), DiabloTools/d4data (CoreTOC)
@@ -108,9 +111,9 @@ Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-
 ## What's Done
 - **Phase 0** ✅ — Format fully reverse-engineered; `docs/filter-format.md` written; all 10 condition types documented
 - **Phase 1** ✅ — Core library complete:
-  - Domain models (`FilterRuleset`, `FilterRule`, full `Condition` hierarchy — 9 types)
+  - Domain models (`FilterRuleset`, `FilterRule`, full `Condition` hierarchy — 10 types)
   - `FilterCodec.Encode()` / `FilterCodec.Decode()` — bidirectional, lossless round-trip for all condition types
-  - `AffixDatabase` (63 entries), `SkillDatabase` (all 9 classes, ~200 entries), `ItemTypeDatabase` (25 types), `FilterColors`
+  - `AffixDatabase` (63 entries), `SkillDatabase` (all 9 classes, ~200 entries), `ItemTypeDatabase` (27 types), `FilterColors`, `UniqueItemDatabase` (~900 internal names)
   - 15 unit tests passing, 0 warnings
   - Attribution sources confirmed; all licenses verified
 - **Phase 2** ✅ — WPF shell complete:
@@ -121,10 +124,10 @@ Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-
 - **Phase 3** (in progress) — Item/affix data integration:
   - Condition list summaries now show resolved item/affix/skill names with cross-database lookups
   - Unknown IDs shown as hex for gap identification
-  - `SpecificUniqueCondition` modeled (type 8) with codec support and UniqueItemDatabase (10 IDs from CoreTOC_flat.json)
+  - `SpecificUniqueCondition` modeled (type 8) with codec support and UniqueItemDatabase (~900 entries, all with internal non-player-friendly names)
 
 ## What's Next
-- **Phase 3** (continued) — Condition value pickers bind to AffixDatabase/SkillDatabase/ItemTypeDatabase; resolve 4 Sorcerer basic skill display names; condition editing (add/edit)
+- **Phase 3** (continued) — Condition value pickers bind to AffixDatabase/SkillDatabase/ItemTypeDatabase; resolve unique item display names; condition editing (add/edit)
 - **Phase 4** — AI rule assistant: `D4Loot.Ai` project, Ollama-first, optional cloud providers (see `docs/ai-assistant.md`)
 
 ## Key Decisions Made
