@@ -349,4 +349,27 @@ public sealed class FilterCodecTests
                 [new RarityCondition(RarityFlags.All)]),
         ]);
     }
+
+    [Fact]
+    public void Decode_ExampleUniqueFilter_IdentifiesHashIds()
+    {
+        // Real filter code containing unique item references
+        const string code = "Cj8QAB0AAP//IjQICBU3aAMAFYjnEwAVq6sdABXVuicAFbh7BQAVJW4fABWTvSYAFVlfAwAV0qsdABW0ECQAKAESB1VuaXF1ZXMYByAB";
+        var ruleset = FilterCodec.Decode(code);
+
+        ruleset.Name.ShouldBe("Uniques");
+        ruleset.Rules.Count.ShouldBe(1);
+        
+        var rule = ruleset.Rules[0];
+        rule.Conditions.Count.ShouldBe(1);
+        rule.Conditions[0].ShouldBeOfType<SpecificUniqueCondition>();
+        
+        var unique = (SpecificUniqueCondition)rule.Conditions[0];
+        // These should be hash IDs from the wire format
+        unique.UniqueIds.Count.ShouldBeGreaterThan(0);
+        
+        // Log the IDs for inspection
+        var idStrs = unique.UniqueIds.Select(id => $"0x{id:x8}").ToList();
+        System.Diagnostics.Debug.WriteLine($"Unique IDs: {string.Join(", ", idStrs)}");
+    }
 }
