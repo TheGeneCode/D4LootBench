@@ -32,7 +32,15 @@ public sealed record CodexCondition : Condition;
 public sealed record ItemTypeCondition(IReadOnlyList<uint> TypeIds) : Condition;
 
 /// <summary>Type 6 — affix hash IDs with a minimum-present threshold (AND/count semantics).</summary>
-public sealed record AffixCondition(IReadOnlyList<uint> AffixIds, int MinimumCount) : Condition;
+/// <remarks>Field 3 in the wire format encodes greater-affix pairs: each sub-message
+/// stores an affix ID plus a companion value (meaning TBD).</remarks>
+public sealed record GreaterAffixEntry(uint AffixId, uint Value);
+
+public sealed record AffixCondition(IReadOnlyList<uint> AffixIds, int MinimumCount) : Condition
+{
+    public IReadOnlyList<GreaterAffixEntry> GreaterEntries { get; init; } = [];
+    public int Field5 { get; init; }
+}
 
 /// <summary>Type 7 — affix hash IDs with OR semantics: matches if the item has any of the listed affixes.</summary>
 public sealed record OptionalAffixCondition(IReadOnlyList<uint> AffixIds) : Condition;

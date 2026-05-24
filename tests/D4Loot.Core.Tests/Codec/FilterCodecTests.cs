@@ -96,7 +96,7 @@ public sealed class FilterCodecTests
         var conditions = new Condition[]
         {
             new RarityCondition(RarityFlags.Rare),
-            new AffixCondition([AffixDatabase.ByName["All Damage Multiplier"]], 1)
+            new AffixCondition([AffixDatabase.ByName["All Damage"]], 1)
         };
         RoundTripRule(new FilterRule("Orange Rare", Visibility.Recolor, FilterColors.Orange,
             conditions)).Conditions.Count.ShouldBe(2);
@@ -150,6 +150,46 @@ public sealed class FilterCodecTests
         Should.NotThrow(() => FilterCodec.Decode("  " + code + "\n"));
     }
 
+    // ── Decodes real-world share code ──────────────────────────
+
+    [Fact]
+    public void Decode_RaxxFilter_RecoversAll16Rules()
+    {
+        var code = @"CiQKE0V2ZXJ5IE15dGhpYyBVbmlxdWUQAB3oIqj/IgQIASAgKAEKIwoSQWxsIENvZGV4IFVwZ3JhZGVzEAAdAAD//yIECAMwASgBCjIKGExlZy9VbmlxdWUvTXl0aGljIENoYXJtcxAAHQAA//8iBwgFFQXtIgAiBAgBIDgoAQoxChNTZXQgQ2hhcm1zIChTRUxFQ1QpEAAdAAD//yICCAkiBwgFFQXtIgAiBAgBIEAoAQooCg5BbGwgU2V0IENoYXJtcxAAHQAA//8iBwgFFQXtIgAiBAgBIEAoAQoxChdMZWcvVW5pcXVlL015dGhpYyBTZWFscxAAHQAA//8iBwgFFYB+IwAiBAgBIHgoAQo1ChZTYWx2YWdlIFNlYWxzICYgQ2hhcm1zEAAdAAD//yIMCAUVgH4jABUF7SIAIgQIASAEKAEKHwoQVW5pcXVlcyAoU0VMRUNUKRACHa7oIv8iAggIKAEKHAoLQWxsIFVuaXF1ZXMQAB0AAP//IgQIASAQKAEKNwoVU3BlY2lmaWMgR0FzIChTRUxFQ1QpEAAdAAD//yIVCAYV9wonABoKDfcKJwAV9wonACABKAEKYgoNTWFpbiBTdGF0IEdBcxAAHQAA//8iSAgGFcLqGwAVxuobABW66hsAFb7qGwAaCg3C6hsAFcLqGwAaCg3G6hsAFcbqGwAaCg266hsAFbrqGwAaCg2+6hsAFb7qGwAgASgBCo0CCg1Vbml2ZXJzYWwgR0FzEAAdAAD//yLyAQgGFTFuHQAVzuobABU4/RsAFbjqGwAV3uobABWy6hsAFQo8JwAVtOobABWA/BsAFZP8JwAVY24dABXY6hsAFdTqGwAV0uobABoKDTFuHQAVMW4dABoKDTj9GwAVOP0bABoKDbjqGwAVuOobABoKDbLqGwAVsuobABoKDd7qGwAV3uobABoKDbTqGwAVtOobABoKDQo8JwAVCjwnABoKDTFuHQAVMW4dABoKDZP8JwAVk/wnABoKDYD8GwAVgPwbABoKDdjqGwAV2OobABoKDdTqGwAV1OobABoKDdLqGwAV0uobACABKAEKJgoTQWxsIEdyZWF0ZXIgQWZmaXhlcxAAHQAA//8iBggEIAEwASgBCh8KDkFsbCBBbmNlc3RyYWxzEAAdAAD//yIECAIgBCgBCjgKF1doaXRlcyBUbyBDdWJlIChTRUxFQ1QpEAAdAAD//yIFCAAg0gYiBwgFFVnRBgAiBAgBIAEoAQoMCgEgEAMdAAD//ygBEhhSYXh4J3MgVG9ybWVudCA2KyBGaWx0ZXIYASAB";
+        var ruleset = FilterCodec.Decode(code);
+
+        // Overflow fix recovers all 16 rules plus the filter name
+        ruleset.Rules.Count.ShouldBe(16);
+        ruleset.Name.ShouldBe("Raxx's Torment 6+ Filter");
+        ruleset.OriginalCode.ShouldBe(code);
+
+        // All Greater Affixes rule (index 12, recovered from overflow) should be correct
+        var ga = ruleset.Rules[12];
+        ga.Name.ShouldBe("All Greater Affixes");
+        ga.Visibility.ShouldBe(Visibility.Show);
+        ga.IsEnabled.ShouldBeTrue();
+        ga.Conditions.Count.ShouldBe(1);
+        ga.Conditions[0].ShouldBeOfType<GreaterAffixCondition>();
+        ((GreaterAffixCondition)ga.Conditions[0]).MinimumCount.ShouldBe(1);
+
+        // Universal GAs rule should have Field5=1 preserved
+        var uni = ruleset.Rules.FirstOrDefault(r => r.Name == "Universal GAs");
+        uni.ShouldNotBeNull();
+        var ac = uni.Conditions.OfType<AffixCondition>().FirstOrDefault();
+        ac.ShouldNotBeNull();
+        ac.MinimumCount.ShouldBe(1);
+        ac.GreaterEntries.Count.ShouldBe(13);
+
+        // Later rules recovered via resync should have correct properties
+        var whites = ruleset.Rules.FirstOrDefault(r => r.Name.StartsWith("Whites"));
+        whites.ShouldNotBeNull();
+        whites.Visibility.ShouldBe(Visibility.Show);
+
+        var catchAll = ruleset.Rules.FirstOrDefault(r => r.Name == " ");
+        catchAll.ShouldNotBeNull();
+        catchAll.Visibility.ShouldBe(Visibility.HideAll);
+    }
+
     // ── Encode → decode → encode produces identical bytes ────────────────
 
     [Fact]
@@ -176,9 +216,9 @@ public sealed class FilterCodecTests
         uint[] coreIds =
         [
             AffixDatabase.ByName["Critical Strike Chance"],
-            AffixDatabase.ByName["Critical Strike Damage Multiplier"],
+            AffixDatabase.ByName["Critical Strike Damage"],
             AffixDatabase.ByName["Attack Speed"],
-            AffixDatabase.ByName["All Damage Multiplier"],
+            AffixDatabase.ByName["All Damage"],
             AffixDatabase.ByName["Vulnerable Damage Multiplier"],
         ];
         uint[] secIds =

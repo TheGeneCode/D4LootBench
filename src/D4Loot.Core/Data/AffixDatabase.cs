@@ -10,11 +10,13 @@ public static class AffixDatabase
     {
         // Offensive — damage
         ["Weapon Damage"]                      = 0x0027fc93,
-        ["All Damage Multiplier"]              = 0x001beac6,
-        ["Attack Speed"]                       = 0x001beace,
-        ["Critical Strike Chance"]             = 0x001bead2,
-        ["Critical Strike Damage Multiplier"]  = 0x001bead4,
+        ["All Damage"]                         = 0x001bead4,
+        ["Attack Speed"]                       = 0x001beab4,
+        ["Critical Strike Chance"]             = 0x001beace,
+        ["Critical Strike Damage"]             = 0x001bead2,
         ["Vulnerable Damage Multiplier"]       = 0x001bfc80,
+        ["Core Skills"]                        = 0x001d6e31,
+        ["All Skills"]                         = 0x00273c0a,
         ["Damage Over Time Multiplier"]        = 0x001bead6,
         ["Cold Damage Multiplier"]             = 0x00270af5,
         ["Fire Damage Multiplier"]             = 0x00270af7,
@@ -27,7 +29,7 @@ public static class AffixDatabase
         // Offensive — primary stats
         ["Strength"]                           = 0x001beac2,
         ["Intelligence"]                       = 0x001beabe,
-        ["Willpower"]                          = 0x001beab4,
+        ["Willpower"]                          = 0x001beac6,
         ["Dexterity"]                          = 0x001beaba,
         ["Thorns"]                             = 0x001beb22,
         ["% Cooldown Reduction"]               = 0x001beab8,

@@ -22,7 +22,7 @@ public sealed class ConditionViewModel
 
     public string Summary => Model switch
     {
-        ItemPowerCondition ip      => $"{ip.Minimum} – {ip.Maximum}",
+        ItemPowerCondition ip      => ip.Maximum == 0 ? $"{ip.Minimum}+" : $"{ip.Minimum} – {ip.Maximum}",
         RarityCondition r          => FormatRarityFlags(r.Mask),
         ItemPropertiesCondition ip => ip.PropertyMask == 4 ? "Ancestral" : $"Mask = {ip.PropertyMask}",
         GreaterAffixCondition ga   => $"Min {ga.MinimumCount}",
@@ -40,7 +40,7 @@ public sealed class ConditionViewModel
     {
         if (flags == RarityFlags.All) return "All";
         var parts = new List<string>(7);
-        if (flags.HasFlag(RarityFlags.Common))    parts.Add("Normal");
+        if (flags.HasFlag(RarityFlags.Common))    parts.Add("Common");
         if (flags.HasFlag(RarityFlags.Magic))     parts.Add("Magic");
         if (flags.HasFlag(RarityFlags.Rare))      parts.Add("Rare");
         if (flags.HasFlag(RarityFlags.Legendary)) parts.Add("Legendary");

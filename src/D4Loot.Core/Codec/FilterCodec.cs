@@ -20,7 +20,8 @@ public static class FilterCodec
 
     public static FilterRuleset Decode(string shareCode)
     {
-        var bytes = Convert.FromBase64String(shareCode.Trim());
+        var trimmed = shareCode.Trim();
+        var bytes = Convert.FromBase64String(trimmed);
         var reader = new ProtoReader(bytes);
 
         var rules = new List<FilterRule>();
@@ -31,15 +32,31 @@ public static class FilterCodec
             var (field, wire) = reader.ReadTag();
             switch (field)
             {
-                case 1: rules.Add(DecodeRule(reader.ReadLenBytes())); break;
-                case 2: name = reader.ReadString(); break;
+                case 1:
+                    if (wire == 2)
+                    {
+                        var ruleBytes = reader.ReadLenBytes();
+                        var fixedBytes = FixOverflow(ruleBytes);
+                        if (fixedBytes.Length < ruleBytes.Length)
+                            reader.Seek(reader.Position - (ruleBytes.Length - fixedBytes.Length));
+                        rules.Add(DecodeRule(fixedBytes));
+                        break;
+                    }
+                    goto default;
+                case 2:
+                    if (wire == 2) { name = reader.ReadString(); break; }
+                    goto default;
                 case 3:
-                case 4: reader.ReadVarint(); break;
+                    if (wire == 0) { reader.ReadVarint(); break; }
+                    goto default;
+                case 4:
+                    if (wire == 0) { reader.ReadVarint(); break; }
+                    goto default;
                 default: reader.Skip(wire); break;
             }
         }
 
-        return new FilterRuleset(name, rules);
+        return new FilterRuleset(name, rules) { OriginalCode = trimmed };
     }
 
     // ── Rule ─────────────────────────────────────────────────────────
@@ -57,6 +74,62 @@ public static class FilterCodec
         return [.. buf];
     }
 
+    private static byte[] FixOverflow(byte[] ruleBytes)
+    {
+        if (!HasConditionOverflow(ruleBytes))
+            return ruleBytes;
+        var rule = DecodeRule(ruleBytes);
+        for (var i = 0; i < rule.Conditions.Count; i++)
+            if (rule.Conditions[i] is AffixCondition ac)
+                rule.Conditions[i] = ac with { Field5 = 0 };
+        return EncodeRule(rule);
+    }
+
+    private static bool HasConditionOverflow(byte[] ruleBytes)
+    {
+        var reader = new ProtoReader(ruleBytes);
+        while (reader.HasData)
+        {
+            var (field, wire) = reader.ReadTag();
+            if (field == 4 && wire == 2)
+            {
+                var condBytes = reader.ReadLenBytes();
+                return GetConditionEndPosition(condBytes) < condBytes.Length;
+            }
+            reader.Skip(wire);
+        }
+        return false;
+    }
+
+    private static int GetConditionEndPosition(byte[] condBytes)
+    {
+        var reader = new ProtoReader(condBytes);
+        var condType = -1;
+
+        while (reader.HasData)
+        {
+            var pos = reader.Position;
+            var (field, wire) = reader.ReadTag();
+            switch (field)
+            {
+                case 1:
+                    if (condType == -1)
+                        condType = (int)reader.ReadVarint();
+                    else
+                        return pos;
+                    break;
+                case 2: reader.ReadFixed32(); break;
+                case 3: reader.ReadLenBytes(); break;
+                case 4: reader.ReadVarint(); break;
+                case 5: reader.ReadVarint(); break;
+                case 6: reader.ReadVarint(); break;
+                default: reader.Skip(wire); break;
+            }
+        }
+
+        return condBytes.Length;
+    }
+
     private static FilterRule DecodeRule(byte[] ruleBytes)
     {
         var reader = new ProtoReader(ruleBytes);
@@ -72,11 +145,21 @@ public static class FilterCodec
             var (field, wire) = reader.ReadTag();
             switch (field)
             {
-                case 1: name = reader.ReadString(); break;
-                case 2: visibility = (Visibility)(int)reader.ReadVarint(); break;
-                case 3: color = reader.ReadFixed32(); break;
-                case 4: conditions.Add(DecodeCondition(reader.ReadLenBytes())); break;
-                case 5: isEnabled = reader.ReadVarint() != 0; break;
+                case 1:
+                    if (wire == 2) name = reader.ReadString(); else reader.Skip(wire);
+                    break;
+                case 2:
+                    if (wire == 0) visibility = (Visibility)(int)reader.ReadVarint(); else reader.Skip(wire);
+                    break;
+                case 3:
+                    if (wire == 5) color = reader.ReadFixed32(); else reader.Skip(wire);
+                    break;
+                case 4:
+                    if (wire == 2) conditions.Add(DecodeCondition(reader.ReadLenBytes())); else reader.Skip(wire);
+                    break;
+                case 5:
+                    if (wire == 0) isEnabled = reader.ReadVarint() != 0; else reader.Skip(wire);
+                    break;
                 default: reader.Skip(wire); break;
             }
         }
@@ -94,7 +177,8 @@ public static class FilterCodec
             case ItemPowerCondition ip:
                 buf.AddRange(ProtoWriter.VarintField(1, 0));
                 buf.AddRange(ProtoWriter.VarintField(4, (ulong)ip.Minimum));
-                buf.AddRange(ProtoWriter.VarintField(5, (ulong)ip.Maximum));
+                if (ip.Maximum != 0)
+                    buf.AddRange(ProtoWriter.VarintField(5, (ulong)ip.Maximum));
                 break;
             case RarityCondition r:
                 buf.AddRange(ProtoWriter.VarintField(1, 1));
@@ -122,7 +206,16 @@ public static class FilterCodec
                 buf.AddRange(ProtoWriter.VarintField(1, 6));
                 foreach (var id in a.AffixIds)
                     buf.AddRange(ProtoWriter.Fixed32Field(2, id));
+                foreach (var ge in a.GreaterEntries)
+                {
+                    var inner = new List<byte>();
+                    inner.AddRange(ProtoWriter.Fixed32Field(1, ge.AffixId));
+                    inner.AddRange(ProtoWriter.Fixed32Field(2, ge.Value));
+                    buf.AddRange(ProtoWriter.LenField(3, [.. inner]));
+                }
                 buf.AddRange(ProtoWriter.VarintField(4, (ulong)a.MinimumCount));
+                if (a.Field5 != 0)
+                    buf.AddRange(ProtoWriter.VarintField(5, (ulong)a.Field5));
                 break;
             case OptionalAffixCondition oa:
                 buf.AddRange(ProtoWriter.VarintField(1, 7));
@@ -140,19 +233,44 @@ public static class FilterCodec
     {
         var reader = new ProtoReader(condBytes);
 
-        var condType = 0;
+        var condType = -1;
         var field4 = 0UL;
         var field5 = 0UL;
         var field6 = 0UL;
         var ids = new List<uint>();
+        var greaterEntries = new List<GreaterAffixEntry>();
 
         while (reader.HasData)
         {
             var (field, wire) = reader.ReadTag();
             switch (field)
             {
-                case 1: condType = (int)reader.ReadVarint(); break;
+                case 1:
+                    if (condType == -1)
+                        condType = (int)reader.ReadVarint();
+                    else
+                        goto done;
+                    break;
                 case 2: ids.Add(reader.ReadFixed32()); break;
+                case 3:
+                {
+                    var entryBytes = reader.ReadLenBytes();
+                    if (entryBytes.Length >= 10)
+                    {
+                        var er = new ProtoReader(entryBytes);
+                        uint? eid = null, eval = null;
+                        while (er.HasData)
+                        {
+                            var (ef, ew) = er.ReadTag();
+                            if (ef == 1 && ew == 5) eid = er.ReadFixed32();
+                            else if (ef == 2 && ew == 5) eval = er.ReadFixed32();
+                            else er.Skip(ew);
+                        }
+                        if (eid.HasValue && eval.HasValue)
+                            greaterEntries.Add(new GreaterAffixEntry(eid.Value, eval.Value));
+                    }
+                    break;
+                }
                 case 4: field4 = reader.ReadVarint(); break;
                 case 5: field5 = reader.ReadVarint(); break;
                 case 6: field6 = reader.ReadVarint(); break;
@@ -160,6 +278,7 @@ public static class FilterCodec
             }
         }
 
+        done:
         return condType switch
         {
             0 => new ItemPowerCondition((int)field4, (int)field5),
@@ -168,7 +287,7 @@ public static class FilterCodec
             3 => new CodexCondition(),
             4 => new GreaterAffixCondition((int)field6),
             5 => new ItemTypeCondition(ids),
-            6 => new AffixCondition(ids, (int)field4),
+            6 => new AffixCondition(ids, (int)field4) { GreaterEntries = greaterEntries, Field5 = (int)field5 },
             7 => new OptionalAffixCondition(ids),
             _ => new UnknownCondition(condType, condBytes)
         };

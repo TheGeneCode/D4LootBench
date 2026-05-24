@@ -10,6 +10,9 @@ internal sealed class ProtoReader
     internal ProtoReader(byte[] data) { _data = data; _pos = 0; }
 
     internal bool HasData => _pos < _data.Length;
+    internal int Position => _pos;
+
+    internal void Seek(int position) => _pos = position;
 
     internal (int FieldNumber, int WireType) ReadTag()
     {
@@ -58,8 +61,9 @@ internal sealed class ProtoReader
             case 0: ReadVarint(); break;
             case 1: _pos += 8; break;
             case 2: ReadLenBytes(); break;
+            case 3: case 4: break; // deprecated Start/End group — ignore
             case 5: _pos += 4; break;
-            default: throw new InvalidDataException($"Unknown protobuf wire type {wireType} at position {_pos}.");
+            default: break; // unknown wire type — skip
         }
     }
 }

@@ -10,6 +10,7 @@ public sealed class FilterRuleset
         Rules = rules.ToList();
     }
 
-    public string          Name  { get; set; } = "Unnamed Filter";
-    public List<FilterRule> Rules { get; set; } = [];
+    public string          Name         { get; set; } = "Unnamed Filter";
+    public List<FilterRule> Rules        { get; set; } = [];
+    public string?         OriginalCode { get; set; }
 }
