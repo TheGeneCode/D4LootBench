@@ -187,26 +187,50 @@
                                         <Border BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                                                 BorderThickness="1" CornerRadius="3"
                                                 Margin="0,0,0,4" Padding="8,5">
-                                            <DockPanel>
-                                                <Button DockPanel.Dock="Right"
-                                                        Content="✕"
-                                                        Command="{Binding DataContext.DeleteConditionCommand,
-                                                                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                        CommandParameter="{Binding}"
-                                                        Padding="6,0"
-                                                        ToolTip="Remove condition" />
-                                                <TextBlock Text="{Binding TypeName}"
-                                                           FontWeight="SemiBold"
-                                                           Margin="0,0,10,0"
-                                                           DockPanel.Dock="Left"
-                                                           VerticalAlignment="Center"
-                                                           MinWidth="120" />
-<TextBlock Text="{Binding Summary}"
-           ToolTip="{Binding FullList}"
-           VerticalAlignment="Center"
-           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
-           TextTrimming="CharacterEllipsis" />
-                                            </DockPanel>
+                                            <StackPanel>
+                                                <!-- Header row: TypeName + Summary + delete -->
+                                                <DockPanel>
+                                                    <Button DockPanel.Dock="Right"
+                                                            Content="✕"
+                                                            Command="{Binding DataContext.DeleteConditionCommand,
+                                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            Padding="6,0"
+                                                            ToolTip="Remove condition" />
+                                                    <TextBlock Text="{Binding TypeName}"
+                                                               FontWeight="SemiBold"
+                                                               Margin="0,0,10,0"
+                                                               DockPanel.Dock="Left"
+                                                               VerticalAlignment="Center"
+                                                               MinWidth="120" />
+                                                    <TextBlock Text="{Binding Summary}"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                                </DockPanel>
+
+                                                <!-- Item list (only for list-type conditions) -->
+                                                <ItemsControl ItemsSource="{Binding Items}"
+                                                              Margin="16,4,0,0">
+                                                    <ItemsControl.Style>
+                                                        <Style TargetType="ItemsControl">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasItems}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </ItemsControl.Style>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding}"
+                                                                       FontSize="11"
+                                                                       Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
