@@ -1,3 +1,4 @@
+using D4Loot.Core.Data;
 using D4Loot.Core.Models;
 
 namespace D4Loot.App.ViewModels;
@@ -27,14 +28,50 @@ public sealed class ConditionViewModel
         ItemPropertiesCondition ip => ip.PropertyMask == 4 ? "Ancestral" : $"Mask = {ip.PropertyMask}",
         GreaterAffixCondition ga   => $"Min {ga.MinimumCount}",
         CodexCondition             => "",
-        ItemTypeCondition it       => $"{it.TypeIds.Count} type(s)",
-        AffixCondition a           => $"{a.AffixIds.Count} affix(es), min {a.MinimumCount}",
-        OptionalAffixCondition oa  => $"{oa.AffixIds.Count} affix(es), any",
+        ItemTypeCondition it       => FormatList(it.TypeIds, "type"),
+        AffixCondition a           => FormatList(a.AffixIds, "affix", a.MinimumCount),
+        OptionalAffixCondition oa  => FormatList(oa.AffixIds, "affix"),
         UnknownCondition u         => $"{u.RawBytes.Length} raw byte(s)",
         _                          => ""
     };
 
+    public string FullList => Model switch
+    {
+        ItemTypeCondition it       => string.Join(", ", it.TypeIds.Select(LookupName)),
+        AffixCondition a           => string.Join(", ", a.AffixIds.Select(LookupName)),
+        OptionalAffixCondition oa  => string.Join(", ", oa.AffixIds.Select(LookupName)),
+        _                          => Summary
+    };
+
     public ConditionViewModel(Condition model) => Model = model;
+
+    private static string FormatList(IReadOnlyList<uint> ids, string label, int? count = null)
+    {
+        if (ids.Count == 0)
+            return $"0 {label}(s)";
+
+        var names = ids.Select(LookupName).ToList();
+        var prefix = count.HasValue
+            ? $"{ids.Count} {label}(es), min {count}: "
+            : $"{ids.Count} {label}(s): ";
+
+        var preview = names.Count <= 3
+            ? string.Join(", ", names)
+            : $"{string.Join(", ", names.Take(3))}, …";
+
+        return prefix + preview;
+    }
+
+    private static string LookupName(uint id)
+    {
+        if (AffixDatabase.ByHash.TryGetValue(id, out var affixName))
+            return affixName;
+        if (SkillDatabase.ByHash.TryGetValue(id, out var skillEntry))
+            return skillEntry.Name;
+        if (ItemTypeDatabase.ByHash.TryGetValue(id, out var itemTypeEntry))
+            return itemTypeEntry.Name;
+        return $"0x{id:x8}";
+    }
 
     private static string FormatRarityFlags(RarityFlags flags)
     {

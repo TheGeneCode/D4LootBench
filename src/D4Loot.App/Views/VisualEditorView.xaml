@@ -201,10 +201,11 @@
                                                            DockPanel.Dock="Left"
                                                            VerticalAlignment="Center"
                                                            MinWidth="120" />
-                                                <TextBlock Text="{Binding Summary}"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
-                                                           TextTrimming="CharacterEllipsis" />
+<TextBlock Text="{Binding Summary}"
+           ToolTip="{Binding FullList}"
+           VerticalAlignment="Center"
+           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+           TextTrimming="CharacterEllipsis" />
                                             </DockPanel>
                                         </Border>
                                     </DataTemplate>
