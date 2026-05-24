@@ -2,71 +2,46 @@ namespace D4Loot.Core.Data;
 
 public sealed record ItemTypeEntry(string Name, uint Hash, string InternalName);
 
-/// <summary>
-/// Item type hash IDs sourced from fnuecke/diablo4-loot-filter-viewer names.json (datamined)
-/// and cross-referenced against Upsilon72/d4-filter-generator Season 13 exports.
-/// IDs are FIXED32 (little-endian) in the protobuf binary.
-/// </summary>
 public static class ItemTypeDatabase
 {
-    // ── Weapons ─────────────────────────────────────────────────────────────
+    public static IReadOnlyList<ItemTypeEntry> All { get; }
+    public static IReadOnlyDictionary<uint, ItemTypeEntry> ByHash { get; }
 
-    public static IReadOnlyList<ItemTypeEntry> Weapons { get; } =
-    [
-        new("Axe",               0x0006D151, "Axe"),
-        new("Two-Handed Axe",    0x0006D152, "Axe2H"),
-        new("Mace",              0x0006D13A, "Mace"),
-        new("Two-Handed Mace",   0x0006D144, "Mace2H"),
-        new("Sword",             0x0006D14C, "Sword"),
-        new("Two-Handed Sword",  0x0006D14F, "Sword2H"),
-        new("Dagger",            0x0006D159, "Dagger"),
-        new("Polearm",           0x0006D15D, "Polearm"),
-        new("Scythe",            0x0006D154, "Scythe"),
-        new("Two-Handed Scythe", 0x0006D155, "Scythe2H"),
-        new("Staff",             0x0006D153, "Staff"),
-        new("Wand",              0x0006D163, "Wand"),
-        new("Focus",             0x0006D16A, "Focus"),
-        new("Bow",               0x0006D167, "Bow"),
-        new("Crossbow",          0x0006D168, "Crossbow"),
-        new("Two-Handed Crossbow", 0x0006D169, "Crossbow2H"),
-        new("Totem",             0x0006D16B, "OffHandTotem")
-    ];
+    public static IReadOnlyList<ItemTypeEntry> Weapons => _byCategory["Weapons"];
+    public static IReadOnlyList<ItemTypeEntry> Armor => _byCategory["Armor"];
+    public static IReadOnlyList<ItemTypeEntry> Accessories => _byCategory["Accessories"];
+    public static IReadOnlyList<ItemTypeEntry> Special => _byCategory["Special"];
 
-    // ── Armor ────────────────────────────────────────────────────────────────
+    private static readonly Dictionary<string, List<ItemTypeEntry>> _byCategory;
 
-    public static IReadOnlyList<ItemTypeEntry> Armor { get; } =
-    [
-        new("Chest Armor",  0x0006D16D, "ChestArmor"),
-        new("Helm",         0x0006D16E, "Helm"),
-        new("Pants",        0x0006D16F, "Legs"),
-        new("Boots",        0x0006D170, "Boots"),
-        new("Gloves",       0x0006D171, "Gloves"),
-        new("Shield",       0x0006D172, "Shield")
-    ];
+    static ItemTypeDatabase()
+    {
+        var all = new List<ItemTypeEntry>();
+        _byCategory = new Dictionary<string, List<ItemTypeEntry>>();
 
-    // ── Accessories ──────────────────────────────────────────────────────────
+        var arr = FilterDataStore.Root.GetProperty("itemTypes");
+        foreach (var el in arr.EnumerateArray())
+        {
+            var name = el.GetProperty("displayName").GetString()!;
+            var hashHex = el.GetProperty("hash").GetString()!;
+            var hash = Convert.ToUInt32(hashHex[2..], 16);
+            var internalName = el.GetProperty("internalName").GetString()!;
+            var category = el.GetProperty("category").GetString()!;
 
-    public static IReadOnlyList<ItemTypeEntry> Accessories { get; } =
-    [
-        new("Ring",    0x0006D174, "Ring"),
-        new("Amulet",  0x0006D175, "Amulet")
-    ];
+            var entry = new ItemTypeEntry(name, hash, internalName);
+            all.Add(entry);
 
-    // ── Special (Charm system, Season 13+) ──────────────────────────────────
+            if (!_byCategory.TryGetValue(category, out var list))
+            {
+                list = new List<ItemTypeEntry>();
+                _byCategory[category] = list;
+            }
+            list.Add(entry);
+        }
 
-    public static IReadOnlyList<ItemTypeEntry> Special { get; } =
-    [
-        new("Charm",         0x0022ed05, "Charm"),
-        new("Horadric Seal", 0x00237e80, "HoradricSeal")
-    ];
-
-    // ── Aggregates ───────────────────────────────────────────────────────────
-
-    public static IReadOnlyList<ItemTypeEntry> All { get; } =
-        [.. Weapons, .. Armor, .. Accessories, .. Special];
-
-    public static IReadOnlyDictionary<uint, ItemTypeEntry> ByHash { get; } =
-        All.ToDictionary(e => e.Hash);
+        All = all.AsReadOnly();
+        ByHash = all.ToDictionary(e => e.Hash);
+    }
 
     public static string GetDisplayName(uint hash)
         => ByHash.TryGetValue(hash, out var entry) ? entry.Name : $"Unknown item type (0x{hash:x8})";

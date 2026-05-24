@@ -132,6 +132,22 @@ public sealed class FilterCodecTests
         decoded.Conditions[0].ShouldBeOfType<OptionalAffixCondition>().AffixIds.ShouldBe(affixIds);
     }
 
+    [Fact]
+    public void Encode_ThenDecode_PreservesSpecificUniqueCondition()
+    {
+        uint[] uniqueIds =
+        [
+            UniqueItemDatabase.All[0].SnoId,
+            UniqueItemDatabase.All[1].SnoId,
+            UniqueItemDatabase.All[2].SnoId
+        ];
+        var decoded = RoundTripRule(new FilterRule("Uniques", Visibility.Show, FilterColors.Blue,
+            [new SpecificUniqueCondition(uniqueIds)]));
+
+        var result = decoded.Conditions[0].ShouldBeOfType<SpecificUniqueCondition>();
+        result.UniqueIds.ShouldBe(uniqueIds);
+    }
+
     // ── Encode produces valid Base64 ──────────────────────────────────────
 
     [Fact]

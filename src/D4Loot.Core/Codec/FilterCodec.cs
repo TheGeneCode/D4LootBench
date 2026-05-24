@@ -175,6 +175,11 @@ public static class FilterCodec
                 foreach (var id in oa.AffixIds)
                     buf.AddRange(ProtoWriter.Fixed32Field(2, id));
                 break;
+            case SpecificUniqueCondition su:
+                buf.AddRange(ProtoWriter.VarintField(1, 8));
+                foreach (var id in su.UniqueIds)
+                    buf.AddRange(ProtoWriter.Fixed32Field(2, id));
+                break;
             case UnknownCondition u:
                 buf.AddRange(u.RawBytes);
                 break;
@@ -247,6 +252,7 @@ public static class FilterCodec
             5 => new ItemTypeCondition(ids),
             6 => new AffixCondition(ids, (int)field4) { GreaterEntries = greaterEntries, Field5 = (int)field5 },
             7 => new OptionalAffixCondition(ids),
+            8 => new SpecificUniqueCondition(ids),
             _ => new UnknownCondition(condType, condBytes)
         };
     }

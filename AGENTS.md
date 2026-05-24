@@ -121,6 +121,7 @@ Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-
 - **Phase 3** (in progress) — Item/affix data integration:
   - Condition list summaries now show resolved item/affix/skill names with cross-database lookups
   - Unknown IDs shown as hex for gap identification
+  - `SpecificUniqueCondition` modeled (type 8) with codec support and UniqueItemDatabase (10 IDs from CoreTOC_flat.json)
 
 ## What's Next
 - **Phase 3** (continued) — Condition value pickers bind to AffixDatabase/SkillDatabase/ItemTypeDatabase; resolve 4 Sorcerer basic skill display names; condition editing (add/edit)
@@ -146,6 +147,14 @@ dotnet test           # 15+ tests in D4Loot.Core.Tests
 ```powershell
 dotnet publish src/D4Loot.App -r win-x64 -p:PublishSingleFile=true --self-contained true
 ```
+
+## Locally Cloned Reference Repos
+
+- `C:\dev\projects\d4-filter-generator` — Upsilon72/d4-filter-generator
+- `C:\dev\projects\d4-loot-filter-viewer` — fnuecke/diablo4-loot-filter-viewer
+
+These repos contain `.proto` files, `names.json`, `CoreTOC_flat.json`, and reference implementations
+for cross-checking protobuf wire format, condition semantics, and ID lookups.
 
 ## README (not yet created) — Doc reminders for initial write
 When creating the repo's README.md, include a troubleshooting section noting that if a share code imported from an external source fails to decode or produces unexpected results, the user should re-export the filter from the in-game UI and use that fresh code instead. Older tool exports or manually-shared codes may have subtle encoding differences (e.g. the GitHub copy of Raxx's filter has 13 greater entries per condition instead of the game's 14).

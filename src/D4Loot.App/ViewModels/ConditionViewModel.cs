@@ -17,6 +17,7 @@ public sealed class ConditionViewModel
         ItemTypeCondition       => "Item Type",
         AffixCondition          => "Required Affixes",
         OptionalAffixCondition  => "Optional Affixes",
+        SpecificUniqueCondition => "Specific Unique",
         UnknownCondition u      => $"Unknown ({u.ConditionType})",
         _                       => "Unknown"
     };
@@ -31,17 +32,19 @@ public sealed class ConditionViewModel
         ItemTypeCondition it       => $"{it.TypeIds.Count} type{(it.TypeIds.Count == 1 ? "" : "s")}",
         AffixCondition a           => $"min {a.MinimumCount} of {a.AffixIds.Count}",
         OptionalAffixCondition oa  => $"any of {oa.AffixIds.Count}",
+        SpecificUniqueCondition su => $"{su.UniqueIds.Count} unique{(su.UniqueIds.Count == 1 ? "" : "s")}",
         UnknownCondition u         => $"{u.RawBytes.Length} raw byte(s)",
         _                          => ""
     };
 
-    public bool HasItems => Model is ItemTypeCondition or AffixCondition or OptionalAffixCondition;
+    public bool HasItems => Model is ItemTypeCondition or AffixCondition or OptionalAffixCondition or SpecificUniqueCondition;
 
     public IReadOnlyList<string> Items => Model switch
     {
         ItemTypeCondition it       => it.TypeIds.Select(LookupName).ToList(),
         AffixCondition a           => a.AffixIds.Select(LookupName).ToList(),
         OptionalAffixCondition oa  => oa.AffixIds.Select(LookupName).ToList(),
+        SpecificUniqueCondition su => su.UniqueIds.Select(LookupUniqueName).ToList(),
         _                          => []
     };
 
@@ -56,6 +59,13 @@ public sealed class ConditionViewModel
         if (ItemTypeDatabase.ByHash.TryGetValue(id, out var itemTypeEntry))
             return itemTypeEntry.Name;
         return $"0x{id:x8}";
+    }
+
+    private static string LookupUniqueName(uint snoId)
+    {
+        if (UniqueItemDatabase.BySnoId.TryGetValue(snoId, out var entry))
+            return entry.Name;
+        return $"0x{snoId:x8}";
     }
 
     private static string FormatRarityFlags(RarityFlags flags)

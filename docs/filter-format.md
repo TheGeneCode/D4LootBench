@@ -115,7 +115,7 @@ The condition type discriminator is field 1. The complete enum (from
 | 5 | Item Type Match | `ItemTypeCondition` | ✅ fully modelled |
 | 6 | Has Required Affixes | `AffixCondition` | ✅ fully modelled (params2 not decoded) |
 | 7 | Has Optional Affixes | `OptionalAffixCondition` | ✅ fully modelled |
-| 8 | Is Specific Unique | `UnknownCondition` | Field layout known; Unique item IDs not catalogued |
+| 8 | Is Specific Unique | `SpecificUniqueCondition` | ✅ fully modelled (10 IDs catalogued in UniqueItemDatabase) |
 | 9 | Talisman Set Bonus | `UnknownCondition` | Field layout known; set/item IDs not catalogued |
 
 > **Correction — fnuecke type mapping reversed for types 3 and 4.** The original

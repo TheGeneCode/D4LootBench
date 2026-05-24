@@ -1,0 +1,6046 @@
+{
+  "formatVersion": 1,
+  "source": "DiabloTools/d4data CoreTOC_flat.json (build 3.0.2.71886)",
+  "affixes": [
+    {
+      "displayName": "% Cooldown Reduction",
+      "hash": "0x001beab8"
+    },
+    {
+      "displayName": "All Damage",
+      "hash": "0x001bead4"
+    },
+    {
+      "displayName": "Armor",
+      "hash": "0x001beab2"
+    },
+    {
+      "displayName": "Attack Speed",
+      "hash": "0x001beab4"
+    },
+    {
+      "displayName": "Attacks Reduce Evade Cooldown",
+      "hash": "0x0026c56c"
+    },
+    {
+      "displayName": "Barrier Generation",
+      "hash": "0x00266b22"
+    },
+    {
+      "displayName": "Cold Damage Multiplier",
+      "hash": "0x00270af5"
+    },
+    {
+      "displayName": "Cold Resistance",
+      "hash": "0x001beb2e"
+    },
+    {
+      "displayName": "Critical Strike Chance",
+      "hash": "0x001beace"
+    },
+    {
+      "displayName": "Critical Strike Damage",
+      "hash": "0x001bead2"
+    },
+    {
+      "displayName": "Damage Over Time Multiplier",
+      "hash": "0x001bead6"
+    },
+    {
+      "displayName": "Damage Reduction",
+      "hash": "0x001d6e63"
+    },
+    {
+      "displayName": "Dexterity",
+      "hash": "0x001beaba"
+    },
+    {
+      "displayName": "Dodge Chance",
+      "hash": "0x001bfc85"
+    },
+    {
+      "displayName": "Energy On Kill",
+      "hash": "0x001d5e25"
+    },
+    {
+      "displayName": "Energy Regeneration",
+      "hash": "0x001d5e30"
+    },
+    {
+      "displayName": "Essence On Kill",
+      "hash": "0x001d5e27"
+    },
+    {
+      "displayName": "Essence Regeneration",
+      "hash": "0x001d5e3a"
+    },
+    {
+      "displayName": "Evade Grants Movement Speed",
+      "hash": "0x0026c570"
+    },
+    {
+      "displayName": "Faith On Kill",
+      "hash": "0x002674bb"
+    },
+    {
+      "displayName": "Faith Regeneration",
+      "hash": "0x002674b9"
+    },
+    {
+      "displayName": "Fire Damage Multiplier",
+      "hash": "0x00270af7"
+    },
+    {
+      "displayName": "Fire Resistance",
+      "hash": "0x001beaee"
+    },
+    {
+      "displayName": "Fortify Generation",
+      "hash": "0x00266b1e"
+    },
+    {
+      "displayName": "Fury On Kill",
+      "hash": "0x001d5e29"
+    },
+    {
+      "displayName": "Fury Regeneration",
+      "hash": "0x001d5e38"
+    },
+    {
+      "displayName": "Healing Received",
+      "hash": "0x001bfcbf"
+    },
+    {
+      "displayName": "Holy Damage Multiplier",
+      "hash": "0x00270aff"
+    },
+    {
+      "displayName": "Intelligence",
+      "hash": "0x001beabe"
+    },
+    {
+      "displayName": "Life On Hit",
+      "hash": "0x001d5e13"
+    },
+    {
+      "displayName": "Life on Kill",
+      "hash": "0x0025da8c"
+    },
+    {
+      "displayName": "Life Regeneration",
+      "hash": "0x001beada"
+    },
+    {
+      "displayName": "Lightning Damage Multiplier",
+      "hash": "0x00270afd"
+    },
+    {
+      "displayName": "Lightning Resistance",
+      "hash": "0x001beaf2"
+    },
+    {
+      "displayName": "Lucky Hit Chance",
+      "hash": "0x001beadc"
+    },
+    {
+      "displayName": "Lucky Hit Restore Primary Resource",
+      "hash": "0x0024527f"
+    },
+    {
+      "displayName": "Mana On Kill",
+      "hash": "0x001d5e2b"
+    },
+    {
+      "displayName": "Mana Regeneration",
+      "hash": "0x001d5e36"
+    },
+    {
+      "displayName": "Maximum Evade Charge",
+      "hash": "0x0026c56e"
+    },
+    {
+      "displayName": "Maximum Life",
+      "hash": "0x001bead8"
+    },
+    {
+      "displayName": "Maximum Resource",
+      "hash": "0x001bfc79"
+    },
+    {
+      "displayName": "Movement Speed",
+      "hash": "0x001beade"
+    },
+    {
+      "displayName": "Physical Damage Multiplier",
+      "hash": "0x00270ad0"
+    },
+    {
+      "displayName": "Physical Resistance",
+      "hash": "0x002557e4"
+    },
+    {
+      "displayName": "Poison Damage Multiplier",
+      "hash": "0x00270afb"
+    },
+    {
+      "displayName": "Poison Resistance",
+      "hash": "0x001beaf4"
+    },
+    {
+      "displayName": "Potion Capacity",
+      "hash": "0x001beae2"
+    },
+    {
+      "displayName": "Resistance to All Elements",
+      "hash": "0x001bfd38"
+    },
+    {
+      "displayName": "Resource Cost Reduction",
+      "hash": "0x001d3a0f"
+    },
+    {
+      "displayName": "Resource Generation",
+      "hash": "0x001beb20"
+    },
+    {
+      "displayName": "Shadow Damage Multiplier",
+      "hash": "0x00270af9"
+    },
+    {
+      "displayName": "Shadow Resistance",
+      "hash": "0x001beaf6"
+    },
+    {
+      "displayName": "Spirit On Kill",
+      "hash": "0x001d5e2d"
+    },
+    {
+      "displayName": "Spirit Regeneration",
+      "hash": "0x001d5e33"
+    },
+    {
+      "displayName": "Strength",
+      "hash": "0x001beac2"
+    },
+    {
+      "displayName": "Thorns",
+      "hash": "0x001beb22"
+    },
+    {
+      "displayName": "Vigor On Kill",
+      "hash": "0x001eb481"
+    },
+    {
+      "displayName": "Vigor Regeneration",
+      "hash": "0x001eb549"
+    },
+    {
+      "displayName": "Vulnerable Damage Multiplier",
+      "hash": "0x001bfc80"
+    },
+    {
+      "displayName": "Weapon Damage",
+      "hash": "0x0027fc93"
+    },
+    {
+      "displayName": "Willpower",
+      "hash": "0x001beac6"
+    },
+    {
+      "displayName": "Wrath every 10 Kills",
+      "hash": "0x0026a374"
+    },
+    {
+      "displayName": "Wrath Regeneration",
+      "hash": "0x0026a37c"
+    }
+  ],
+  "skills": [
+    {
+      "displayName": "All Skills",
+      "hash": "0x00273C0A",
+      "class": "All"
+    },
+    {
+      "displayName": "Core Skills",
+      "hash": "0x001D6E31",
+      "class": "All"
+    },
+    {
+      "displayName": "Basic Skills",
+      "hash": "0x001D6E2F",
+      "class": "All"
+    },
+    {
+      "displayName": "Defensive Skills",
+      "hash": "0x001D6E2B",
+      "class": "All"
+    },
+    {
+      "displayName": "Bash",
+      "hash": "0x001C60BC",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Flay",
+      "hash": "0x001C60C0",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Frenzy",
+      "hash": "0x001C60C2",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Lunging Strike",
+      "hash": "0x001C60C4",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Hammer of the Ancients",
+      "hash": "0x001C68CB",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Rend",
+      "hash": "0x001C68F6",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Double Swing",
+      "hash": "0x001C6908",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Upheaval",
+      "hash": "0x001C690E",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Whirlwind",
+      "hash": "0x001C6920",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Challenging Shout",
+      "hash": "0x001C692A",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Charge",
+      "hash": "0x001C692C",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Death Blow",
+      "hash": "0x001C692E",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Ground Stomp",
+      "hash": "0x001C6935",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Iron Skin",
+      "hash": "0x001C6938",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Kick",
+      "hash": "0x001C693A",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Leap",
+      "hash": "0x001C6941",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Rallying Cry",
+      "hash": "0x001C6943",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Rupture",
+      "hash": "0x001C6945",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Steel Grasp",
+      "hash": "0x001C6947",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "War Cry",
+      "hash": "0x001C6949",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Call of the Ancients",
+      "hash": "0x002782A5",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Dust Devils",
+      "hash": "0x002782A9",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Earthquake",
+      "hash": "0x002782AB",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Iron Shrapnel",
+      "hash": "0x002782AF",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Brawling Skills",
+      "hash": "0x001D6E25",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Weapon Mastery Skills",
+      "hash": "0x001D6E27",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Bludgeoning Skills",
+      "hash": "0x00280B83",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Dual Wield Skills",
+      "hash": "0x00280B85",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Slashing Skills",
+      "hash": "0x00280B87",
+      "class": "Barbarian"
+    },
+    {
+      "displayName": "Earthspike",
+      "hash": "0x001CC052",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Claw",
+      "hash": "0x001CC054",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Storm Strike",
+      "hash": "0x001CC056",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Wind Shear",
+      "hash": "0x001CC058",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Maul",
+      "hash": "0x001CC060",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Landslide",
+      "hash": "0x001CC062",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Pulverize",
+      "hash": "0x001CC064",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Tornado",
+      "hash": "0x001CC066",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Lightning Storm",
+      "hash": "0x001CC068",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Shred",
+      "hash": "0x001CC06A",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Blood Howl",
+      "hash": "0x001CC06D",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Boulder",
+      "hash": "0x001CC06F",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Cyclone Armor",
+      "hash": "0x001CC071",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Debilitating Roar",
+      "hash": "0x001CC073",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Earthen Bulwark",
+      "hash": "0x001CC075",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Hurricane",
+      "hash": "0x001CC077",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Rabies",
+      "hash": "0x001CC183",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Ravens",
+      "hash": "0x001CC185",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Trample",
+      "hash": "0x001CC188",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Vine Creeper",
+      "hash": "0x001CC18A",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Wolves",
+      "hash": "0x001CC18D",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Human",
+      "hash": "0x002782B7",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Versatile",
+      "hash": "0x002782B9",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Companion Skills",
+      "hash": "0x001D6E2D",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Wrath Skills",
+      "hash": "0x001D6E33",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Earth Skills",
+      "hash": "0x00280B89",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Nature Magic Skills",
+      "hash": "0x00280B8B",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Shapeshifting Skills",
+      "hash": "0x00280B8D",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Storm Skills",
+      "hash": "0x00280B8F",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Werebear Skills",
+      "hash": "0x00280B91",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Werewolf Skills",
+      "hash": "0x00280B93",
+      "class": "Druid"
+    },
+    {
+      "displayName": "Bone Splinters",
+      "hash": "0x001C7E6E",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Decompose",
+      "hash": "0x001C7E7D",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Hemorrhage",
+      "hash": "0x001C7E84",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Reap",
+      "hash": "0x001C7E88",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Bone Spear",
+      "hash": "0x001C7E90",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Blight",
+      "hash": "0x001C7E9A",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Sever",
+      "hash": "0x001C7EA1",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Blood Surge",
+      "hash": "0x001C7EA8",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Blood Lance",
+      "hash": "0x001C7EB0",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Blood Mist",
+      "hash": "0x001C7EB2",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Bone Prison",
+      "hash": "0x001C7EB6",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Bone Spirit",
+      "hash": "0x001C7EB8",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Corpse Explosion",
+      "hash": "0x001C7EBA",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Corpse Tendrils",
+      "hash": "0x001C7EBC",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Decrepify",
+      "hash": "0x001C7EBE",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Iron Maiden",
+      "hash": "0x001C7EC0",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Skeleton Warrior",
+      "hash": "0x001D6E4F",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Skeleton Mage",
+      "hash": "0x001D6E51",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Golem",
+      "hash": "0x001D6E53",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Macabre Skills",
+      "hash": "0x001D6E47",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Curse Skills",
+      "hash": "0x001D6E49",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Corpse Skills",
+      "hash": "0x001D6E4B",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Blood Skills",
+      "hash": "0x00280B95",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Bone Skills",
+      "hash": "0x00280B97",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Darkness Skills",
+      "hash": "0x00280B99",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Minion Skills",
+      "hash": "0x00280B9B",
+      "class": "Necromancer"
+    },
+    {
+      "displayName": "Heartseeker",
+      "hash": "0x001C952F",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Puncture",
+      "hash": "0x001C9531",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Invigorating Strike",
+      "hash": "0x001C9533",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Forceful Arrow",
+      "hash": "0x001C9535",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Blade Shift",
+      "hash": "0x001C9537",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Rapid Fire",
+      "hash": "0x001C953B",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Flurry",
+      "hash": "0x001C953D",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Barrage",
+      "hash": "0x001C953F",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Twisting Blades",
+      "hash": "0x001C9541",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Penetrating Shot",
+      "hash": "0x001C9543",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Poison Imbuement",
+      "hash": "0x001C9545",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Caltrops",
+      "hash": "0x001C9547",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Cold Imbuement",
+      "hash": "0x001C9549",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Concealment",
+      "hash": "0x001C954B",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Dark Shroud",
+      "hash": "0x001C954D",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Dash",
+      "hash": "0x001C954F",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Poison Trap",
+      "hash": "0x001C9551",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Shadow Imbuement",
+      "hash": "0x001C9553",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Shadow Step",
+      "hash": "0x001C9555",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Smoke Bomb",
+      "hash": "0x001C9557",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Grenade",
+      "hash": "0x002782B1",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Shade",
+      "hash": "0x002782B3",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Arrow Storm",
+      "hash": "0x002782B5",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Agility Skills",
+      "hash": "0x001D6E41",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Subterfuge Skills",
+      "hash": "0x001D6E43",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Imbuement Skills",
+      "hash": "0x001D6E45",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Cutthroat Skills",
+      "hash": "0x00280BA1",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Grenade Skills",
+      "hash": "0x00280BA3",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Marksman Skills",
+      "hash": "0x00280BA5",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Trap Skills",
+      "hash": "0x00280BA7",
+      "class": "Rogue"
+    },
+    {
+      "displayName": "Spark",
+      "hash": "0x001D674B",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Fire Bolt",
+      "hash": "0x001D674D",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Frost Bolt",
+      "hash": "0x001D6750",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Arc Lash",
+      "hash": "0x001D6752",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Fireball",
+      "hash": "0x001D673F",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Ice Shards",
+      "hash": "0x001D6741",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Chain Lightning",
+      "hash": "0x001D6743",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Charged Bolts",
+      "hash": "0x001D6745",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Incinerate",
+      "hash": "0x001D6747",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Frozen Orb",
+      "hash": "0x001D6749",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Ball Lightning",
+      "hash": "0x001D6754",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Blizzard",
+      "hash": "0x001D6756",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Firewall",
+      "hash": "0x001D6758",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Flame Shield",
+      "hash": "0x001D675A",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Frost Nova",
+      "hash": "0x001D675C",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Hydra",
+      "hash": "0x001D675E",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Ice Armor",
+      "hash": "0x001D6760",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Ice Blades",
+      "hash": "0x001D6762",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Lightning Spear",
+      "hash": "0x001D6764",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Meteor",
+      "hash": "0x001D6766",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Teleport",
+      "hash": "0x001D6768",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Familiar",
+      "hash": "0x001E79A8",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Conjuration Skills",
+      "hash": "0x001D6E3D",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Mastery Skills",
+      "hash": "0x001D6E3F",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Frost Skills",
+      "hash": "0x00280BA9",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Pyromancy Skills",
+      "hash": "0x00280BAB",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Shock Skills",
+      "hash": "0x00280BAD",
+      "class": "Sorcerer"
+    },
+    {
+      "displayName": "Rock Splitter",
+      "hash": "0x001EB8A4",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Thunderspike",
+      "hash": "0x001EBBAD",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Thrash",
+      "hash": "0x001EBBB7",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Withering Fist",
+      "hash": "0x001EBD1B",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Crushing Hand",
+      "hash": "0x001EBD36",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Quill Volley",
+      "hash": "0x001EBD49",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Rake",
+      "hash": "0x001EBD60",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Stinger",
+      "hash": "0x001EBDB9",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Vortex",
+      "hash": "0x001EBEE9",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Soar",
+      "hash": "0x001EC0FE",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Ravager",
+      "hash": "0x001EC119",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Toxic Skin",
+      "hash": "0x001EC199",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Armored Hide",
+      "hash": "0x001EC1B8",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Concussive Stomp",
+      "hash": "0x001ED05A",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Counterattack",
+      "hash": "0x001ED0CB",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Scourge",
+      "hash": "0x001ED1D4",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Payback",
+      "hash": "0x001ED2E9",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Razor Wings",
+      "hash": "0x001ED2F1",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Rushing Claw",
+      "hash": "0x001ED338",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Touch of Death",
+      "hash": "0x001ED34D",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Focus Skills",
+      "hash": "0x001EBDFD",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Potency Skills",
+      "hash": "0x001ED2C8",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Centipede Skills",
+      "hash": "0x00280BAF",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Eagle Skills",
+      "hash": "0x00280BB1",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Gorilla Skills",
+      "hash": "0x00280BB3",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Jaguar Skills",
+      "hash": "0x00280BB5",
+      "class": "Spiritborn"
+    },
+    {
+      "displayName": "Advance",
+      "hash": "0x002539AB",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Brandish",
+      "hash": "0x00253A6C",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Holy Bolt",
+      "hash": "0x00261AA5",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Clash",
+      "hash": "0x00261AA7",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Blessed Shield",
+      "hash": "0x0024F051",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Blessed Hammer",
+      "hash": "0x0024F057",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Shield Bash",
+      "hash": "0x0025122E",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Divine Lance",
+      "hash": "0x0025B0E2",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Spear of the Heavens",
+      "hash": "0x0025C005",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Zeal",
+      "hash": "0x00261AB7",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Fanaticism Aura",
+      "hash": "0x00261ABB",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Holy Light Aura",
+      "hash": "0x00261ABD",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Defiance Aura",
+      "hash": "0x00261ABF",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Aegis",
+      "hash": "0x00261ACE",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Shield Charge",
+      "hash": "0x00261AD8",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Falling Star",
+      "hash": "0x00261ADD",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Rally",
+      "hash": "0x00261AE2",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Consecration",
+      "hash": "0x00261AE4",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Purify",
+      "hash": "0x00261AE6",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Condemn",
+      "hash": "0x00261AE8",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Aura Skills",
+      "hash": "0x00261AC2",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Valor Skills",
+      "hash": "0x00261AC7",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Justice Skills",
+      "hash": "0x00261ACC",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Judicator Skills",
+      "hash": "0x0024F033",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Zealot Skills",
+      "hash": "0x0024F06A",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Disciple Skills",
+      "hash": "0x00280B9D",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Juggernaut Skills",
+      "hash": "0x00280B9F",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Command Fallen",
+      "hash": "0x0026AD4D",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Molten Bomb",
+      "hash": "0x0026AD68",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Doom",
+      "hash": "0x0026AD6A",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Hellion Sting",
+      "hash": "0x0026AD6C",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Hell Fracture",
+      "hash": "0x0026AD42",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Umbral Chains",
+      "hash": "0x0026AD44",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Blazing Scream",
+      "hash": "0x0026AD46",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Dread Claws",
+      "hash": "0x0026AD48",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Bombardment",
+      "hash": "0x0026ADCD",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Wall of Agony",
+      "hash": "0x0026AD71",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Tortured Wretch",
+      "hash": "0x0026AD78",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Dark Prison",
+      "hash": "0x0026AD7A",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Nether Step",
+      "hash": "0x0026AD7C",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Infernal Breath",
+      "hash": "0x0026AD80",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Tyrant\u0027s Grasp",
+      "hash": "0x0026AD83",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Profane Sentinel",
+      "hash": "0x0026AD85",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Sigil of Subversion",
+      "hash": "0x0026AD87",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Sigil of Summons",
+      "hash": "0x0026AD89",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Sigil of Chaos",
+      "hash": "0x0026AD8B",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Occult Skills",
+      "hash": "0x0026ADC2",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Hellfire Skills",
+      "hash": "0x0026ADC4",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Abyss Skills",
+      "hash": "0x0026ADC6",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Demonology Skills",
+      "hash": "0x0026ADC8",
+      "class": "Warlock"
+    }
+  ],
+  "itemTypes": [
+    {
+      "displayName": "Axe",
+      "hash": "0x0006D151",
+      "internalName": "Axe",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Two-Handed Axe",
+      "hash": "0x0006D152",
+      "internalName": "Axe2H",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Mace",
+      "hash": "0x0006D13A",
+      "internalName": "Mace",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Two-Handed Mace",
+      "hash": "0x0006D144",
+      "internalName": "Mace2H",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Sword",
+      "hash": "0x0006D14C",
+      "internalName": "Sword",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Two-Handed Sword",
+      "hash": "0x0006D14F",
+      "internalName": "Sword2H",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Dagger",
+      "hash": "0x0006D159",
+      "internalName": "Dagger",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Polearm",
+      "hash": "0x0006D15D",
+      "internalName": "Polearm",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Scythe",
+      "hash": "0x0006D154",
+      "internalName": "Scythe",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Two-Handed Scythe",
+      "hash": "0x0006D155",
+      "internalName": "Scythe2H",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Staff",
+      "hash": "0x0006D153",
+      "internalName": "Staff",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Wand",
+      "hash": "0x0006D163",
+      "internalName": "Wand",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Focus",
+      "hash": "0x0006D16A",
+      "internalName": "Focus",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Bow",
+      "hash": "0x0006D167",
+      "internalName": "Bow",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Crossbow",
+      "hash": "0x0006D168",
+      "internalName": "Crossbow",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Two-Handed Crossbow",
+      "hash": "0x0006D169",
+      "internalName": "Crossbow2H",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Totem",
+      "hash": "0x0006D16B",
+      "internalName": "OffHandTotem",
+      "category": "Weapons"
+    },
+    {
+      "displayName": "Chest Armor",
+      "hash": "0x0006D16D",
+      "internalName": "ChestArmor",
+      "category": "Armor"
+    },
+    {
+      "displayName": "Helm",
+      "hash": "0x0006D16E",
+      "internalName": "Helm",
+      "category": "Armor"
+    },
+    {
+      "displayName": "Pants",
+      "hash": "0x0006D16F",
+      "internalName": "Legs",
+      "category": "Armor"
+    },
+    {
+      "displayName": "Boots",
+      "hash": "0x0006D170",
+      "internalName": "Boots",
+      "category": "Armor"
+    },
+    {
+      "displayName": "Gloves",
+      "hash": "0x0006D171",
+      "internalName": "Gloves",
+      "category": "Armor"
+    },
+    {
+      "displayName": "Shield",
+      "hash": "0x0006D172",
+      "internalName": "Shield",
+      "category": "Armor"
+    },
+    {
+      "displayName": "Ring",
+      "hash": "0x0006D174",
+      "internalName": "Ring",
+      "category": "Accessories"
+    },
+    {
+      "displayName": "Amulet",
+      "hash": "0x0006D175",
+      "internalName": "Amulet",
+      "category": "Accessories"
+    },
+    {
+      "displayName": "Charm",
+      "hash": "0x0022ed05",
+      "internalName": "Charm",
+      "category": "Special"
+    },
+    {
+      "displayName": "Horadric Seal",
+      "hash": "0x00237e80",
+      "internalName": "HoradricSeal",
+      "category": "Special"
+    }
+  ],
+  "uniques": [
+    {
+      "displayName": "Gloves_Unique_Generic_002",
+      "snoId": "0x0002D7AB",
+      "internalName": "Gloves_Unique_Generic_002"
+    },
+    {
+      "displayName": "Gloves_Unique_Sorc_002",
+      "snoId": "0x00031A2D",
+      "internalName": "Gloves_Unique_Sorc_002"
+    },
+    {
+      "displayName": "Boots_Unique_Generic_001",
+      "snoId": "0x00032D88",
+      "internalName": "Boots_Unique_Generic_001"
+    },
+    {
+      "displayName": "1HSword_Unique_Generic_001",
+      "snoId": "0x00035F59",
+      "internalName": "1HSword_Unique_Generic_001"
+    },
+    {
+      "displayName": "2HSword_Unique_Generic_001",
+      "snoId": "0x00036827",
+      "internalName": "2HSword_Unique_Generic_001"
+    },
+    {
+      "displayName": "1HAxe_Unique_Generic_001",
+      "snoId": "0x00036837",
+      "internalName": "1HAxe_Unique_Generic_001"
+    },
+    {
+      "displayName": "2HBow_Unique_Rogue_006",
+      "snoId": "0x00036B4A",
+      "internalName": "2HBow_Unique_Rogue_006"
+    },
+    {
+      "displayName": "Helm_Unique_Generic_001",
+      "snoId": "0x0003B10A",
+      "internalName": "Helm_Unique_Generic_001"
+    },
+    {
+      "displayName": "Gloves_Unique_Generic_003",
+      "snoId": "0x0003E301",
+      "internalName": "Gloves_Unique_Generic_003"
+    },
+    {
+      "displayName": "2HSword_Unique_Barb_002",
+      "snoId": "0x00047319",
+      "internalName": "2HSword_Unique_Barb_002"
+    },
+    {
+      "displayName": "Boots_Unique_Generic_002",
+      "snoId": "0x00047355",
+      "internalName": "Boots_Unique_Generic_002"
+    },
+    {
+      "displayName": "Gloves_Unique_Barb_001",
+      "snoId": "0x000496BF",
+      "internalName": "Gloves_Unique_Barb_001"
+    },
+    {
+      "displayName": "2HMace_Unique_Barb_001",
+      "snoId": "0x0005415D",
+      "internalName": "2HMace_Unique_Barb_001"
+    },
+    {
+      "displayName": "2HStaff_Unique_Druid_001",
+      "snoId": "0x0005698C",
+      "internalName": "2HStaff_Unique_Druid_001"
+    },
+    {
+      "displayName": "2HAxe_Unique_Barb_001",
+      "snoId": "0x00057189",
+      "internalName": "2HAxe_Unique_Barb_001"
+    },
+    {
+      "displayName": "Chest_Unique_Druid_002",
+      "snoId": "0x000575B4",
+      "internalName": "Chest_Unique_Druid_002"
+    },
+    {
+      "displayName": "2HStaff_Unique_Generic_100",
+      "snoId": "0x00057AFD",
+      "internalName": "2HStaff_Unique_Generic_100"
+    },
+    {
+      "displayName": "1HSword_Unique_Generic_100",
+      "snoId": "0x00057BB8",
+      "internalName": "1HSword_Unique_Generic_100"
+    },
+    {
+      "displayName": "2HBow_Unique_Rogue_001",
+      "snoId": "0x00057D3F",
+      "internalName": "2HBow_Unique_Rogue_001"
+    },
+    {
+      "displayName": "1HMace_Unique_Druid_001",
+      "snoId": "0x00061184",
+      "internalName": "1HMace_Unique_Druid_001"
+    },
+    {
+      "displayName": "Chest_Unique_Sorc_002",
+      "snoId": "0x000660E1",
+      "internalName": "Chest_Unique_Sorc_002"
+    },
+    {
+      "displayName": "1HDagger_Unique_Rogue_001",
+      "snoId": "0x0006E213",
+      "internalName": "1HDagger_Unique_Rogue_001"
+    },
+    {
+      "displayName": "Helm_Unique_Rogue_002",
+      "snoId": "0x0006F2ED",
+      "internalName": "Helm_Unique_Rogue_002"
+    },
+    {
+      "displayName": "1HDagger_Unique_Rogue_002",
+      "snoId": "0x00072A90",
+      "internalName": "1HDagger_Unique_Rogue_002"
+    },
+    {
+      "displayName": "Pants_Unique_Rogue_004",
+      "snoId": "0x00072E0B",
+      "internalName": "Pants_Unique_Rogue_004"
+    },
+    {
+      "displayName": "Helm_Unique_Rogue_001",
+      "snoId": "0x00078D8D",
+      "internalName": "Helm_Unique_Rogue_001"
+    },
+    {
+      "displayName": "Helm_Unique_Generic_Boost_NoPowers",
+      "snoId": "0x00079B1C",
+      "internalName": "Helm_Unique_Generic_Boost_NoPowers"
+    },
+    {
+      "displayName": "1HDagger_Unique_Generic_Boost_NoPowers1",
+      "snoId": "0x00079B75",
+      "internalName": "1HDagger_Unique_Generic_Boost_NoPowers1"
+    },
+    {
+      "displayName": "2HScythe_Unique_Generic_Boost_NoPowers",
+      "snoId": "0x00079B7D",
+      "internalName": "2HScythe_Unique_Generic_Boost_NoPowers"
+    },
+    {
+      "displayName": "Pants_Unique_Generic_Boost_NoPowers",
+      "snoId": "0x00079B87",
+      "internalName": "Pants_Unique_Generic_Boost_NoPowers"
+    },
+    {
+      "displayName": "Helm_Unique_Generic_002",
+      "snoId": "0x00094E1C",
+      "internalName": "Helm_Unique_Generic_002"
+    },
+    {
+      "displayName": "QST_Template_Item_Unique_Chest",
+      "snoId": "0x00098D28",
+      "internalName": "QST_Template_Item_Unique_Chest"
+    },
+    {
+      "displayName": "Chest_Unique_Druid_003",
+      "snoId": "0x000D54B3",
+      "internalName": "Chest_Unique_Druid_003"
+    },
+    {
+      "displayName": "Pants_Unique_Druid_001",
+      "snoId": "0x000D6FCE",
+      "internalName": "Pants_Unique_Druid_001"
+    },
+    {
+      "displayName": "performance_test_unique_ring_rogue_imbue_poison",
+      "snoId": "0x000EE796",
+      "internalName": "performance_test_unique_ring_rogue_imbue_poison"
+    },
+    {
+      "displayName": "performance_test_unique_ring_rogue_imbue_cold",
+      "snoId": "0x000EE7CF",
+      "internalName": "performance_test_unique_ring_rogue_imbue_cold"
+    },
+    {
+      "displayName": "performance_test_unique_ring_rogue_imbue_shadow",
+      "snoId": "0x000EE7D1",
+      "internalName": "performance_test_unique_ring_rogue_imbue_shadow"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_003",
+      "snoId": "0x000F19EE",
+      "internalName": "Ring_Unique_Druid_003"
+    },
+    {
+      "displayName": "2HStaff_Unique_Generic_Boost_NoPowers_8",
+      "snoId": "0x000FE443",
+      "internalName": "2HStaff_Unique_Generic_Boost_NoPowers_8"
+    },
+    {
+      "displayName": "2HStaff_Unique_Sorc_002",
+      "snoId": "0x00103904",
+      "internalName": "2HStaff_Unique_Sorc_002"
+    },
+    {
+      "displayName": "2HCrossbow_Unique_Rogue_100",
+      "snoId": "0x00126753",
+      "internalName": "2HCrossbow_Unique_Rogue_100"
+    },
+    {
+      "displayName": "Boots_Unique_Barb_100",
+      "snoId": "0x001278E2",
+      "internalName": "Boots_Unique_Barb_100"
+    },
+    {
+      "displayName": "Ring_Unique_Sorc_100",
+      "snoId": "0x00127D06",
+      "internalName": "Ring_Unique_Sorc_100"
+    },
+    {
+      "displayName": "1HWand_Unique_Sorc_100",
+      "snoId": "0x00128948",
+      "internalName": "1HWand_Unique_Sorc_100"
+    },
+    {
+      "displayName": "Chest_Unique_Generic_100",
+      "snoId": "0x00128A59",
+      "internalName": "Chest_Unique_Generic_100"
+    },
+    {
+      "displayName": "Ring_Unique_Generic_100",
+      "snoId": "0x00128A9E",
+      "internalName": "Ring_Unique_Generic_100"
+    },
+    {
+      "displayName": "Pants_Unique_Necro_100",
+      "snoId": "0x00129210",
+      "internalName": "Pants_Unique_Necro_100"
+    },
+    {
+      "displayName": "Pants_Unique_Rogue_100",
+      "snoId": "0x00129A94",
+      "internalName": "Pants_Unique_Rogue_100"
+    },
+    {
+      "displayName": "2HScythe_Unique_Necro_100",
+      "snoId": "0x00129E70",
+      "internalName": "2HScythe_Unique_Necro_100"
+    },
+    {
+      "displayName": "Boots_Unique_Necro_100",
+      "snoId": "0x00129EA2",
+      "internalName": "Boots_Unique_Necro_100"
+    },
+    {
+      "displayName": "2HMace_Unique_Barb_100",
+      "snoId": "0x0012A626",
+      "internalName": "2HMace_Unique_Barb_100"
+    },
+    {
+      "displayName": "Ring_Unique_Necro_100",
+      "snoId": "0x0012A7E3",
+      "internalName": "Ring_Unique_Necro_100"
+    },
+    {
+      "displayName": "Chest_Unique_Necro_100",
+      "snoId": "0x0012AFAB",
+      "internalName": "Chest_Unique_Necro_100"
+    },
+    {
+      "displayName": "Amulet_Unique_Sorc_100",
+      "snoId": "0x0012B254",
+      "internalName": "Amulet_Unique_Sorc_100"
+    },
+    {
+      "displayName": "Ring_Unique_Sorc_101",
+      "snoId": "0x0012B360",
+      "internalName": "Ring_Unique_Sorc_101"
+    },
+    {
+      "displayName": "Gloves_Unique_Necro_100",
+      "snoId": "0x0012BA0E",
+      "internalName": "Gloves_Unique_Necro_100"
+    },
+    {
+      "displayName": "Amulet_Unique_Necro_100",
+      "snoId": "0x0012C695",
+      "internalName": "Amulet_Unique_Necro_100"
+    },
+    {
+      "displayName": "Helm_Unique_Necro_100",
+      "snoId": "0x0012D6EF",
+      "internalName": "Helm_Unique_Necro_100"
+    },
+    {
+      "displayName": "Amulet_Unique_Generic_100",
+      "snoId": "0x0013781F",
+      "internalName": "Amulet_Unique_Generic_100"
+    },
+    {
+      "displayName": "Chest_Unique_Barb_100",
+      "snoId": "0x0013E73A",
+      "internalName": "Chest_Unique_Barb_100"
+    },
+    {
+      "displayName": "1HSword_Unique_Barb_101",
+      "snoId": "0x0013E788",
+      "internalName": "1HSword_Unique_Barb_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Barb_100",
+      "snoId": "0x0013E795",
+      "internalName": "Amulet_Unique_Barb_100"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_100",
+      "snoId": "0x0013E7AA",
+      "internalName": "Helm_Unique_Druid_100"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_101",
+      "snoId": "0x0013EE66",
+      "internalName": "Helm_Unique_Druid_101"
+    },
+    {
+      "displayName": "1HAxe_Unique_Druid_100",
+      "snoId": "0x0013EE6B",
+      "internalName": "1HAxe_Unique_Druid_100"
+    },
+    {
+      "displayName": "Chest_Unique_Necro_101",
+      "snoId": "0x0013EE76",
+      "internalName": "Chest_Unique_Necro_101"
+    },
+    {
+      "displayName": "1HScythe_Unique_Necro_100",
+      "snoId": "0x0013EE7C",
+      "internalName": "1HScythe_Unique_Necro_100"
+    },
+    {
+      "displayName": "Gloves_Unique_Rogue_100",
+      "snoId": "0x0013EE8B",
+      "internalName": "Gloves_Unique_Rogue_100"
+    },
+    {
+      "displayName": "Amulet_Unique_Rogue_100",
+      "snoId": "0x0013EE93",
+      "internalName": "Amulet_Unique_Rogue_100"
+    },
+    {
+      "displayName": "Pants_Unique_Sorc_100",
+      "snoId": "0x0013EEA2",
+      "internalName": "Pants_Unique_Sorc_100"
+    },
+    {
+      "displayName": "Boots_Unique_Sorc_100",
+      "snoId": "0x0013EEBE",
+      "internalName": "Boots_Unique_Sorc_100"
+    },
+    {
+      "displayName": "2HStaff_Unique_Sorc_100",
+      "snoId": "0x0013EEC7",
+      "internalName": "2HStaff_Unique_Sorc_100"
+    },
+    {
+      "displayName": "Pants_Unique_Generic_100",
+      "snoId": "0x0013EED6",
+      "internalName": "Pants_Unique_Generic_100"
+    },
+    {
+      "displayName": "Ring_Unique_Generic_101",
+      "snoId": "0x0013EEE2",
+      "internalName": "Ring_Unique_Generic_101"
+    },
+    {
+      "displayName": "performance_test_unique_ring_shrine_artillery",
+      "snoId": "0x00143797",
+      "internalName": "performance_test_unique_ring_shrine_artillery"
+    },
+    {
+      "displayName": "Gloves_Unique_Druid_100",
+      "snoId": "0x0015E163",
+      "internalName": "Gloves_Unique_Druid_100"
+    },
+    {
+      "displayName": "1HWand_Unique_Sorc_101",
+      "snoId": "0x0015F72A",
+      "internalName": "1HWand_Unique_Sorc_101"
+    },
+    {
+      "displayName": "2HBow_Unique_Rogue_100",
+      "snoId": "0x0015F732",
+      "internalName": "2HBow_Unique_Rogue_100"
+    },
+    {
+      "displayName": "1HShield_Unique_Necro_100",
+      "snoId": "0x0015F736",
+      "internalName": "1HShield_Unique_Necro_100"
+    },
+    {
+      "displayName": "Pants_Unique_Generic_101",
+      "snoId": "0x001689D8",
+      "internalName": "Pants_Unique_Generic_101"
+    },
+    {
+      "displayName": "Helm_Unique_Barb_100",
+      "snoId": "0x0016BA9E",
+      "internalName": "Helm_Unique_Barb_100"
+    },
+    {
+      "displayName": "Helm_Unique_Generic_003",
+      "snoId": "0x0017BAFB",
+      "internalName": "Helm_Unique_Generic_003"
+    },
+    {
+      "displayName": "Gloves_Unique_Generic_004",
+      "snoId": "0x0017CB1D",
+      "internalName": "Gloves_Unique_Generic_004"
+    },
+    {
+      "displayName": "Pants_Unique_Generic_102",
+      "snoId": "0x0017CB7B",
+      "internalName": "Pants_Unique_Generic_102"
+    },
+    {
+      "displayName": "Ring_Unique_Generic_102",
+      "snoId": "0x0017CD71",
+      "internalName": "Ring_Unique_Generic_102"
+    },
+    {
+      "displayName": "Chest_Unique_Generic_101",
+      "snoId": "0x0017D127",
+      "internalName": "Chest_Unique_Generic_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Generic_101",
+      "snoId": "0x0017D2DC",
+      "internalName": "Amulet_Unique_Generic_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Druid_100",
+      "snoId": "0x001892C9",
+      "internalName": "Amulet_Unique_Druid_100"
+    },
+    {
+      "displayName": "Chest_Unique_Rogue_100",
+      "snoId": "0x00189A04",
+      "internalName": "Chest_Unique_Rogue_100"
+    },
+    {
+      "displayName": "x1_Ring_Unique_Generic_104",
+      "snoId": "0x001900E9",
+      "internalName": "x1_Ring_Unique_Generic_104"
+    },
+    {
+      "displayName": "Boots_Unique_Rogue_100",
+      "snoId": "0x001A0351",
+      "internalName": "Boots_Unique_Rogue_100"
+    },
+    {
+      "displayName": "Ring_Unique_Barb_100",
+      "snoId": "0x001A0A6A",
+      "internalName": "Ring_Unique_Barb_100"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_100",
+      "snoId": "0x001A0A9B",
+      "internalName": "Ring_Unique_Druid_100"
+    },
+    {
+      "displayName": "Ring_Unique_Rogue_100",
+      "snoId": "0x001A0AA2",
+      "internalName": "Ring_Unique_Rogue_100"
+    },
+    {
+      "displayName": "Ring_Unique_Necro_101",
+      "snoId": "0x001A0AA4",
+      "internalName": "Ring_Unique_Necro_101"
+    },
+    {
+      "displayName": "Ring_Unique_Barb_101",
+      "snoId": "0x001A223E",
+      "internalName": "Ring_Unique_Barb_101"
+    },
+    {
+      "displayName": "Helm_Unique_Sorc_100",
+      "snoId": "0x001A2442",
+      "internalName": "Helm_Unique_Sorc_100"
+    },
+    {
+      "displayName": "Amulet_Unique_Generic_102",
+      "snoId": "0x001A3B76",
+      "internalName": "Amulet_Unique_Generic_102"
+    },
+    {
+      "displayName": "Gloves_Unique_Druid_97",
+      "snoId": "0x001ACD0A",
+      "internalName": "Gloves_Unique_Druid_97"
+    },
+    {
+      "displayName": "x1_Ring_Unique_Rogue_128",
+      "snoId": "0x001AD4FB",
+      "internalName": "x1_Ring_Unique_Rogue_128"
+    },
+    {
+      "displayName": "Helm_Unique_Barb_101_x1",
+      "snoId": "0x001B4BE5",
+      "internalName": "Helm_Unique_Barb_101_x1"
+    },
+    {
+      "displayName": "X1_2HGlaive_Unique_Spiritborn_02",
+      "snoId": "0x001BC9F1",
+      "internalName": "X1_2HGlaive_Unique_Spiritborn_02"
+    },
+    {
+      "displayName": "X1_2HGlaive_Unique_Spiritborn_03",
+      "snoId": "0x001BCA0D",
+      "internalName": "X1_2HGlaive_Unique_Spiritborn_03"
+    },
+    {
+      "displayName": "QST_Naha_Cowsplosion_Item_Unique_Incense",
+      "snoId": "0x001BEB34",
+      "internalName": "QST_Naha_Cowsplosion_Item_Unique_Incense"
+    },
+    {
+      "displayName": "Boots_Unique_Generic_003",
+      "snoId": "0x001C5CB4",
+      "internalName": "Boots_Unique_Generic_003"
+    },
+    {
+      "displayName": "QST_Naha_SinProxy2_Unique_Horn",
+      "snoId": "0x001C608B",
+      "internalName": "QST_Naha_SinProxy2_Unique_Horn"
+    },
+    {
+      "displayName": "Amulet_Unique_Sorc_101",
+      "snoId": "0x001C6C65",
+      "internalName": "Amulet_Unique_Sorc_101"
+    },
+    {
+      "displayName": "QST_Naha_SinProxy_04_Item_Unique_Relic",
+      "snoId": "0x001C8956",
+      "internalName": "QST_Naha_SinProxy_04_Item_Unique_Relic"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_101",
+      "snoId": "0x001CB4C4",
+      "internalName": "Ring_Unique_Druid_101"
+    },
+    {
+      "displayName": "Gloves_Unique_Sorc_101",
+      "snoId": "0x001CED1F",
+      "internalName": "Gloves_Unique_Sorc_101"
+    },
+    {
+      "displayName": "Chest_Unique_Generic_127",
+      "snoId": "0x001D03AC",
+      "internalName": "Chest_Unique_Generic_127"
+    },
+    {
+      "displayName": "Pants_Unique_Barb_100",
+      "snoId": "0x001D04AC",
+      "internalName": "Pants_Unique_Barb_100"
+    },
+    {
+      "displayName": "Gloves_Unique_Barb_100",
+      "snoId": "0x001D04B2",
+      "internalName": "Gloves_Unique_Barb_100"
+    },
+    {
+      "displayName": "Boots_Unique_Druid_100",
+      "snoId": "0x001D063B",
+      "internalName": "Boots_Unique_Druid_100"
+    },
+    {
+      "displayName": "Gloves_Unique_Necro_101",
+      "snoId": "0x001D064B",
+      "internalName": "Gloves_Unique_Necro_101"
+    },
+    {
+      "displayName": "Ring_Unique_Rogue_101",
+      "snoId": "0x001D06E9",
+      "internalName": "Ring_Unique_Rogue_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Necro_101",
+      "snoId": "0x001D0785",
+      "internalName": "Amulet_Unique_Necro_101"
+    },
+    {
+      "displayName": "Ring_Unique_Rogue_102",
+      "snoId": "0x001D0A18",
+      "internalName": "Ring_Unique_Rogue_102"
+    },
+    {
+      "displayName": "Chest_Unique_Necro_98",
+      "snoId": "0x001D6EC0",
+      "internalName": "Chest_Unique_Necro_98"
+    },
+    {
+      "displayName": "glove_Unique_Necro_98",
+      "snoId": "0x001D6EC7",
+      "internalName": "glove_Unique_Necro_98"
+    },
+    {
+      "displayName": "Pants_Unique_Necro_98",
+      "snoId": "0x001D6ECF",
+      "internalName": "Pants_Unique_Necro_98"
+    },
+    {
+      "displayName": "Boots_Unique_Necro_98",
+      "snoId": "0x001D6ED1",
+      "internalName": "Boots_Unique_Necro_98"
+    },
+    {
+      "displayName": "Helm_Unique_Necro_98",
+      "snoId": "0x001D6ED3",
+      "internalName": "Helm_Unique_Necro_98"
+    },
+    {
+      "displayName": "Amulet_Unique_Barb_101",
+      "snoId": "0x001D8448",
+      "internalName": "Amulet_Unique_Barb_101"
+    },
+    {
+      "displayName": "Chest_Unique_Rogue_101",
+      "snoId": "0x001D8465",
+      "internalName": "Chest_Unique_Rogue_101"
+    },
+    {
+      "displayName": "Boots_Unique_Necro_101",
+      "snoId": "0x001D8469",
+      "internalName": "Boots_Unique_Necro_101"
+    },
+    {
+      "displayName": "Pants_Unique_Sorc_101",
+      "snoId": "0x001D846D",
+      "internalName": "Pants_Unique_Sorc_101"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_95",
+      "snoId": "0x001D8DA2",
+      "internalName": "Helm_Unique_Druid_95"
+    },
+    {
+      "displayName": "Helm_Unique_Rogue_95",
+      "snoId": "0x001D9EDF",
+      "internalName": "Helm_Unique_Rogue_95"
+    },
+    {
+      "displayName": "S05_BSK_Gloves_Unique_Generic_001",
+      "snoId": "0x001DAB42",
+      "internalName": "S05_BSK_Gloves_Unique_Generic_001"
+    },
+    {
+      "displayName": "S05_BSK_Helm_Unique_Generic_001",
+      "snoId": "0x001DAB9B",
+      "internalName": "S05_BSK_Helm_Unique_Generic_001"
+    },
+    {
+      "displayName": "S05_BSK_1HSword_Unique_Generic_001",
+      "snoId": "0x001DABAB",
+      "internalName": "S05_BSK_1HSword_Unique_Generic_001"
+    },
+    {
+      "displayName": "S05_BSK_Boots_Unique_Generic_001",
+      "snoId": "0x001DABB8",
+      "internalName": "S05_BSK_Boots_Unique_Generic_001"
+    },
+    {
+      "displayName": "S05_BSK_Amulet_Unique_Generic_001",
+      "snoId": "0x001DABBC",
+      "internalName": "S05_BSK_Amulet_Unique_Generic_001"
+    },
+    {
+      "displayName": "S05_BSK_2HStaff_Unique_Sorcerer_001",
+      "snoId": "0x001DABC1",
+      "internalName": "S05_BSK_2HStaff_Unique_Sorcerer_001"
+    },
+    {
+      "displayName": "S05_BSK_1HSword_Unique_Barbarian_001",
+      "snoId": "0x001DABD2",
+      "internalName": "S05_BSK_1HSword_Unique_Barbarian_001"
+    },
+    {
+      "displayName": "S05_BSK_2HStaff_Unique_Druid_001",
+      "snoId": "0x001DABE0",
+      "internalName": "S05_BSK_2HStaff_Unique_Druid_001"
+    },
+    {
+      "displayName": "S05_BSK_1HDagger_Unique_Rogue_001",
+      "snoId": "0x001DABEB",
+      "internalName": "S05_BSK_1HDagger_Unique_Rogue_001"
+    },
+    {
+      "displayName": "S05_BSK_1HDagger_Unique_Necro_001",
+      "snoId": "0x001DABFE",
+      "internalName": "S05_BSK_1HDagger_Unique_Necro_001"
+    },
+    {
+      "displayName": "Helm_Unique_Barbarian_95",
+      "snoId": "0x001DB9A1",
+      "internalName": "Helm_Unique_Barbarian_95"
+    },
+    {
+      "displayName": "Gloves_Unique_Druid_95",
+      "snoId": "0x001DC9DA",
+      "internalName": "Gloves_Unique_Druid_95"
+    },
+    {
+      "displayName": "Helm_Unique_Necro_95",
+      "snoId": "0x001DD6AF",
+      "internalName": "Helm_Unique_Necro_95"
+    },
+    {
+      "displayName": "S05_BSK_Reputation_Unique_850_Cache",
+      "snoId": "0x001DE8E6",
+      "internalName": "S05_BSK_Reputation_Unique_850_Cache"
+    },
+    {
+      "displayName": "Template_Unique_Spiritborn_000_x1",
+      "snoId": "0x001DF74B",
+      "internalName": "Template_Unique_Spiritborn_000_x1"
+    },
+    {
+      "displayName": "Ring_Unique_Spiritborn_001_x1",
+      "snoId": "0x001E0147",
+      "internalName": "Ring_Unique_Spiritborn_001_x1"
+    },
+    {
+      "displayName": "Ring_Unique_Spiritborn_002_x1",
+      "snoId": "0x001E014B",
+      "internalName": "Ring_Unique_Spiritborn_002_x1"
+    },
+    {
+      "displayName": "Ring_Unique_Spiritborn_003_x1",
+      "snoId": "0x001E014E",
+      "internalName": "Ring_Unique_Spiritborn_003_x1"
+    },
+    {
+      "displayName": "Ring_Unique_Spiritborn_004_x1",
+      "snoId": "0x001E0179",
+      "internalName": "Ring_Unique_Spiritborn_004_x1"
+    },
+    {
+      "displayName": "Ring_Unique_Spiritborn_005_x1",
+      "snoId": "0x001E017B",
+      "internalName": "Ring_Unique_Spiritborn_005_x1"
+    },
+    {
+      "displayName": "Ring_Unique_Spiritborn_006_x1",
+      "snoId": "0x001E017D",
+      "internalName": "Ring_Unique_Spiritborn_006_x1"
+    },
+    {
+      "displayName": "Boots_Unique_Spiritborn_008_x1",
+      "snoId": "0x001E08BE",
+      "internalName": "Boots_Unique_Spiritborn_008_x1"
+    },
+    {
+      "displayName": "Gloves_Unique_Spiritborn_007_x1",
+      "snoId": "0x001E092E",
+      "internalName": "Gloves_Unique_Spiritborn_007_x1"
+    },
+    {
+      "displayName": "Chest_Unique_Spiritborn_013_x1",
+      "snoId": "0x001E0E7B",
+      "internalName": "Chest_Unique_Spiritborn_013_x1"
+    },
+    {
+      "displayName": "Glaive_Unique_Spiritborn_014_x1",
+      "snoId": "0x001E3F21",
+      "internalName": "Glaive_Unique_Spiritborn_014_x1"
+    },
+    {
+      "displayName": "Quarterstaff_Unique_Spiritborn_012_x1",
+      "snoId": "0x001E52F0",
+      "internalName": "Quarterstaff_Unique_Spiritborn_012_x1"
+    },
+    {
+      "displayName": "Helm_Unique_Spiritborn_009_x1",
+      "snoId": "0x001E53DA",
+      "internalName": "Helm_Unique_Spiritborn_009_x1"
+    },
+    {
+      "displayName": "Helm_Unique_Spiritborn_011_x1",
+      "snoId": "0x001E5EEE",
+      "internalName": "Helm_Unique_Spiritborn_011_x1"
+    },
+    {
+      "displayName": "Glaive_Unique_Spiritborn_010_x1",
+      "snoId": "0x001EB551",
+      "internalName": "Glaive_Unique_Spiritborn_010_x1"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_102",
+      "snoId": "0x001EC38B",
+      "internalName": "Ring_Unique_Druid_102"
+    },
+    {
+      "displayName": "Pants_Unique_Spiritborn_015_x1",
+      "snoId": "0x001ED343",
+      "internalName": "Pants_Unique_Spiritborn_015_x1"
+    },
+    {
+      "displayName": "Quarterstaff_Unique_Spiritborn_001",
+      "snoId": "0x001EE2B3",
+      "internalName": "Quarterstaff_Unique_Spiritborn_001"
+    },
+    {
+      "displayName": "Totem_Unique_Druid_101_x1",
+      "snoId": "0x001F2EA3",
+      "internalName": "Totem_Unique_Druid_101_x1"
+    },
+    {
+      "displayName": "Boots_Unique_Sorc_96",
+      "snoId": "0x001F342E",
+      "internalName": "Boots_Unique_Sorc_96"
+    },
+    {
+      "displayName": "Chest_Unique_Sorc_96",
+      "snoId": "0x001F3430",
+      "internalName": "Chest_Unique_Sorc_96"
+    },
+    {
+      "displayName": "Gloves_Unique_Sorc_96",
+      "snoId": "0x001F3432",
+      "internalName": "Gloves_Unique_Sorc_96"
+    },
+    {
+      "displayName": "Helm_Unique_Sorc_96",
+      "snoId": "0x001F3434",
+      "internalName": "Helm_Unique_Sorc_96"
+    },
+    {
+      "displayName": "Pants_Unique_Sorc_96",
+      "snoId": "0x001F3436",
+      "internalName": "Pants_Unique_Sorc_96"
+    },
+    {
+      "displayName": "Gloves_Unique_Sorc_143_x1",
+      "snoId": "0x001F4737",
+      "internalName": "Gloves_Unique_Sorc_143_x1"
+    },
+    {
+      "displayName": "Helm_Unique_Necro_101_x1",
+      "snoId": "0x001F5442",
+      "internalName": "Helm_Unique_Necro_101_x1"
+    },
+    {
+      "displayName": "Helm_Unique_Generic_004",
+      "snoId": "0x001F6E17",
+      "internalName": "Helm_Unique_Generic_004"
+    },
+    {
+      "displayName": "Chest_Unique_Generic_103",
+      "snoId": "0x001F6E1B",
+      "internalName": "Chest_Unique_Generic_103"
+    },
+    {
+      "displayName": "Boots_Unique_Barb_101",
+      "snoId": "0x001F6E1D",
+      "internalName": "Boots_Unique_Barb_101"
+    },
+    {
+      "displayName": "Gloves_Unique_Rogue_101",
+      "snoId": "0x001F6E20",
+      "internalName": "Gloves_Unique_Rogue_101"
+    },
+    {
+      "displayName": "2HPolearm_Unique_Generic_001",
+      "snoId": "0x001F6E25",
+      "internalName": "2HPolearm_Unique_Generic_001"
+    },
+    {
+      "displayName": "Gloves_Unique_Barb_101",
+      "snoId": "0x001FC162",
+      "internalName": "Gloves_Unique_Barb_101"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_102",
+      "snoId": "0x001FC169",
+      "internalName": "Helm_Unique_Druid_102"
+    },
+    {
+      "displayName": "Chest_Unique_Barb_101",
+      "snoId": "0x001FC16B",
+      "internalName": "Chest_Unique_Barb_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Druid_101",
+      "snoId": "0x001FC16F",
+      "internalName": "Amulet_Unique_Druid_101"
+    },
+    {
+      "displayName": "1HFocus_Unique_Sorc_100",
+      "snoId": "0x001FC175",
+      "internalName": "1HFocus_Unique_Sorc_100"
+    },
+    {
+      "displayName": "Helm_Unique_Sorc_101",
+      "snoId": "0x001FC177",
+      "internalName": "Helm_Unique_Sorc_101"
+    },
+    {
+      "displayName": "Pants_Unique_Necro_101",
+      "snoId": "0x001FC181",
+      "internalName": "Pants_Unique_Necro_101"
+    },
+    {
+      "displayName": "2HSword_Unique_Necro_100",
+      "snoId": "0x001FC187",
+      "internalName": "2HSword_Unique_Necro_100"
+    },
+    {
+      "displayName": "Boots_Unique_Rogue_101",
+      "snoId": "0x001FC18A",
+      "internalName": "Boots_Unique_Rogue_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Spiritborn_100",
+      "snoId": "0x001FC1A9",
+      "internalName": "Amulet_Unique_Spiritborn_100"
+    },
+    {
+      "displayName": "Quarterstaff_Unique_Spiritborn_016_x1",
+      "snoId": "0x001FF06E",
+      "internalName": "Quarterstaff_Unique_Spiritborn_016_x1"
+    },
+    {
+      "displayName": "Chest_Unique_Generic_125",
+      "snoId": "0x0020097A",
+      "internalName": "Chest_Unique_Generic_125"
+    },
+    {
+      "displayName": "Boots_Unique_Barbarian_98",
+      "snoId": "0x00205BCA",
+      "internalName": "Boots_Unique_Barbarian_98"
+    },
+    {
+      "displayName": "Chest_Unique_Barbarian_98",
+      "snoId": "0x00205BCC",
+      "internalName": "Chest_Unique_Barbarian_98"
+    },
+    {
+      "displayName": "Gloves_Unique_Barbarian_98",
+      "snoId": "0x00205BCE",
+      "internalName": "Gloves_Unique_Barbarian_98"
+    },
+    {
+      "displayName": "Helm_Unique_Barbarian_98",
+      "snoId": "0x00205BD0",
+      "internalName": "Helm_Unique_Barbarian_98"
+    },
+    {
+      "displayName": "Pants_Unique_Barbarian_98",
+      "snoId": "0x00205BD2",
+      "internalName": "Pants_Unique_Barbarian_98"
+    },
+    {
+      "displayName": "Helm_Unique_Rogue_99",
+      "snoId": "0x00205C12",
+      "internalName": "Helm_Unique_Rogue_99"
+    },
+    {
+      "displayName": "Pants_Unique_Rogue_99",
+      "snoId": "0x00205C14",
+      "internalName": "Pants_Unique_Rogue_99"
+    },
+    {
+      "displayName": "Glove_Unique_Rogue_99",
+      "snoId": "0x00205C17",
+      "internalName": "Glove_Unique_Rogue_99"
+    },
+    {
+      "displayName": "Chest_Unique_Rogue_99",
+      "snoId": "0x00205C19",
+      "internalName": "Chest_Unique_Rogue_99"
+    },
+    {
+      "displayName": "Boots_Unique_Rogue_99",
+      "snoId": "0x00205C1B",
+      "internalName": "Boots_Unique_Rogue_99"
+    },
+    {
+      "displayName": "Boots_Unique_Necro_96",
+      "snoId": "0x0020640C",
+      "internalName": "Boots_Unique_Necro_96"
+    },
+    {
+      "displayName": "Chest_Unique_Necro_96",
+      "snoId": "0x0020640F",
+      "internalName": "Chest_Unique_Necro_96"
+    },
+    {
+      "displayName": "Gloves_Unique_Necro_96",
+      "snoId": "0x00206411",
+      "internalName": "Gloves_Unique_Necro_96"
+    },
+    {
+      "displayName": "Helm_Unique_Necro_96",
+      "snoId": "0x00206415",
+      "internalName": "Helm_Unique_Necro_96"
+    },
+    {
+      "displayName": "Pants_Unique_Necro_96",
+      "snoId": "0x00206417",
+      "internalName": "Pants_Unique_Necro_96"
+    },
+    {
+      "displayName": "Pants_Unique_Necro_102",
+      "snoId": "0x00206636",
+      "internalName": "Pants_Unique_Necro_102"
+    },
+    {
+      "displayName": "Boots_Unique_Sorc_98",
+      "snoId": "0x0020665C",
+      "internalName": "Boots_Unique_Sorc_98"
+    },
+    {
+      "displayName": "Chest_Unique_Sorc_98",
+      "snoId": "0x00206660",
+      "internalName": "Chest_Unique_Sorc_98"
+    },
+    {
+      "displayName": "Gloves_Unique_Sorc_98",
+      "snoId": "0x00206662",
+      "internalName": "Gloves_Unique_Sorc_98"
+    },
+    {
+      "displayName": "Helm_Unique_Sorc_98",
+      "snoId": "0x00206666",
+      "internalName": "Helm_Unique_Sorc_98"
+    },
+    {
+      "displayName": "Pants_Unique_Sorc_98",
+      "snoId": "0x00206668",
+      "internalName": "Pants_Unique_Sorc_98"
+    },
+    {
+      "displayName": "Chest_Unique_Druid_98",
+      "snoId": "0x002066AF",
+      "internalName": "Chest_Unique_Druid_98"
+    },
+    {
+      "displayName": "Gloves_Unique_Druid_98",
+      "snoId": "0x002066B2",
+      "internalName": "Gloves_Unique_Druid_98"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_98",
+      "snoId": "0x002066B5",
+      "internalName": "Helm_Unique_Druid_98"
+    },
+    {
+      "displayName": "Boots_Unique_Druid_98",
+      "snoId": "0x002066B7",
+      "internalName": "Boots_Unique_Druid_98"
+    },
+    {
+      "displayName": "Pants_Unique_Druid_98",
+      "snoId": "0x002066B9",
+      "internalName": "Pants_Unique_Druid_98"
+    },
+    {
+      "displayName": "Gloves_Unique_Rogue_96",
+      "snoId": "0x0020712C",
+      "internalName": "Gloves_Unique_Rogue_96"
+    },
+    {
+      "displayName": "S07_Witch_Bonus_Unique_001",
+      "snoId": "0x00207ADD",
+      "internalName": "S07_Witch_Bonus_Unique_001"
+    },
+    {
+      "displayName": "S07_Witch_Eldritch_Unique_001",
+      "snoId": "0x002088F3",
+      "internalName": "S07_Witch_Eldritch_Unique_001"
+    },
+    {
+      "displayName": "S07_Witch_GrowthRot_Unique_001",
+      "snoId": "0x00208904",
+      "internalName": "S07_Witch_GrowthRot_Unique_001"
+    },
+    {
+      "displayName": "S07_Witch_Psyche_Unique_001",
+      "snoId": "0x00208906",
+      "internalName": "S07_Witch_Psyche_Unique_001"
+    },
+    {
+      "displayName": "1HFocus_Unique_Sorc_101",
+      "snoId": "0x002092DC",
+      "internalName": "1HFocus_Unique_Sorc_101"
+    },
+    {
+      "displayName": "S07_Witch_Reputation_Cache_Mid_Unique_Icon",
+      "snoId": "0x0020FF2B",
+      "internalName": "S07_Witch_Reputation_Cache_Mid_Unique_Icon"
+    },
+    {
+      "displayName": "S07_Witch_Reputation_Cache_Mid_Unique_Torment",
+      "snoId": "0x00210FED",
+      "internalName": "S07_Witch_Reputation_Cache_Mid_Unique_Torment"
+    },
+    {
+      "displayName": "S07_Witch_Reputation_Cache_Mid_Legendary_Unique_Torment",
+      "snoId": "0x00210FF4",
+      "internalName": "S07_Witch_Reputation_Cache_Mid_Legendary_Unique_Torment"
+    },
+    {
+      "displayName": "Boots_Unique_Druid_99",
+      "snoId": "0x0021435A",
+      "internalName": "Boots_Unique_Druid_99"
+    },
+    {
+      "displayName": "Chest_Unique_Druid_99",
+      "snoId": "0x0021435E",
+      "internalName": "Chest_Unique_Druid_99"
+    },
+    {
+      "displayName": "Glove_Unique_Druid_99",
+      "snoId": "0x00214360",
+      "internalName": "Glove_Unique_Druid_99"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_99",
+      "snoId": "0x00214362",
+      "internalName": "Helm_Unique_Druid_99"
+    },
+    {
+      "displayName": "Pants_Unique_Druid_99",
+      "snoId": "0x00214376",
+      "internalName": "Pants_Unique_Druid_99"
+    },
+    {
+      "displayName": "Boots_Unique_Rogue_98",
+      "snoId": "0x00215752",
+      "internalName": "Boots_Unique_Rogue_98"
+    },
+    {
+      "displayName": "Chest_Unique_Rogue_98",
+      "snoId": "0x00215754",
+      "internalName": "Chest_Unique_Rogue_98"
+    },
+    {
+      "displayName": "Gloves_Unique_Rogue_98",
+      "snoId": "0x00215756",
+      "internalName": "Gloves_Unique_Rogue_98"
+    },
+    {
+      "displayName": "Helm_Unique_Rogue_98",
+      "snoId": "0x00215758",
+      "internalName": "Helm_Unique_Rogue_98"
+    },
+    {
+      "displayName": "Pants_Unique_Rogue_98",
+      "snoId": "0x0021575A",
+      "internalName": "Pants_Unique_Rogue_98"
+    },
+    {
+      "displayName": "Chest_Unique_Druid_97",
+      "snoId": "0x00216D5D",
+      "internalName": "Chest_Unique_Druid_97"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_97",
+      "snoId": "0x00216D60",
+      "internalName": "Helm_Unique_Druid_97"
+    },
+    {
+      "displayName": "Pants_Unique_Druid_97",
+      "snoId": "0x00216D62",
+      "internalName": "Pants_Unique_Druid_97"
+    },
+    {
+      "displayName": "Boots_Unique_Druid_97",
+      "snoId": "0x00216D64",
+      "internalName": "Boots_Unique_Druid_97"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A1_B1",
+      "snoId": "0x0021CB8E",
+      "internalName": "X2_Fish_Nahantu_Unique_A1_B1"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A1_B2",
+      "snoId": "0x0021CB90",
+      "internalName": "X2_Fish_Nahantu_Unique_A1_B2"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A1_B3",
+      "snoId": "0x0021CB92",
+      "internalName": "X2_Fish_Nahantu_Unique_A1_B3"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A2_B1",
+      "snoId": "0x0021CB94",
+      "internalName": "X2_Fish_Nahantu_Unique_A2_B1"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A2_B2",
+      "snoId": "0x0021CB96",
+      "internalName": "X2_Fish_Nahantu_Unique_A2_B2"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A2_B3",
+      "snoId": "0x0021CB98",
+      "internalName": "X2_Fish_Nahantu_Unique_A2_B3"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A3_B1",
+      "snoId": "0x0021CB9A",
+      "internalName": "X2_Fish_Nahantu_Unique_A3_B1"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A3_B2",
+      "snoId": "0x0021CB9C",
+      "internalName": "X2_Fish_Nahantu_Unique_A3_B2"
+    },
+    {
+      "displayName": "X2_Fish_Nahantu_Unique_A3_B3",
+      "snoId": "0x0021CB9E",
+      "internalName": "X2_Fish_Nahantu_Unique_A3_B3"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A1_B1",
+      "snoId": "0x0021CBAF",
+      "internalName": "X2_Fish_DrySteppes_Unique_A1_B1"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A1_B2",
+      "snoId": "0x0021CBB1",
+      "internalName": "X2_Fish_DrySteppes_Unique_A1_B2"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A1_B3",
+      "snoId": "0x0021CBB3",
+      "internalName": "X2_Fish_DrySteppes_Unique_A1_B3"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A2_B1",
+      "snoId": "0x0021CBB5",
+      "internalName": "X2_Fish_DrySteppes_Unique_A2_B1"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A2_B2",
+      "snoId": "0x0021CBB7",
+      "internalName": "X2_Fish_DrySteppes_Unique_A2_B2"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A2_B3",
+      "snoId": "0x0021CBB9",
+      "internalName": "X2_Fish_DrySteppes_Unique_A2_B3"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A3_B1",
+      "snoId": "0x0021CBBB",
+      "internalName": "X2_Fish_DrySteppes_Unique_A3_B1"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A3_B2",
+      "snoId": "0x0021CBBD",
+      "internalName": "X2_Fish_DrySteppes_Unique_A3_B2"
+    },
+    {
+      "displayName": "X2_Fish_DrySteppes_Unique_A3_B3",
+      "snoId": "0x0021CBBF",
+      "internalName": "X2_Fish_DrySteppes_Unique_A3_B3"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A1_B1",
+      "snoId": "0x0021CC40",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A1_B1"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A1_B2",
+      "snoId": "0x0021CC42",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A1_B2"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A1_B3",
+      "snoId": "0x0021CC44",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A1_B3"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A2_B1",
+      "snoId": "0x0021CC46",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A2_B1"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A2_B2",
+      "snoId": "0x0021CC48",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A2_B2"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A2_B3",
+      "snoId": "0x0021CC4A",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A2_B3"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A3_B1",
+      "snoId": "0x0021CC4C",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A3_B1"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A3_B2",
+      "snoId": "0x0021CC4E",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A3_B2"
+    },
+    {
+      "displayName": "X2_Fish_FracturedPeaks_Unique_A3_B3",
+      "snoId": "0x0021CC50",
+      "internalName": "X2_Fish_FracturedPeaks_Unique_A3_B3"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A1_B1",
+      "snoId": "0x0021CC72",
+      "internalName": "X2_Fish_Skovos_Unique_A1_B1"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A1_B2",
+      "snoId": "0x0021CC74",
+      "internalName": "X2_Fish_Skovos_Unique_A1_B2"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A1_B3",
+      "snoId": "0x0021CC77",
+      "internalName": "X2_Fish_Skovos_Unique_A1_B3"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A2_B1",
+      "snoId": "0x0021CC7B",
+      "internalName": "X2_Fish_Skovos_Unique_A2_B1"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A2_B2",
+      "snoId": "0x0021CC7F",
+      "internalName": "X2_Fish_Skovos_Unique_A2_B2"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A2_B3",
+      "snoId": "0x0021CC81",
+      "internalName": "X2_Fish_Skovos_Unique_A2_B3"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A3_B1",
+      "snoId": "0x0021CC84",
+      "internalName": "X2_Fish_Skovos_Unique_A3_B1"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A3_B2",
+      "snoId": "0x0021CC87",
+      "internalName": "X2_Fish_Skovos_Unique_A3_B2"
+    },
+    {
+      "displayName": "X2_Fish_Skovos_Unique_A3_B3",
+      "snoId": "0x0021CC8B",
+      "internalName": "X2_Fish_Skovos_Unique_A3_B3"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A1_B1",
+      "snoId": "0x0021CCA6",
+      "internalName": "X2_Fish_Hawezar_Unique_A1_B1"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A1_B2",
+      "snoId": "0x0021CCA8",
+      "internalName": "X2_Fish_Hawezar_Unique_A1_B2"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A1_B3",
+      "snoId": "0x0021CCAA",
+      "internalName": "X2_Fish_Hawezar_Unique_A1_B3"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A2_B1",
+      "snoId": "0x0021CCAC",
+      "internalName": "X2_Fish_Hawezar_Unique_A2_B1"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A2_B2",
+      "snoId": "0x0021CCAE",
+      "internalName": "X2_Fish_Hawezar_Unique_A2_B2"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A2_B3",
+      "snoId": "0x0021CCB0",
+      "internalName": "X2_Fish_Hawezar_Unique_A2_B3"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A3_B1",
+      "snoId": "0x0021CCB2",
+      "internalName": "X2_Fish_Hawezar_Unique_A3_B1"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A3_B2",
+      "snoId": "0x0021CCB4",
+      "internalName": "X2_Fish_Hawezar_Unique_A3_B2"
+    },
+    {
+      "displayName": "X2_Fish_Hawezar_Unique_A3_B3",
+      "snoId": "0x0021CCB6",
+      "internalName": "X2_Fish_Hawezar_Unique_A3_B3"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A1_B1",
+      "snoId": "0x0021CCC8",
+      "internalName": "X2_Fish_Kehjistan_Unique_A1_B1"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A1_B2",
+      "snoId": "0x0021CCCA",
+      "internalName": "X2_Fish_Kehjistan_Unique_A1_B2"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A1_B3",
+      "snoId": "0x0021CCCC",
+      "internalName": "X2_Fish_Kehjistan_Unique_A1_B3"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A2_B1",
+      "snoId": "0x0021CCCE",
+      "internalName": "X2_Fish_Kehjistan_Unique_A2_B1"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A2_B2",
+      "snoId": "0x0021CCD0",
+      "internalName": "X2_Fish_Kehjistan_Unique_A2_B2"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A2_B3",
+      "snoId": "0x0021CCD2",
+      "internalName": "X2_Fish_Kehjistan_Unique_A2_B3"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A3_B1",
+      "snoId": "0x0021CCD4",
+      "internalName": "X2_Fish_Kehjistan_Unique_A3_B1"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A3_B2",
+      "snoId": "0x0021CCD6",
+      "internalName": "X2_Fish_Kehjistan_Unique_A3_B2"
+    },
+    {
+      "displayName": "X2_Fish_Kehjistan_Unique_A3_B3",
+      "snoId": "0x0021CCD8",
+      "internalName": "X2_Fish_Kehjistan_Unique_A3_B3"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A1_B1",
+      "snoId": "0x0021CF05",
+      "internalName": "X2_Fish_Scosglen_Unique_A1_B1"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A1_B2",
+      "snoId": "0x0021CF08",
+      "internalName": "X2_Fish_Scosglen_Unique_A1_B2"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A1_B3",
+      "snoId": "0x0021CF0B",
+      "internalName": "X2_Fish_Scosglen_Unique_A1_B3"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A2_B1",
+      "snoId": "0x0021CF0E",
+      "internalName": "X2_Fish_Scosglen_Unique_A2_B1"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A2_B2",
+      "snoId": "0x0021CF10",
+      "internalName": "X2_Fish_Scosglen_Unique_A2_B2"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A2_B3",
+      "snoId": "0x0021CF14",
+      "internalName": "X2_Fish_Scosglen_Unique_A2_B3"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A3_B1",
+      "snoId": "0x0021CF16",
+      "internalName": "X2_Fish_Scosglen_Unique_A3_B1"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A3_B2",
+      "snoId": "0x0021CF18",
+      "internalName": "X2_Fish_Scosglen_Unique_A3_B2"
+    },
+    {
+      "displayName": "X2_Fish_Scosglen_Unique_A3_B3",
+      "snoId": "0x0021CF1A",
+      "internalName": "X2_Fish_Scosglen_Unique_A3_B3"
+    },
+    {
+      "displayName": "2HMace_Unique_Druid_100",
+      "snoId": "0x002236EE",
+      "internalName": "2HMace_Unique_Druid_100"
+    },
+    {
+      "displayName": "Gloves_Unique_Necro_102",
+      "snoId": "0x002236FD",
+      "internalName": "Gloves_Unique_Necro_102"
+    },
+    {
+      "displayName": "Amulet_Unique_Sorc_102",
+      "snoId": "0x00223700",
+      "internalName": "Amulet_Unique_Sorc_102"
+    },
+    {
+      "displayName": "Pants_Unique_Spiritborn_100",
+      "snoId": "0x00223703",
+      "internalName": "Pants_Unique_Spiritborn_100"
+    },
+    {
+      "displayName": "Gloves_Unique_Rogue_102",
+      "snoId": "0x00224737",
+      "internalName": "Gloves_Unique_Rogue_102"
+    },
+    {
+      "displayName": "Pants_Unique_Rogue_96",
+      "snoId": "0x00230FA4",
+      "internalName": "Pants_Unique_Rogue_96"
+    },
+    {
+      "displayName": "Helm_Unique_Rogue_96",
+      "snoId": "0x00230FA6",
+      "internalName": "Helm_Unique_Rogue_96"
+    },
+    {
+      "displayName": "Glove_Unique_Rogue_96",
+      "snoId": "0x00230FA8",
+      "internalName": "Glove_Unique_Rogue_96"
+    },
+    {
+      "displayName": "Chest_Unique_Rogue_96",
+      "snoId": "0x00230FAA",
+      "internalName": "Chest_Unique_Rogue_96"
+    },
+    {
+      "displayName": "Boots_Unique_Rogue_96",
+      "snoId": "0x00230FAC",
+      "internalName": "Boots_Unique_Rogue_96"
+    },
+    {
+      "displayName": "X2_1HMace_Unique_Paladin_uniq14",
+      "snoId": "0x002311B7",
+      "internalName": "X2_1HMace_Unique_Paladin_uniq14"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_100_Chest",
+      "snoId": "0x00234BE6",
+      "internalName": "S10_Helm_Unique_Druid_100_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_101_Chest",
+      "snoId": "0x00235CE8",
+      "internalName": "S10_Helm_Unique_Druid_101_Chest"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Generic_Unique_001",
+      "snoId": "0x0023EB39",
+      "internalName": "S10_ChaosPerk_Generic_Unique_001"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Generic_Unique_002",
+      "snoId": "0x0023EB3C",
+      "internalName": "S10_ChaosPerk_Generic_Unique_002"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Generic_Unique_003",
+      "snoId": "0x0023EB3F",
+      "internalName": "S10_ChaosPerk_Generic_Unique_003"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Barb_Unique_001",
+      "snoId": "0x0023EB50",
+      "internalName": "S10_ChaosPerk_Barb_Unique_001"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Druid_Unique_001",
+      "snoId": "0x0023EB59",
+      "internalName": "S10_ChaosPerk_Druid_Unique_001"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Necro_Unique_001",
+      "snoId": "0x0023EB61",
+      "internalName": "S10_ChaosPerk_Necro_Unique_001"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Rogue_Unique_001",
+      "snoId": "0x0023EC06",
+      "internalName": "S10_ChaosPerk_Rogue_Unique_001"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Sorc_Unique_001",
+      "snoId": "0x0023EC0E",
+      "internalName": "S10_ChaosPerk_Sorc_Unique_001"
+    },
+    {
+      "displayName": "S10_ChaosPerk_Spiritborn_Unique_001",
+      "snoId": "0x0023EC16",
+      "internalName": "S10_ChaosPerk_Spiritborn_Unique_001"
+    },
+    {
+      "displayName": "1HFocus_Unique_Necro_100",
+      "snoId": "0x002410AF",
+      "internalName": "1HFocus_Unique_Necro_100"
+    },
+    {
+      "displayName": "1HSword_Unique_Barb_103",
+      "snoId": "0x002410B4",
+      "internalName": "1HSword_Unique_Barb_103"
+    },
+    {
+      "displayName": "Gloves_Unique_Spiritborn_100",
+      "snoId": "0x002410D6",
+      "internalName": "Gloves_Unique_Spiritborn_100"
+    },
+    {
+      "displayName": "Pants_Unique_Druid_002",
+      "snoId": "0x002410E1",
+      "internalName": "Pants_Unique_Druid_002"
+    },
+    {
+      "displayName": "Ring_Unique_Sorc_102",
+      "snoId": "0x002410ED",
+      "internalName": "Ring_Unique_Sorc_102"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_100_Chest",
+      "snoId": "0x00244EE9",
+      "internalName": "S10_Ring_Unique_Druid_100_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_100_Gloves",
+      "snoId": "0x00244F9D",
+      "internalName": "S10_Helm_Unique_Druid_100_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_100_Boots",
+      "snoId": "0x00244FD1",
+      "internalName": "S10_Helm_Unique_Druid_100_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_100_Legs",
+      "snoId": "0x00244FD3",
+      "internalName": "S10_Helm_Unique_Druid_100_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_101_Boots",
+      "snoId": "0x00245342",
+      "internalName": "S10_Helm_Unique_Druid_101_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_101_Gloves",
+      "snoId": "0x00245344",
+      "internalName": "S10_Helm_Unique_Druid_101_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Druid_101_Legs",
+      "snoId": "0x00245348",
+      "internalName": "S10_Helm_Unique_Druid_101_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_100_Boots",
+      "snoId": "0x0024541C",
+      "internalName": "S10_Ring_Unique_Druid_100_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_100_Gloves",
+      "snoId": "0x00245457",
+      "internalName": "S10_Ring_Unique_Druid_100_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_101_Chest",
+      "snoId": "0x002459B4",
+      "internalName": "S10_Ring_Unique_Druid_101_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_101_Helm",
+      "snoId": "0x002459C7",
+      "internalName": "S10_Ring_Unique_Druid_101_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_003_x1_Helm",
+      "snoId": "0x002470FD",
+      "internalName": "S10_Ring_Unique_Spiritborn_003_x1_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_003_x1_Boots",
+      "snoId": "0x0024710F",
+      "internalName": "S10_Ring_Unique_Spiritborn_003_x1_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_003_x1_Chest",
+      "snoId": "0x0024711F",
+      "internalName": "S10_Ring_Unique_Spiritborn_003_x1_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_003_x1_Gloves",
+      "snoId": "0x00247123",
+      "internalName": "S10_Ring_Unique_Spiritborn_003_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_003_x1_Legs",
+      "snoId": "0x00247125",
+      "internalName": "S10_Ring_Unique_Spiritborn_003_x1_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_009_x1_Gloves",
+      "snoId": "0x00247136",
+      "internalName": "S10_Helm_Unique_Spiritborn_009_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_009_x1_Boots",
+      "snoId": "0x0024716F",
+      "internalName": "S10_Helm_Unique_Spiritborn_009_x1_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_009_x1_Chest",
+      "snoId": "0x00247177",
+      "internalName": "S10_Helm_Unique_Spiritborn_009_x1_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_009_x1_Legs",
+      "snoId": "0x0024717A",
+      "internalName": "S10_Helm_Unique_Spiritborn_009_x1_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Spiritborn_013_x1_Helm",
+      "snoId": "0x00247186",
+      "internalName": "S10_Chest_Unique_Spiritborn_013_x1_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Spiritborn_013_x1_Boots",
+      "snoId": "0x002471C1",
+      "internalName": "S10_Chest_Unique_Spiritborn_013_x1_Boots"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Spiritborn_013_x1_Gloves",
+      "snoId": "0x002471C3",
+      "internalName": "S10_Chest_Unique_Spiritborn_013_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Spiritborn_013_x1_Legs",
+      "snoId": "0x002471C5",
+      "internalName": "S10_Chest_Unique_Spiritborn_013_x1_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_011_x1_Chest",
+      "snoId": "0x002471C8",
+      "internalName": "S10_Helm_Unique_Spiritborn_011_x1_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_011_x1_Boots",
+      "snoId": "0x002471DC",
+      "internalName": "S10_Helm_Unique_Spiritborn_011_x1_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_011_x1_Gloves",
+      "snoId": "0x002471DF",
+      "internalName": "S10_Helm_Unique_Spiritborn_011_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Spiritborn_011_x1_Legs",
+      "snoId": "0x002471E1",
+      "internalName": "S10_Helm_Unique_Spiritborn_011_x1_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_004_x1_Helm",
+      "snoId": "0x00247483",
+      "internalName": "S10_Ring_Unique_Spiritborn_004_x1_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_004_x1_Boots",
+      "snoId": "0x0024748A",
+      "internalName": "S10_Ring_Unique_Spiritborn_004_x1_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_004_x1_Chest",
+      "snoId": "0x0024748D",
+      "internalName": "S10_Ring_Unique_Spiritborn_004_x1_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_004_x1_Gloves",
+      "snoId": "0x0024748F",
+      "internalName": "S10_Ring_Unique_Spiritborn_004_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_004_x1_Legs",
+      "snoId": "0x00247491",
+      "internalName": "S10_Ring_Unique_Spiritborn_004_x1_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_005_x1_Boots",
+      "snoId": "0x00247498",
+      "internalName": "S10_Ring_Unique_Spiritborn_005_x1_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_005_x1_Chest",
+      "snoId": "0x002474C2",
+      "internalName": "S10_Ring_Unique_Spiritborn_005_x1_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_005_x1_Gloves",
+      "snoId": "0x002474C4",
+      "internalName": "S10_Ring_Unique_Spiritborn_005_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_005_x1_Helm",
+      "snoId": "0x002474C6",
+      "internalName": "S10_Ring_Unique_Spiritborn_005_x1_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Spiritborn_005_x1_Legs",
+      "snoId": "0x002474C8",
+      "internalName": "S10_Ring_Unique_Spiritborn_005_x1_Legs"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Boots",
+      "snoId": "0x002475A1",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Boots"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Chest",
+      "snoId": "0x002475AB",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Chest"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Gloves",
+      "snoId": "0x002475AD",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Helm",
+      "snoId": "0x002475AF",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Helm"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Legs",
+      "snoId": "0x002475B1",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_016_x1_Legs"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Boots",
+      "snoId": "0x002475B6",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Boots"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Chest",
+      "snoId": "0x002475C5",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Chest"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Gloves",
+      "snoId": "0x002475C8",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Helm",
+      "snoId": "0x002475CA",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Helm"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Legs",
+      "snoId": "0x002475CC",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_012_x1_Legs"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_001_Boots",
+      "snoId": "0x002475CF",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_001_Boots"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_001_Chest",
+      "snoId": "0x002475D8",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_001_Chest"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_001_Gloves",
+      "snoId": "0x002475DA",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_001_Gloves"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_001_Helm",
+      "snoId": "0x002475DC",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_001_Helm"
+    },
+    {
+      "displayName": "S10_Quarterstaff_Unique_Spiritborn_001_Legs",
+      "snoId": "0x002475DE",
+      "internalName": "S10_Quarterstaff_Unique_Spiritborn_001_Legs"
+    },
+    {
+      "displayName": "S10_Glaive_Unique_Spiritborn_010_x1_Boots",
+      "snoId": "0x002475E0",
+      "internalName": "S10_Glaive_Unique_Spiritborn_010_x1_Boots"
+    },
+    {
+      "displayName": "S10_Glaive_Unique_Spiritborn_010_x1_Chest",
+      "snoId": "0x002475F0",
+      "internalName": "S10_Glaive_Unique_Spiritborn_010_x1_Chest"
+    },
+    {
+      "displayName": "S10_Glaive_Unique_Spiritborn_010_x1_Gloves",
+      "snoId": "0x002475F2",
+      "internalName": "S10_Glaive_Unique_Spiritborn_010_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Glaive_Unique_Spiritborn_010_x1_Helm",
+      "snoId": "0x002475F4",
+      "internalName": "S10_Glaive_Unique_Spiritborn_010_x1_Helm"
+    },
+    {
+      "displayName": "S10_Glaive_Unique_Spiritborn_010_x1_Legs",
+      "snoId": "0x002475F6",
+      "internalName": "S10_Glaive_Unique_Spiritborn_010_x1_Legs"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Spiritborn_100_Boots",
+      "snoId": "0x002475F9",
+      "internalName": "S10_Pants_Unique_Spiritborn_100_Boots"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Spiritborn_100_Chest",
+      "snoId": "0x00247602",
+      "internalName": "S10_Pants_Unique_Spiritborn_100_Chest"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Spiritborn_100_Gloves",
+      "snoId": "0x00247604",
+      "internalName": "S10_Pants_Unique_Spiritborn_100_Gloves"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Spiritborn_100_Helm",
+      "snoId": "0x00247606",
+      "internalName": "S10_Pants_Unique_Spiritborn_100_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_100_Boots",
+      "snoId": "0x0024791D",
+      "internalName": "S10_Ring_Unique_Sorc_100_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_100_Chest",
+      "snoId": "0x0024797E",
+      "internalName": "S10_Ring_Unique_Sorc_100_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_100_Gloves",
+      "snoId": "0x00247983",
+      "internalName": "S10_Ring_Unique_Sorc_100_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_100_Helm",
+      "snoId": "0x00247988",
+      "internalName": "S10_Ring_Unique_Sorc_100_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_100_Legs",
+      "snoId": "0x0024798B",
+      "internalName": "S10_Ring_Unique_Sorc_100_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Boots",
+      "snoId": "0x00247994",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_100_Helm",
+      "snoId": "0x00247E3B",
+      "internalName": "S10_Ring_Unique_Druid_100_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_100_Legs",
+      "snoId": "0x00247E51",
+      "internalName": "S10_Ring_Unique_Druid_100_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_101_Boots",
+      "snoId": "0x00247E65",
+      "internalName": "S10_Ring_Unique_Druid_101_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_101_Gloves",
+      "snoId": "0x00247E6E",
+      "internalName": "S10_Ring_Unique_Druid_101_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_101_Legs",
+      "snoId": "0x00247E78",
+      "internalName": "S10_Ring_Unique_Druid_101_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Chest",
+      "snoId": "0x00247F66",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Gloves",
+      "snoId": "0x00247F68",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Helm",
+      "snoId": "0x00247F6A",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Legs",
+      "snoId": "0x00247F6C",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Generic_101_Boots",
+      "snoId": "0x002488C2",
+      "internalName": "S10_Amulet_Unique_Generic_101_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Generic_101_Chest",
+      "snoId": "0x00248936",
+      "internalName": "S10_Amulet_Unique_Generic_101_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Generic_101_Gloves",
+      "snoId": "0x00248938",
+      "internalName": "S10_Amulet_Unique_Generic_101_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Generic_101_Helm",
+      "snoId": "0x0024893B",
+      "internalName": "S10_Amulet_Unique_Generic_101_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Generic_101_Legs",
+      "snoId": "0x0024893F",
+      "internalName": "S10_Amulet_Unique_Generic_101_Legs"
+    },
+    {
+      "displayName": "S10_S05_BSK_Helm_Unique_Generic_001_Boots",
+      "snoId": "0x00248993",
+      "internalName": "S10_S05_BSK_Helm_Unique_Generic_001_Boots"
+    },
+    {
+      "displayName": "S10_S05_BSK_Helm_Unique_Generic_001_Chest",
+      "snoId": "0x002489AF",
+      "internalName": "S10_S05_BSK_Helm_Unique_Generic_001_Chest"
+    },
+    {
+      "displayName": "S10_S05_BSK_Helm_Unique_Generic_001_Gloves",
+      "snoId": "0x002489B1",
+      "internalName": "S10_S05_BSK_Helm_Unique_Generic_001_Gloves"
+    },
+    {
+      "displayName": "S10_S05_BSK_Helm_Unique_Generic_001_Legs",
+      "snoId": "0x002489B5",
+      "internalName": "S10_S05_BSK_Helm_Unique_Generic_001_Legs"
+    },
+    {
+      "displayName": "S10_S05_BSK_Gloves_Unique_Generic_001_Boots",
+      "snoId": "0x00248A32",
+      "internalName": "S10_S05_BSK_Gloves_Unique_Generic_001_Boots"
+    },
+    {
+      "displayName": "S10_S05_BSK_Gloves_Unique_Generic_001_Chest",
+      "snoId": "0x00248A4D",
+      "internalName": "S10_S05_BSK_Gloves_Unique_Generic_001_Chest"
+    },
+    {
+      "displayName": "S10_S05_BSK_Gloves_Unique_Generic_001_Helm",
+      "snoId": "0x00248A4F",
+      "internalName": "S10_S05_BSK_Gloves_Unique_Generic_001_Helm"
+    },
+    {
+      "displayName": "S10_S05_BSK_Gloves_Unique_Generic_001_Legs",
+      "snoId": "0x00248A52",
+      "internalName": "S10_S05_BSK_Gloves_Unique_Generic_001_Legs"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_002_Boots",
+      "snoId": "0x00248A67",
+      "internalName": "S10_Gloves_Unique_Generic_002_Boots"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_002_Chest",
+      "snoId": "0x00248A75",
+      "internalName": "S10_Gloves_Unique_Generic_002_Chest"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_002_Helm",
+      "snoId": "0x00248A77",
+      "internalName": "S10_Gloves_Unique_Generic_002_Helm"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_002_Legs",
+      "snoId": "0x00248A79",
+      "internalName": "S10_Gloves_Unique_Generic_002_Legs"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Generic_002_Chest",
+      "snoId": "0x00248A95",
+      "internalName": "S10_Boots_Unique_Generic_002_Chest"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Generic_002_Gloves",
+      "snoId": "0x00248AB3",
+      "internalName": "S10_Boots_Unique_Generic_002_Gloves"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Generic_002_Helm",
+      "snoId": "0x00248AB9",
+      "internalName": "S10_Boots_Unique_Generic_002_Helm"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Generic_002_Legs",
+      "snoId": "0x00248ABD",
+      "internalName": "S10_Boots_Unique_Generic_002_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Generic_003_Boots",
+      "snoId": "0x00248AE8",
+      "internalName": "S10_Helm_Unique_Generic_003_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Generic_003_Chest",
+      "snoId": "0x00248B13",
+      "internalName": "S10_Helm_Unique_Generic_003_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Generic_003_Gloves",
+      "snoId": "0x00248B15",
+      "internalName": "S10_Helm_Unique_Generic_003_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Generic_003_Legs",
+      "snoId": "0x00248B43",
+      "internalName": "S10_Helm_Unique_Generic_003_Legs"
+    },
+    {
+      "displayName": "S10_S05_BSK_Amulet_Unique_Generic_001_Boots",
+      "snoId": "0x0024A47E",
+      "internalName": "S10_S05_BSK_Amulet_Unique_Generic_001_Boots"
+    },
+    {
+      "displayName": "S10_S05_BSK_Amulet_Unique_Generic_001_Chest",
+      "snoId": "0x0024A489",
+      "internalName": "S10_S05_BSK_Amulet_Unique_Generic_001_Chest"
+    },
+    {
+      "displayName": "S10_S05_BSK_Amulet_Unique_Generic_001_Gloves",
+      "snoId": "0x0024A48B",
+      "internalName": "S10_S05_BSK_Amulet_Unique_Generic_001_Gloves"
+    },
+    {
+      "displayName": "S10_S05_BSK_Amulet_Unique_Generic_001_Helm",
+      "snoId": "0x0024A48D",
+      "internalName": "S10_S05_BSK_Amulet_Unique_Generic_001_Helm"
+    },
+    {
+      "displayName": "S10_S05_BSK_Amulet_Unique_Generic_001_Legs",
+      "snoId": "0x0024A48F",
+      "internalName": "S10_S05_BSK_Amulet_Unique_Generic_001_Legs"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_004_Boots",
+      "snoId": "0x0024A494",
+      "internalName": "S10_Gloves_Unique_Generic_004_Boots"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_004_Chest",
+      "snoId": "0x0024A4DA",
+      "internalName": "S10_Gloves_Unique_Generic_004_Chest"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_004_Helm",
+      "snoId": "0x0024A4DC",
+      "internalName": "S10_Gloves_Unique_Generic_004_Helm"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Generic_004_Legs",
+      "snoId": "0x0024A4E0",
+      "internalName": "S10_Gloves_Unique_Generic_004_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_102_Boots",
+      "snoId": "0x0024A61D",
+      "internalName": "S10_Ring_Unique_Generic_102_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_102_Chest",
+      "snoId": "0x0024A671",
+      "internalName": "S10_Ring_Unique_Generic_102_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_102_Gloves",
+      "snoId": "0x0024A67B",
+      "internalName": "S10_Ring_Unique_Generic_102_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_102_Helm",
+      "snoId": "0x0024A67F",
+      "internalName": "S10_Ring_Unique_Generic_102_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_102_Legs",
+      "snoId": "0x0024A68E",
+      "internalName": "S10_Ring_Unique_Generic_102_Legs"
+    },
+    {
+      "displayName": "S10_1HWand_Unique_Sorc_100_Boots",
+      "snoId": "0x0024AD44",
+      "internalName": "S10_1HWand_Unique_Sorc_100_Boots"
+    },
+    {
+      "displayName": "S10_1HWand_Unique_Sorc_100_Chest",
+      "snoId": "0x0024AD61",
+      "internalName": "S10_1HWand_Unique_Sorc_100_Chest"
+    },
+    {
+      "displayName": "S10_1HWand_Unique_Sorc_100_Gloves",
+      "snoId": "0x0024AD63",
+      "internalName": "S10_1HWand_Unique_Sorc_100_Gloves"
+    },
+    {
+      "displayName": "S10_1HWand_Unique_Sorc_100_Helm",
+      "snoId": "0x0024AD65",
+      "internalName": "S10_1HWand_Unique_Sorc_100_Helm"
+    },
+    {
+      "displayName": "S10_1HWand_Unique_Sorc_100_Legs",
+      "snoId": "0x0024AD67",
+      "internalName": "S10_1HWand_Unique_Sorc_100_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_101_Boots",
+      "snoId": "0x0024AD7A",
+      "internalName": "S10_Amulet_Unique_Sorc_101_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_101_Chest",
+      "snoId": "0x0024ADAD",
+      "internalName": "S10_Amulet_Unique_Sorc_101_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_101_Gloves",
+      "snoId": "0x0024ADAF",
+      "internalName": "S10_Amulet_Unique_Sorc_101_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_101_Helm",
+      "snoId": "0x0024ADB3",
+      "internalName": "S10_Amulet_Unique_Sorc_101_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_101_Legs",
+      "snoId": "0x0024ADB8",
+      "internalName": "S10_Amulet_Unique_Sorc_101_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_100_Boots",
+      "snoId": "0x0024AF21",
+      "internalName": "S10_Ring_Unique_Generic_100_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_100_Chest",
+      "snoId": "0x0024AF5F",
+      "internalName": "S10_Ring_Unique_Generic_100_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_100_Gloves",
+      "snoId": "0x0024AF67",
+      "internalName": "S10_Ring_Unique_Generic_100_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_100_Helm",
+      "snoId": "0x0024AF6B",
+      "internalName": "S10_Ring_Unique_Generic_100_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Generic_100_Legs",
+      "snoId": "0x0024AF70",
+      "internalName": "S10_Ring_Unique_Generic_100_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Sorc_002_Boots",
+      "snoId": "0x0024AF91",
+      "internalName": "S10_Chest_Unique_Sorc_002_Boots"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Sorc_002_Gloves",
+      "snoId": "0x0024AFC6",
+      "internalName": "S10_Chest_Unique_Sorc_002_Gloves"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Sorc_002_Helm",
+      "snoId": "0x0024AFCB",
+      "internalName": "S10_Chest_Unique_Sorc_002_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Sorc_002_Legs",
+      "snoId": "0x0024AFCE",
+      "internalName": "S10_Chest_Unique_Sorc_002_Legs"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_100_Boots",
+      "snoId": "0x0024BC4B",
+      "internalName": "S10_2HStaff_Unique_Sorc_100_Boots"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_100_Chest",
+      "snoId": "0x0024BC61",
+      "internalName": "S10_2HStaff_Unique_Sorc_100_Chest"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_100_Gloves",
+      "snoId": "0x0024BC63",
+      "internalName": "S10_2HStaff_Unique_Sorc_100_Gloves"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_100_Helm",
+      "snoId": "0x0024BC66",
+      "internalName": "S10_2HStaff_Unique_Sorc_100_Helm"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_100_Legs",
+      "snoId": "0x0024BC68",
+      "internalName": "S10_2HStaff_Unique_Sorc_100_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Sorc_100_Boots",
+      "snoId": "0x0024BCCD",
+      "internalName": "S10_Helm_Unique_Sorc_100_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Sorc_100_Chest",
+      "snoId": "0x0024BCF1",
+      "internalName": "S10_Helm_Unique_Sorc_100_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Sorc_100_Gloves",
+      "snoId": "0x0024BCF6",
+      "internalName": "S10_Helm_Unique_Sorc_100_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Sorc_100_Legs",
+      "snoId": "0x0024BCFF",
+      "internalName": "S10_Helm_Unique_Sorc_100_Legs"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Boots",
+      "snoId": "0x0024BD68",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Boots"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Chest",
+      "snoId": "0x0024BED9",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Chest"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Gloves",
+      "snoId": "0x0024BEDC",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Gloves"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Helm",
+      "snoId": "0x0024BEDF",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Helm"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Legs",
+      "snoId": "0x0024BEE1",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Sorcerer_001_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_102_Boots",
+      "snoId": "0x0024C404",
+      "internalName": "S10_Amulet_Unique_Sorc_102_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_100_Boots",
+      "snoId": "0x0024C432",
+      "internalName": "S10_Amulet_Unique_Barb_100_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_100_Chest",
+      "snoId": "0x0024C48C",
+      "internalName": "S10_Amulet_Unique_Barb_100_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_100_Gloves",
+      "snoId": "0x0024C490",
+      "internalName": "S10_Amulet_Unique_Barb_100_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_100_Helm",
+      "snoId": "0x0024C496",
+      "internalName": "S10_Amulet_Unique_Barb_100_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_100_Legs",
+      "snoId": "0x0024C498",
+      "internalName": "S10_Amulet_Unique_Barb_100_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_102_Chest",
+      "snoId": "0x0024C49D",
+      "internalName": "S10_Amulet_Unique_Sorc_102_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_102_Gloves",
+      "snoId": "0x0024C4A0",
+      "internalName": "S10_Amulet_Unique_Sorc_102_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_102_Helm",
+      "snoId": "0x0024C4A2",
+      "internalName": "S10_Amulet_Unique_Sorc_102_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_102_Legs",
+      "snoId": "0x0024C4A4",
+      "internalName": "S10_Amulet_Unique_Sorc_102_Legs"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Barb_001_Boots",
+      "snoId": "0x0024C5A5",
+      "internalName": "S10_Gloves_Unique_Barb_001_Boots"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Barb_001_Chest",
+      "snoId": "0x0024C5AF",
+      "internalName": "S10_Gloves_Unique_Barb_001_Chest"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Barb_001_Helm",
+      "snoId": "0x0024C5B2",
+      "internalName": "S10_Gloves_Unique_Barb_001_Helm"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Barb_001_Legs",
+      "snoId": "0x0024C5B4",
+      "internalName": "S10_Gloves_Unique_Barb_001_Legs"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Rogue_100_Chest",
+      "snoId": "0x0024C6EE",
+      "internalName": "S10_Boots_Unique_Rogue_100_Chest"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Rogue_100_Gloves",
+      "snoId": "0x0024C6FC",
+      "internalName": "S10_Boots_Unique_Rogue_100_Gloves"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Rogue_100_Helm",
+      "snoId": "0x0024C6FE",
+      "internalName": "S10_Boots_Unique_Rogue_100_Helm"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Rogue_100_Legs",
+      "snoId": "0x0024C702",
+      "internalName": "S10_Boots_Unique_Rogue_100_Legs"
+    },
+    {
+      "displayName": "S10_1HDagger_Unique_Rogue_001_Boots",
+      "snoId": "0x0024C70A",
+      "internalName": "S10_1HDagger_Unique_Rogue_001_Boots"
+    },
+    {
+      "displayName": "S10_1HDagger_Unique_Rogue_001_Chest",
+      "snoId": "0x0024C76F",
+      "internalName": "S10_1HDagger_Unique_Rogue_001_Chest"
+    },
+    {
+      "displayName": "S10_1HDagger_Unique_Rogue_001_Gloves",
+      "snoId": "0x0024C775",
+      "internalName": "S10_1HDagger_Unique_Rogue_001_Gloves"
+    },
+    {
+      "displayName": "S10_1HDagger_Unique_Rogue_001_Helm",
+      "snoId": "0x0024C779",
+      "internalName": "S10_1HDagger_Unique_Rogue_001_Helm"
+    },
+    {
+      "displayName": "S10_1HDagger_Unique_Rogue_001_Legs",
+      "snoId": "0x0024C77E",
+      "internalName": "S10_1HDagger_Unique_Rogue_001_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_001_Boots",
+      "snoId": "0x0024CBEB",
+      "internalName": "S10_Helm_Unique_Rogue_001_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_001_Chest",
+      "snoId": "0x0024CBF8",
+      "internalName": "S10_Helm_Unique_Rogue_001_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_001_Gloves",
+      "snoId": "0x0024CBFB",
+      "internalName": "S10_Helm_Unique_Rogue_001_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_001_Legs",
+      "snoId": "0x0024CBFE",
+      "internalName": "S10_Helm_Unique_Rogue_001_Legs"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Rogue_100_Boots",
+      "snoId": "0x0024CC22",
+      "internalName": "S10_Gloves_Unique_Rogue_100_Boots"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Rogue_100_Chest",
+      "snoId": "0x0024CC2D",
+      "internalName": "S10_Gloves_Unique_Rogue_100_Chest"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Rogue_100_Helm",
+      "snoId": "0x0024CC36",
+      "internalName": "S10_Gloves_Unique_Rogue_100_Helm"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Rogue_100_Legs",
+      "snoId": "0x0024CC3A",
+      "internalName": "S10_Gloves_Unique_Rogue_100_Legs"
+    },
+    {
+      "displayName": "S10_x1_Ring_Unique_Rogue_128_Boots",
+      "snoId": "0x0024CC84",
+      "internalName": "S10_x1_Ring_Unique_Rogue_128_Boots"
+    },
+    {
+      "displayName": "S10_x1_Ring_Unique_Rogue_128_Chest",
+      "snoId": "0x0024CC9F",
+      "internalName": "S10_x1_Ring_Unique_Rogue_128_Chest"
+    },
+    {
+      "displayName": "S10_x1_Ring_Unique_Rogue_128_Gloves",
+      "snoId": "0x0024CCA4",
+      "internalName": "S10_x1_Ring_Unique_Rogue_128_Gloves"
+    },
+    {
+      "displayName": "S10_x1_Ring_Unique_Rogue_128_Helm",
+      "snoId": "0x0024CCA8",
+      "internalName": "S10_x1_Ring_Unique_Rogue_128_Helm"
+    },
+    {
+      "displayName": "S10_x1_Ring_Unique_Rogue_128_Legs",
+      "snoId": "0x0024CCAA",
+      "internalName": "S10_x1_Ring_Unique_Rogue_128_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_102_Boots",
+      "snoId": "0x0024CCD2",
+      "internalName": "S10_Ring_Unique_Rogue_102_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_102_Chest",
+      "snoId": "0x0024CCF2",
+      "internalName": "S10_Ring_Unique_Rogue_102_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_102_Gloves",
+      "snoId": "0x0024CCF4",
+      "internalName": "S10_Ring_Unique_Rogue_102_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_102_Helm",
+      "snoId": "0x0024CCF6",
+      "internalName": "S10_Ring_Unique_Rogue_102_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_102_Legs",
+      "snoId": "0x0024CCFA",
+      "internalName": "S10_Ring_Unique_Rogue_102_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_101_Helm",
+      "snoId": "0x0024D434",
+      "internalName": "S10_Chest_Unique_Barb_101_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_101_Legs",
+      "snoId": "0x0024D43C",
+      "internalName": "S10_Chest_Unique_Barb_101_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_101_Boots",
+      "snoId": "0x0024D43E",
+      "internalName": "S10_Chest_Unique_Barb_101_Boots"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_101_Gloves",
+      "snoId": "0x0024D440",
+      "internalName": "S10_Chest_Unique_Barb_101_Gloves"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_100_Boots",
+      "snoId": "0x0024D45F",
+      "internalName": "S10_Chest_Unique_Rogue_100_Boots"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Barb_100_Helm",
+      "snoId": "0x0024D4AC",
+      "internalName": "S10_2HMace_Unique_Barb_100_Helm"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Barb_100_Chest",
+      "snoId": "0x0024D4B1",
+      "internalName": "S10_2HMace_Unique_Barb_100_Chest"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Barb_100_Gloves",
+      "snoId": "0x0024D4B3",
+      "internalName": "S10_2HMace_Unique_Barb_100_Gloves"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Barb_100_Boots",
+      "snoId": "0x0024D4B5",
+      "internalName": "S10_2HMace_Unique_Barb_100_Boots"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Barb_100_Legs",
+      "snoId": "0x0024D4B7",
+      "internalName": "S10_2HMace_Unique_Barb_100_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_100_Helm",
+      "snoId": "0x0024D5A3",
+      "internalName": "S10_Chest_Unique_Barb_100_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_100_Gloves",
+      "snoId": "0x0024D5A7",
+      "internalName": "S10_Chest_Unique_Barb_100_Gloves"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_100_Legs",
+      "snoId": "0x0024D5A9",
+      "internalName": "S10_Chest_Unique_Barb_100_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Barb_100_Boots",
+      "snoId": "0x0024D5AC",
+      "internalName": "S10_Chest_Unique_Barb_100_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_100_Helm",
+      "snoId": "0x0024D5D1",
+      "internalName": "S10_Ring_Unique_Barb_100_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_100_Gloves",
+      "snoId": "0x0024D742",
+      "internalName": "S10_Chest_Unique_Rogue_100_Gloves"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_100_Helm",
+      "snoId": "0x0024D744",
+      "internalName": "S10_Chest_Unique_Rogue_100_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_100_Legs",
+      "snoId": "0x0024D746",
+      "internalName": "S10_Chest_Unique_Rogue_100_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_100_Chest",
+      "snoId": "0x0024D756",
+      "internalName": "S10_Ring_Unique_Barb_100_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_100_Gloves",
+      "snoId": "0x0024D758",
+      "internalName": "S10_Ring_Unique_Barb_100_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_100_Legs",
+      "snoId": "0x0024D75A",
+      "internalName": "S10_Ring_Unique_Barb_100_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_100_Boots",
+      "snoId": "0x0024D75F",
+      "internalName": "S10_Ring_Unique_Barb_100_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_101_Helm",
+      "snoId": "0x0024D76B",
+      "internalName": "S10_Ring_Unique_Barb_101_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_101_Chest",
+      "snoId": "0x0024D77B",
+      "internalName": "S10_Ring_Unique_Barb_101_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_101_Gloves",
+      "snoId": "0x0024D77E",
+      "internalName": "S10_Ring_Unique_Barb_101_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_101_Legs",
+      "snoId": "0x0024D783",
+      "internalName": "S10_Ring_Unique_Barb_101_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Barb_101_Boots",
+      "snoId": "0x0024D785",
+      "internalName": "S10_Ring_Unique_Barb_101_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_100_Chest",
+      "snoId": "0x0024D790",
+      "internalName": "S10_Helm_Unique_Barb_100_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_100_Gloves",
+      "snoId": "0x0024D7A0",
+      "internalName": "S10_Helm_Unique_Barb_100_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_100_Legs",
+      "snoId": "0x0024D7A3",
+      "internalName": "S10_Helm_Unique_Barb_100_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_100_Boots",
+      "snoId": "0x0024D7A5",
+      "internalName": "S10_Helm_Unique_Barb_100_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_101_x1_Chest",
+      "snoId": "0x0024D7D8",
+      "internalName": "S10_Helm_Unique_Barb_101_x1_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_101_x1_Gloves",
+      "snoId": "0x0024D826",
+      "internalName": "S10_Helm_Unique_Barb_101_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_101_x1_Legs",
+      "snoId": "0x0024D828",
+      "internalName": "S10_Helm_Unique_Barb_101_x1_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Barb_101_x1_Boots",
+      "snoId": "0x0024D82A",
+      "internalName": "S10_Helm_Unique_Barb_101_x1_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_101_Helm",
+      "snoId": "0x0024D83C",
+      "internalName": "S10_Amulet_Unique_Barb_101_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_101_Chest",
+      "snoId": "0x0024D846",
+      "internalName": "S10_Amulet_Unique_Barb_101_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_101_Gloves",
+      "snoId": "0x0024D848",
+      "internalName": "S10_Amulet_Unique_Barb_101_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_101_Legs",
+      "snoId": "0x0024D84A",
+      "internalName": "S10_Amulet_Unique_Barb_101_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Barb_101_Boots",
+      "snoId": "0x0024D84C",
+      "internalName": "S10_Amulet_Unique_Barb_101_Boots"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Barb_101_Helm",
+      "snoId": "0x0024D874",
+      "internalName": "S10_Boots_Unique_Barb_101_Helm"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Barb_101_Chest",
+      "snoId": "0x0024D88A",
+      "internalName": "S10_Boots_Unique_Barb_101_Chest"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Barb_101_Gloves",
+      "snoId": "0x0024D88C",
+      "internalName": "S10_Boots_Unique_Barb_101_Gloves"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Barb_101_Legs",
+      "snoId": "0x0024D88E",
+      "internalName": "S10_Boots_Unique_Barb_101_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_101_Boots",
+      "snoId": "0x0024DC51",
+      "internalName": "S10_Chest_Unique_Rogue_101_Boots"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_101_Gloves",
+      "snoId": "0x0024DC7F",
+      "internalName": "S10_Chest_Unique_Rogue_101_Gloves"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_101_Helm",
+      "snoId": "0x0024DC91",
+      "internalName": "S10_Chest_Unique_Rogue_101_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Rogue_101_Legs",
+      "snoId": "0x0024DC93",
+      "internalName": "S10_Chest_Unique_Rogue_101_Legs"
+    },
+    {
+      "displayName": "S10_2HBow_Unique_Rogue_001_Boots",
+      "snoId": "0x0024DD73",
+      "internalName": "S10_2HBow_Unique_Rogue_001_Boots"
+    },
+    {
+      "displayName": "S10_2HBow_Unique_Rogue_001_Chest",
+      "snoId": "0x0024DD79",
+      "internalName": "S10_2HBow_Unique_Rogue_001_Chest"
+    },
+    {
+      "displayName": "S10_2HBow_Unique_Rogue_001_Gloves",
+      "snoId": "0x0024DD7D",
+      "internalName": "S10_2HBow_Unique_Rogue_001_Gloves"
+    },
+    {
+      "displayName": "S10_2HBow_Unique_Rogue_001_Helm",
+      "snoId": "0x0024DD87",
+      "internalName": "S10_2HBow_Unique_Rogue_001_Helm"
+    },
+    {
+      "displayName": "S10_2HBow_Unique_Rogue_001_Legs",
+      "snoId": "0x0024DD95",
+      "internalName": "S10_2HBow_Unique_Rogue_001_Legs"
+    },
+    {
+      "displayName": "X2_HoradricCube_Unique_IngredientList",
+      "snoId": "0x0024DDEA",
+      "internalName": "X2_HoradricCube_Unique_IngredientList"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Rogue_100_Boots",
+      "snoId": "0x0024DFB3",
+      "internalName": "S10_Amulet_Unique_Rogue_100_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Rogue_100_Chest",
+      "snoId": "0x0024DFBF",
+      "internalName": "S10_Amulet_Unique_Rogue_100_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Rogue_100_Gloves",
+      "snoId": "0x0024DFC1",
+      "internalName": "S10_Amulet_Unique_Rogue_100_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Rogue_100_Helm",
+      "snoId": "0x0024DFC3",
+      "internalName": "S10_Amulet_Unique_Rogue_100_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Rogue_100_Legs",
+      "snoId": "0x0024DFC5",
+      "internalName": "S10_Amulet_Unique_Rogue_100_Legs"
+    },
+    {
+      "displayName": "S10_1HScythe_Unique_Necro_100_Helm",
+      "snoId": "0x0024E243",
+      "internalName": "S10_1HScythe_Unique_Necro_100_Helm"
+    },
+    {
+      "displayName": "S10_1HScythe_Unique_Necro_100_Chest",
+      "snoId": "0x0024E24D",
+      "internalName": "S10_1HScythe_Unique_Necro_100_Chest"
+    },
+    {
+      "displayName": "S10_1HScythe_Unique_Necro_100_Gloves",
+      "snoId": "0x0024E24F",
+      "internalName": "S10_1HScythe_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_1HScythe_Unique_Necro_100_Legs",
+      "snoId": "0x0024E252",
+      "internalName": "S10_1HScythe_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_1HScythe_Unique_Necro_100_Boots",
+      "snoId": "0x0024E254",
+      "internalName": "S10_1HScythe_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_002_Boots",
+      "snoId": "0x0024E26D",
+      "internalName": "S10_Helm_Unique_Rogue_002_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_002_Chest",
+      "snoId": "0x0024E317",
+      "internalName": "S10_Helm_Unique_Rogue_002_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_002_Gloves",
+      "snoId": "0x0024E319",
+      "internalName": "S10_Helm_Unique_Rogue_002_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Rogue_002_Legs",
+      "snoId": "0x0024E31C",
+      "internalName": "S10_Helm_Unique_Rogue_002_Legs"
+    },
+    {
+      "displayName": "S10_2HScythe_Unique_Necro_100_Helm",
+      "snoId": "0x0024E331",
+      "internalName": "S10_2HScythe_Unique_Necro_100_Helm"
+    },
+    {
+      "displayName": "S10_2HScythe_Unique_Necro_100_Chest",
+      "snoId": "0x0024E33D",
+      "internalName": "S10_2HScythe_Unique_Necro_100_Chest"
+    },
+    {
+      "displayName": "S10_2HScythe_Unique_Necro_100_Gloves",
+      "snoId": "0x0024E342",
+      "internalName": "S10_2HScythe_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_2HScythe_Unique_Necro_100_Legs",
+      "snoId": "0x0024E344",
+      "internalName": "S10_2HScythe_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_2HScythe_Unique_Necro_100_Boots",
+      "snoId": "0x0024E347",
+      "internalName": "S10_2HScythe_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_100_Chest",
+      "snoId": "0x0024E360",
+      "internalName": "S10_Helm_Unique_Necro_100_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_100_Gloves",
+      "snoId": "0x0024E368",
+      "internalName": "S10_Helm_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_100_Legs",
+      "snoId": "0x0024E36A",
+      "internalName": "S10_Helm_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_100_Boots",
+      "snoId": "0x0024E36C",
+      "internalName": "S10_Helm_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_100_Helm",
+      "snoId": "0x0024E429",
+      "internalName": "S10_Amulet_Unique_Necro_100_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_100_Chest",
+      "snoId": "0x0024E444",
+      "internalName": "S10_Amulet_Unique_Necro_100_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_100_Gloves",
+      "snoId": "0x0024E446",
+      "internalName": "S10_Amulet_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_100_Legs",
+      "snoId": "0x0024E449",
+      "internalName": "S10_Amulet_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_100_Boots",
+      "snoId": "0x0024E44B",
+      "internalName": "S10_Amulet_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_1HMace_Unique_Druid_001_Boots",
+      "snoId": "0x0024E44E",
+      "internalName": "S10_1HMace_Unique_Druid_001_Boots"
+    },
+    {
+      "displayName": "S10_1HMace_Unique_Druid_001_Chest",
+      "snoId": "0x0024E4AA",
+      "internalName": "S10_1HMace_Unique_Druid_001_Chest"
+    },
+    {
+      "displayName": "S10_1HMace_Unique_Druid_001_Gloves",
+      "snoId": "0x0024E4AE",
+      "internalName": "S10_1HMace_Unique_Druid_001_Gloves"
+    },
+    {
+      "displayName": "S10_1HMace_Unique_Druid_001_Helm",
+      "snoId": "0x0024E4B0",
+      "internalName": "S10_1HMace_Unique_Druid_001_Helm"
+    },
+    {
+      "displayName": "S10_1HMace_Unique_Druid_001_Legs",
+      "snoId": "0x0024E4B3",
+      "internalName": "S10_1HMace_Unique_Druid_001_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_101_Helm",
+      "snoId": "0x0024E4F2",
+      "internalName": "S10_Amulet_Unique_Necro_101_Helm"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Druid_001_Boots",
+      "snoId": "0x0024E50C",
+      "internalName": "S10_2HStaff_Unique_Druid_001_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_101_Chest",
+      "snoId": "0x0024E516",
+      "internalName": "S10_Amulet_Unique_Necro_101_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_101_Gloves",
+      "snoId": "0x0024E518",
+      "internalName": "S10_Amulet_Unique_Necro_101_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_101_Legs",
+      "snoId": "0x0024E51C",
+      "internalName": "S10_Amulet_Unique_Necro_101_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Necro_101_Boots",
+      "snoId": "0x0024E51E",
+      "internalName": "S10_Amulet_Unique_Necro_101_Boots"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Druid_001_Chest",
+      "snoId": "0x0024E52B",
+      "internalName": "S10_2HStaff_Unique_Druid_001_Chest"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Druid_001_Gloves",
+      "snoId": "0x0024E52F",
+      "internalName": "S10_2HStaff_Unique_Druid_001_Gloves"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Druid_001_Helm",
+      "snoId": "0x0024E531",
+      "internalName": "S10_2HStaff_Unique_Druid_001_Helm"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Druid_001_Legs",
+      "snoId": "0x0024E535",
+      "internalName": "S10_2HStaff_Unique_Druid_001_Legs"
+    },
+    {
+      "displayName": "S10_1HShield_Unique_Necro_100_Helm",
+      "snoId": "0x0024E55F",
+      "internalName": "S10_1HShield_Unique_Necro_100_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_003_Boots",
+      "snoId": "0x0024E579",
+      "internalName": "S10_Ring_Unique_Druid_003_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_003_Chest",
+      "snoId": "0x0024E57E",
+      "internalName": "S10_Ring_Unique_Druid_003_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_003_Gloves",
+      "snoId": "0x0024E581",
+      "internalName": "S10_Ring_Unique_Druid_003_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_003_Helm",
+      "snoId": "0x0024E584",
+      "internalName": "S10_Ring_Unique_Druid_003_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_003_Legs",
+      "snoId": "0x0024E587",
+      "internalName": "S10_Ring_Unique_Druid_003_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_101_Boots",
+      "snoId": "0x0024E5A2",
+      "internalName": "S10_Amulet_Unique_Druid_101_Boots"
+    },
+    {
+      "displayName": "S10_1HShield_Unique_Necro_100_Chest",
+      "snoId": "0x0024E61B",
+      "internalName": "S10_1HShield_Unique_Necro_100_Chest"
+    },
+    {
+      "displayName": "S10_1HShield_Unique_Necro_100_Gloves",
+      "snoId": "0x0024E61E",
+      "internalName": "S10_1HShield_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_1HShield_Unique_Necro_100_Legs",
+      "snoId": "0x0024E622",
+      "internalName": "S10_1HShield_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_1HShield_Unique_Necro_100_Boots",
+      "snoId": "0x0024E624",
+      "internalName": "S10_1HShield_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_101_Chest",
+      "snoId": "0x0024E638",
+      "internalName": "S10_Amulet_Unique_Druid_101_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_101_Gloves",
+      "snoId": "0x0024E63A",
+      "internalName": "S10_Amulet_Unique_Druid_101_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_101_Helm",
+      "snoId": "0x0024E63D",
+      "internalName": "S10_Amulet_Unique_Druid_101_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_101_Legs",
+      "snoId": "0x0024E63F",
+      "internalName": "S10_Amulet_Unique_Druid_101_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_100_Helm",
+      "snoId": "0x0024E7D0",
+      "internalName": "S10_Ring_Unique_Necro_100_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_100_Chest",
+      "snoId": "0x0024E7DE",
+      "internalName": "S10_Ring_Unique_Necro_100_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_100_Gloves",
+      "snoId": "0x0024E7E2",
+      "internalName": "S10_Ring_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_100_Legs",
+      "snoId": "0x0024E7E4",
+      "internalName": "S10_Ring_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_100_Boots",
+      "snoId": "0x0024E7E6",
+      "internalName": "S10_Ring_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_102_Boots",
+      "snoId": "0x0024E7F2",
+      "internalName": "S10_Ring_Unique_Druid_102_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_101_Helm",
+      "snoId": "0x0024E803",
+      "internalName": "S10_Ring_Unique_Necro_101_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_102_Chest",
+      "snoId": "0x0024E80F",
+      "internalName": "S10_Ring_Unique_Druid_102_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_102_Gloves",
+      "snoId": "0x0024E815",
+      "internalName": "S10_Ring_Unique_Druid_102_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_102_Helm",
+      "snoId": "0x0024E819",
+      "internalName": "S10_Ring_Unique_Druid_102_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Druid_102_Legs",
+      "snoId": "0x0024E81B",
+      "internalName": "S10_Ring_Unique_Druid_102_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_101_Chest",
+      "snoId": "0x0024E81D",
+      "internalName": "S10_Ring_Unique_Necro_101_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_101_Gloves",
+      "snoId": "0x0024E81F",
+      "internalName": "S10_Ring_Unique_Necro_101_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_101_Legs",
+      "snoId": "0x0024E821",
+      "internalName": "S10_Ring_Unique_Necro_101_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Necro_101_Boots",
+      "snoId": "0x0024E823",
+      "internalName": "S10_Ring_Unique_Necro_101_Boots"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Boots",
+      "snoId": "0x0024E836",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Boots"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Chest",
+      "snoId": "0x0024E83E",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Chest"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Gloves",
+      "snoId": "0x0024E844",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Gloves"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Helm",
+      "snoId": "0x0024E846",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Helm"
+    },
+    {
+      "displayName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Legs",
+      "snoId": "0x0024E849",
+      "internalName": "S10_S05_BSK_2HStaff_Unique_Druid_001_Legs"
+    },
+    {
+      "displayName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Helm",
+      "snoId": "0x0024E855",
+      "internalName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Helm"
+    },
+    {
+      "displayName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Chest",
+      "snoId": "0x0024E8D3",
+      "internalName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Chest"
+    },
+    {
+      "displayName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Gloves",
+      "snoId": "0x0024E8D7",
+      "internalName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Gloves"
+    },
+    {
+      "displayName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Legs",
+      "snoId": "0x0024E8DA",
+      "internalName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Legs"
+    },
+    {
+      "displayName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Boots",
+      "snoId": "0x0024E8DC",
+      "internalName": "S10_S05_BSK_1HDagger_Unique_Necro_001_Boots"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_101_x1_Chest",
+      "snoId": "0x0024E8EB",
+      "internalName": "S10_Helm_Unique_Necro_101_x1_Chest"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_101_x1_Gloves",
+      "snoId": "0x0024E9BF",
+      "internalName": "S10_Helm_Unique_Necro_101_x1_Gloves"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_101_x1_Legs",
+      "snoId": "0x0024E9C6",
+      "internalName": "S10_Helm_Unique_Necro_101_x1_Legs"
+    },
+    {
+      "displayName": "S10_Helm_Unique_Necro_101_x1_Boots",
+      "snoId": "0x0024E9C8",
+      "internalName": "S10_Helm_Unique_Necro_101_x1_Boots"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Necro_102_Helm",
+      "snoId": "0x0024E9CB",
+      "internalName": "S10_Gloves_Unique_Necro_102_Helm"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Necro_102_Chest",
+      "snoId": "0x0024E9E5",
+      "internalName": "S10_Gloves_Unique_Necro_102_Chest"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Necro_102_Legs",
+      "snoId": "0x0024E9EB",
+      "internalName": "S10_Gloves_Unique_Necro_102_Legs"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Necro_102_Boots",
+      "snoId": "0x0024E9ED",
+      "internalName": "S10_Gloves_Unique_Necro_102_Boots"
+    },
+    {
+      "displayName": "1HMace_Unique_Paladin_001",
+      "snoId": "0x0024F031",
+      "internalName": "1HMace_Unique_Paladin_001"
+    },
+    {
+      "displayName": "1HShield_Unique_Paladin_001",
+      "snoId": "0x0024F0CC",
+      "internalName": "1HShield_Unique_Paladin_001"
+    },
+    {
+      "displayName": "1HDagger_Unique_Generic_001",
+      "snoId": "0x0024FE35",
+      "internalName": "1HDagger_Unique_Generic_001"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Sorc_101_Boots",
+      "snoId": "0x002501BD",
+      "internalName": "S10_Pants_Unique_Sorc_101_Boots"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Sorc_101_Chest",
+      "snoId": "0x002501C6",
+      "internalName": "S10_Pants_Unique_Sorc_101_Chest"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Sorc_101_Gloves",
+      "snoId": "0x002501C8",
+      "internalName": "S10_Pants_Unique_Sorc_101_Gloves"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Sorc_101_Helm",
+      "snoId": "0x002501CA",
+      "internalName": "S10_Pants_Unique_Sorc_101_Helm"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_103_Boots",
+      "snoId": "0x00250229",
+      "internalName": "S10_1HSword_Unique_Barb_103_Boots"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_103_Chest",
+      "snoId": "0x00250258",
+      "internalName": "S10_1HSword_Unique_Barb_103_Chest"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_103_Gloves",
+      "snoId": "0x0025025E",
+      "internalName": "S10_1HSword_Unique_Barb_103_Gloves"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_103_Helm",
+      "snoId": "0x00250261",
+      "internalName": "S10_1HSword_Unique_Barb_103_Helm"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_103_Legs",
+      "snoId": "0x00250263",
+      "internalName": "S10_1HSword_Unique_Barb_103_Legs"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Druid_002_Boots",
+      "snoId": "0x0025026B",
+      "internalName": "S10_Pants_Unique_Druid_002_Boots"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Druid_002_Chest",
+      "snoId": "0x0025027D",
+      "internalName": "S10_Pants_Unique_Druid_002_Chest"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Druid_002_Gloves",
+      "snoId": "0x00250284",
+      "internalName": "S10_Pants_Unique_Druid_002_Gloves"
+    },
+    {
+      "displayName": "S10_Pants_Unique_Druid_002_Helm",
+      "snoId": "0x00250286",
+      "internalName": "S10_Pants_Unique_Druid_002_Helm"
+    },
+    {
+      "displayName": "S10_2HCrossbow_Unique_Rogue_100_Boots",
+      "snoId": "0x00250296",
+      "internalName": "S10_2HCrossbow_Unique_Rogue_100_Boots"
+    },
+    {
+      "displayName": "S10_2HCrossbow_Unique_Rogue_100_Chest",
+      "snoId": "0x0025032B",
+      "internalName": "S10_2HCrossbow_Unique_Rogue_100_Chest"
+    },
+    {
+      "displayName": "S10_2HCrossbow_Unique_Rogue_100_Gloves",
+      "snoId": "0x0025032F",
+      "internalName": "S10_2HCrossbow_Unique_Rogue_100_Gloves"
+    },
+    {
+      "displayName": "S10_2HCrossbow_Unique_Rogue_100_Helm",
+      "snoId": "0x00250333",
+      "internalName": "S10_2HCrossbow_Unique_Rogue_100_Helm"
+    },
+    {
+      "displayName": "S10_2HCrossbow_Unique_Rogue_100_Legs",
+      "snoId": "0x0025033A",
+      "internalName": "S10_2HCrossbow_Unique_Rogue_100_Legs"
+    },
+    {
+      "displayName": "S10_1HFocus_Unique_Necro_100_Boots",
+      "snoId": "0x00250341",
+      "internalName": "S10_1HFocus_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_1HFocus_Unique_Necro_100_Chest",
+      "snoId": "0x00250379",
+      "internalName": "S10_1HFocus_Unique_Necro_100_Chest"
+    },
+    {
+      "displayName": "S10_1HFocus_Unique_Necro_100_Gloves",
+      "snoId": "0x0025037F",
+      "internalName": "S10_1HFocus_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_1HFocus_Unique_Necro_100_Helm",
+      "snoId": "0x00250383",
+      "internalName": "S10_1HFocus_Unique_Necro_100_Helm"
+    },
+    {
+      "displayName": "S10_1HFocus_Unique_Necro_100_Legs",
+      "snoId": "0x00250386",
+      "internalName": "S10_1HFocus_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_102_Boots",
+      "snoId": "0x00250396",
+      "internalName": "S10_Ring_Unique_Sorc_102_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_102_Chest",
+      "snoId": "0x002503C4",
+      "internalName": "S10_Ring_Unique_Sorc_102_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_102_Gloves",
+      "snoId": "0x002503C7",
+      "internalName": "S10_Ring_Unique_Sorc_102_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_102_Helm",
+      "snoId": "0x002503C9",
+      "internalName": "S10_Ring_Unique_Sorc_102_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Sorc_102_Legs",
+      "snoId": "0x002503CB",
+      "internalName": "S10_Ring_Unique_Sorc_102_Legs"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Spiritborn_100_Boots",
+      "snoId": "0x002503CF",
+      "internalName": "S10_Gloves_Unique_Spiritborn_100_Boots"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Spiritborn_100_Chests",
+      "snoId": "0x002503DB",
+      "internalName": "S10_Gloves_Unique_Spiritborn_100_Chests"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Spiritborn_100_Gloves",
+      "snoId": "0x002503E0",
+      "internalName": "S10_Gloves_Unique_Spiritborn_100_Gloves"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Spiritborn_100_Helm",
+      "snoId": "0x002503E2",
+      "internalName": "S10_Gloves_Unique_Spiritborn_100_Helm"
+    },
+    {
+      "displayName": "S10_Gloves_Unique_Spiritborn_100_Legs",
+      "snoId": "0x002503E5",
+      "internalName": "S10_Gloves_Unique_Spiritborn_100_Legs"
+    },
+    {
+      "displayName": "1HShield_Unique_Paladin_002",
+      "snoId": "0x0025122A",
+      "internalName": "1HShield_Unique_Paladin_002"
+    },
+    {
+      "displayName": "Ring_Unique_Paladin_001",
+      "snoId": "0x0025127B",
+      "internalName": "Ring_Unique_Paladin_001"
+    },
+    {
+      "displayName": "1HShield_Unique_Paladin_003",
+      "snoId": "0x002516DE",
+      "internalName": "1HShield_Unique_Paladin_003"
+    },
+    {
+      "displayName": "Boots_Unique_Paladin_001",
+      "snoId": "0x002539A2",
+      "internalName": "Boots_Unique_Paladin_001"
+    },
+    {
+      "displayName": "1HSword_Unique_Paladin_001",
+      "snoId": "0x00253A6A",
+      "internalName": "1HSword_Unique_Paladin_001"
+    },
+    {
+      "displayName": "2HSword_Unique_Paladin_002",
+      "snoId": "0x0025527E",
+      "internalName": "2HSword_Unique_Paladin_002"
+    },
+    {
+      "displayName": "Helm_Unique_Paladin_002",
+      "snoId": "0x002554D9",
+      "internalName": "Helm_Unique_Paladin_002"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_100_Boots",
+      "snoId": "0x00256991",
+      "internalName": "S10_Amulet_Unique_Druid_100_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_100_Chest",
+      "snoId": "0x002569A5",
+      "internalName": "S10_Amulet_Unique_Druid_100_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_100_Gloves",
+      "snoId": "0x002569A7",
+      "internalName": "S10_Amulet_Unique_Druid_100_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_100_Helm",
+      "snoId": "0x002569A9",
+      "internalName": "S10_Amulet_Unique_Druid_100_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Druid_100_Legs",
+      "snoId": "0x002569AB",
+      "internalName": "S10_Amulet_Unique_Druid_100_Legs"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Necro_100_Boots",
+      "snoId": "0x002569BA",
+      "internalName": "S10_Chest_Unique_Necro_100_Boots"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Necro_100_Gloves",
+      "snoId": "0x002569C0",
+      "internalName": "S10_Chest_Unique_Necro_100_Gloves"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Necro_100_Helm",
+      "snoId": "0x002569C2",
+      "internalName": "S10_Chest_Unique_Necro_100_Helm"
+    },
+    {
+      "displayName": "S10_Chest_Unique_Necro_100_Legs",
+      "snoId": "0x00256CE3",
+      "internalName": "S10_Chest_Unique_Necro_100_Legs"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_101_Boots",
+      "snoId": "0x00256D03",
+      "internalName": "S10_Ring_Unique_Rogue_101_Boots"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_101_Chest",
+      "snoId": "0x00256D84",
+      "internalName": "S10_Ring_Unique_Rogue_101_Chest"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_101_Gloves",
+      "snoId": "0x00256D88",
+      "internalName": "S10_Ring_Unique_Rogue_101_Gloves"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_101_Helm",
+      "snoId": "0x00256D90",
+      "internalName": "S10_Ring_Unique_Rogue_101_Helm"
+    },
+    {
+      "displayName": "S10_Ring_Unique_Rogue_101_Legs",
+      "snoId": "0x00256D92",
+      "internalName": "S10_Ring_Unique_Rogue_101_Legs"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Sorc_100_Chest",
+      "snoId": "0x00256DED",
+      "internalName": "S10_Boots_Unique_Sorc_100_Chest"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Sorc_100_Gloves",
+      "snoId": "0x002570B2",
+      "internalName": "S10_Boots_Unique_Sorc_100_Gloves"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Sorc_100_Helm",
+      "snoId": "0x002570B4",
+      "internalName": "S10_Boots_Unique_Sorc_100_Helm"
+    },
+    {
+      "displayName": "S10_Boots_Unique_Sorc_100_Legs",
+      "snoId": "0x002570B8",
+      "internalName": "S10_Boots_Unique_Sorc_100_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Spiritborn_100_Boots",
+      "snoId": "0x002570DE",
+      "internalName": "S10_Amulet_Unique_Spiritborn_100_Boots"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Spiritborn_100_Chest",
+      "snoId": "0x0025724C",
+      "internalName": "S10_Amulet_Unique_Spiritborn_100_Chest"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Spiritborn_100_Gloves",
+      "snoId": "0x00257251",
+      "internalName": "S10_Amulet_Unique_Spiritborn_100_Gloves"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Spiritborn_100_Helm",
+      "snoId": "0x00257255",
+      "internalName": "S10_Amulet_Unique_Spiritborn_100_Helm"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Spiritborn_100_Legs",
+      "snoId": "0x0025725B",
+      "internalName": "S10_Amulet_Unique_Spiritborn_100_Legs"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_101_Boots",
+      "snoId": "0x002580F2",
+      "internalName": "S10_1HSword_Unique_Barb_101_Boots"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_101_Chest",
+      "snoId": "0x002581F8",
+      "internalName": "S10_1HSword_Unique_Barb_101_Chest"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_101_Gloves",
+      "snoId": "0x0025823E",
+      "internalName": "S10_1HSword_Unique_Barb_101_Gloves"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_101_Helm",
+      "snoId": "0x00258240",
+      "internalName": "S10_1HSword_Unique_Barb_101_Helm"
+    },
+    {
+      "displayName": "S10_1HSword_Unique_Barb_101_Legs",
+      "snoId": "0x00258243",
+      "internalName": "S10_1HSword_Unique_Barb_101_Legs"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Boots_V2",
+      "snoId": "0x0025827C",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Boots_V2"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Chest_V2",
+      "snoId": "0x00258283",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Chest_V2"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Gloves_V2",
+      "snoId": "0x00258289",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Gloves_V2"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Helm_V2",
+      "snoId": "0x0025828B",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Helm_V2"
+    },
+    {
+      "displayName": "S10_Amulet_Unique_Sorc_100_Legs_V2",
+      "snoId": "0x0025828D",
+      "internalName": "S10_Amulet_Unique_Sorc_100_Legs_V2"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_002_Boots_V2",
+      "snoId": "0x002582AF",
+      "internalName": "S10_2HStaff_Unique_Sorc_002_Boots_V2"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_002_Chest_V2",
+      "snoId": "0x002582B1",
+      "internalName": "S10_2HStaff_Unique_Sorc_002_Chest_V2"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_002_Gloves_V2",
+      "snoId": "0x002582B4",
+      "internalName": "S10_2HStaff_Unique_Sorc_002_Gloves_V2"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_002_Helm_V2",
+      "snoId": "0x002582B6",
+      "internalName": "S10_2HStaff_Unique_Sorc_002_Helm_V2"
+    },
+    {
+      "displayName": "S10_2HStaff_Unique_Sorc_002_Legs_V2",
+      "snoId": "0x002582B8",
+      "internalName": "S10_2HStaff_Unique_Sorc_002_Legs_V2"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Druid_100_Boots_V2",
+      "snoId": "0x002582D2",
+      "internalName": "S10_2HMace_Unique_Druid_100_Boots_V2"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Druid_100_Chest_V2",
+      "snoId": "0x002582D4",
+      "internalName": "S10_2HMace_Unique_Druid_100_Chest_V2"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Druid_100_Gloves_V2",
+      "snoId": "0x002582D6",
+      "internalName": "S10_2HMace_Unique_Druid_100_Gloves_V2"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Druid_100_Helm_V2",
+      "snoId": "0x002582D8",
+      "internalName": "S10_2HMace_Unique_Druid_100_Helm_V2"
+    },
+    {
+      "displayName": "S10_2HMace_Unique_Druid_100_Legs_V2",
+      "snoId": "0x002582DA",
+      "internalName": "S10_2HMace_Unique_Druid_100_Legs_V2"
+    },
+    {
+      "displayName": "Boots_Unique_Spiritborn_001",
+      "snoId": "0x0025914E",
+      "internalName": "Boots_Unique_Spiritborn_001"
+    },
+    {
+      "displayName": "1HMace_Unique_Sorc_100",
+      "snoId": "0x00259790",
+      "internalName": "1HMace_Unique_Sorc_100"
+    },
+    {
+      "displayName": "Boots_Unique_Druid_101",
+      "snoId": "0x00259FE1",
+      "internalName": "Boots_Unique_Druid_101"
+    },
+    {
+      "displayName": "1HMace_Unique_Necro_100",
+      "snoId": "0x0025AFF6",
+      "internalName": "1HMace_Unique_Necro_100"
+    },
+    {
+      "displayName": "1HFlail_Unique_Paladin_003",
+      "snoId": "0x0025B0D6",
+      "internalName": "1HFlail_Unique_Paladin_003"
+    },
+    {
+      "displayName": "1HShield_Unique_Paladin_004",
+      "snoId": "0x0025BB4B",
+      "internalName": "1HShield_Unique_Paladin_004"
+    },
+    {
+      "displayName": "1HShield_Unique_Paladin_005",
+      "snoId": "0x0025BFC9",
+      "internalName": "1HShield_Unique_Paladin_005"
+    },
+    {
+      "displayName": "Gloves_Unique_Paladin_003",
+      "snoId": "0x0025C1DA",
+      "internalName": "Gloves_Unique_Paladin_003"
+    },
+    {
+      "displayName": "Amulet_Unique_Paladin_002",
+      "snoId": "0x0025C7C1",
+      "internalName": "Amulet_Unique_Paladin_002"
+    },
+    {
+      "displayName": "1HSword_Unique_Paladin_002",
+      "snoId": "0x0025CBB1",
+      "internalName": "1HSword_Unique_Paladin_002"
+    },
+    {
+      "displayName": "Boots_Unique_Paladin_95",
+      "snoId": "0x0025CEE2",
+      "internalName": "Boots_Unique_Paladin_95"
+    },
+    {
+      "displayName": "Chest_Unique_Paladin_95",
+      "snoId": "0x0025CEE5",
+      "internalName": "Chest_Unique_Paladin_95"
+    },
+    {
+      "displayName": "Glove_Unique_Paladin_95",
+      "snoId": "0x0025CEE8",
+      "internalName": "Glove_Unique_Paladin_95"
+    },
+    {
+      "displayName": "Helm_Unique_Paladin_95",
+      "snoId": "0x0025CEEC",
+      "internalName": "Helm_Unique_Paladin_95"
+    },
+    {
+      "displayName": "Pants_Unique_Paladin_95",
+      "snoId": "0x0025CEEF",
+      "internalName": "Pants_Unique_Paladin_95"
+    },
+    {
+      "displayName": "2HAxe_Unique_Paladin_001",
+      "snoId": "0x0025D064",
+      "internalName": "2HAxe_Unique_Paladin_001"
+    },
+    {
+      "displayName": "Boots_Unique_Warlock_95",
+      "snoId": "0x0025D1B4",
+      "internalName": "Boots_Unique_Warlock_95"
+    },
+    {
+      "displayName": "Chest_Unique_Warlock_95",
+      "snoId": "0x0025D1B6",
+      "internalName": "Chest_Unique_Warlock_95"
+    },
+    {
+      "displayName": "Glove_Unique_Warlock_95",
+      "snoId": "0x0025D1B8",
+      "internalName": "Glove_Unique_Warlock_95"
+    },
+    {
+      "displayName": "Helm_Unique_Warlock_95",
+      "snoId": "0x0025D1BA",
+      "internalName": "Helm_Unique_Warlock_95"
+    },
+    {
+      "displayName": "Pants_Unique_Warlock_95",
+      "snoId": "0x0025D1BC",
+      "internalName": "Pants_Unique_Warlock_95"
+    },
+    {
+      "displayName": "Pants_Unique_Barb_101",
+      "snoId": "0x0025D35D",
+      "internalName": "Pants_Unique_Barb_101"
+    },
+    {
+      "displayName": "Chest_Unique_Paladin_001",
+      "snoId": "0x0025D428",
+      "internalName": "Chest_Unique_Paladin_001"
+    },
+    {
+      "displayName": "Ring_Unique_Paladin_002",
+      "snoId": "0x0025D677",
+      "internalName": "Ring_Unique_Paladin_002"
+    },
+    {
+      "displayName": "Pants_Unique_Paladin_002",
+      "snoId": "0x0025D6F8",
+      "internalName": "Pants_Unique_Paladin_002"
+    },
+    {
+      "displayName": "Amulet_Unique_Paladin_003",
+      "snoId": "0x00264FAA",
+      "internalName": "Amulet_Unique_Paladin_003"
+    },
+    {
+      "displayName": "Ring_Unique_Paladin_003",
+      "snoId": "0x002654B3",
+      "internalName": "Ring_Unique_Paladin_003"
+    },
+    {
+      "displayName": "1HFlail_Unique_Paladin_004",
+      "snoId": "0x00265A83",
+      "internalName": "1HFlail_Unique_Paladin_004"
+    },
+    {
+      "displayName": "S12_SH_TreasureHunterHunt_FakeItem_Unique_01",
+      "snoId": "0x002691E1",
+      "internalName": "S12_SH_TreasureHunterHunt_FakeItem_Unique_01"
+    },
+    {
+      "displayName": "Ring_Unique_Generic_103",
+      "snoId": "0x0026BC52",
+      "internalName": "Ring_Unique_Generic_103"
+    },
+    {
+      "displayName": "Gloves_Unique_Generic_005",
+      "snoId": "0x0026BD89",
+      "internalName": "Gloves_Unique_Generic_005"
+    },
+    {
+      "displayName": "1HAxe_Unique_Generic_003",
+      "snoId": "0x0026BD93",
+      "internalName": "1HAxe_Unique_Generic_003"
+    },
+    {
+      "displayName": "Ring_Unique_Warlock_001",
+      "snoId": "0x0026E047",
+      "internalName": "Ring_Unique_Warlock_001"
+    },
+    {
+      "displayName": "1HSword_Unique_Warlock_001",
+      "snoId": "0x0026E38C",
+      "internalName": "1HSword_Unique_Warlock_001"
+    },
+    {
+      "displayName": "2HSword_Unique_Warlock_001",
+      "snoId": "0x0026E38E",
+      "internalName": "2HSword_Unique_Warlock_001"
+    },
+    {
+      "displayName": "2HAxe_Unique_Warlock_001",
+      "snoId": "0x0026E392",
+      "internalName": "2HAxe_Unique_Warlock_001"
+    },
+    {
+      "displayName": "1HMace_Unique_Warlock_001",
+      "snoId": "0x0026E397",
+      "internalName": "1HMace_Unique_Warlock_001"
+    },
+    {
+      "displayName": "2HMace_Unique_Warlock_001",
+      "snoId": "0x0026E399",
+      "internalName": "2HMace_Unique_Warlock_001"
+    },
+    {
+      "displayName": "1HDagger_Unique_Warlock_001",
+      "snoId": "0x0026E39B",
+      "internalName": "1HDagger_Unique_Warlock_001"
+    },
+    {
+      "displayName": "1HFocus_Unique_Warlock_001",
+      "snoId": "0x0026E39E",
+      "internalName": "1HFocus_Unique_Warlock_001"
+    },
+    {
+      "displayName": "1HFlail_Unique_Warlock_001",
+      "snoId": "0x0026E3A0",
+      "internalName": "1HFlail_Unique_Warlock_001"
+    },
+    {
+      "displayName": "2HStaff_Unique_AF_001",
+      "snoId": "0x0026E4B6",
+      "internalName": "2HStaff_Unique_AF_001"
+    },
+    {
+      "displayName": "2HBow_Unique_AF_001",
+      "snoId": "0x0026E4BB",
+      "internalName": "2HBow_Unique_AF_001"
+    },
+    {
+      "displayName": "Ring_Unique_Warlock_002",
+      "snoId": "0x0026E590",
+      "internalName": "Ring_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Ring_Unique_Warlock_003",
+      "snoId": "0x0026E597",
+      "internalName": "Ring_Unique_Warlock_003"
+    },
+    {
+      "displayName": "Ring_Unique_Warlock_004",
+      "snoId": "0x0026E59B",
+      "internalName": "Ring_Unique_Warlock_004"
+    },
+    {
+      "displayName": "Ring_Unique_Warlock_005",
+      "snoId": "0x0026E59D",
+      "internalName": "Ring_Unique_Warlock_005"
+    },
+    {
+      "displayName": "Ring_Unique_Warlock_006",
+      "snoId": "0x0026E5A1",
+      "internalName": "Ring_Unique_Warlock_006"
+    },
+    {
+      "displayName": "Ring_Unique_Warlock_007",
+      "snoId": "0x0026E5A3",
+      "internalName": "Ring_Unique_Warlock_007"
+    },
+    {
+      "displayName": "Amulet_Unique_Warlock_001",
+      "snoId": "0x0026E5A7",
+      "internalName": "Amulet_Unique_Warlock_001"
+    },
+    {
+      "displayName": "Helm_Unique_Warlock_001",
+      "snoId": "0x0026E5AA",
+      "internalName": "Helm_Unique_Warlock_001"
+    },
+    {
+      "displayName": "Chest_Unique_Warlock_001",
+      "snoId": "0x0026E5AC",
+      "internalName": "Chest_Unique_Warlock_001"
+    },
+    {
+      "displayName": "Gloves_Unique_Warlock_001",
+      "snoId": "0x0026E5AE",
+      "internalName": "Gloves_Unique_Warlock_001"
+    },
+    {
+      "displayName": "Pants_Unique_Warlock_001",
+      "snoId": "0x0026E5B0",
+      "internalName": "Pants_Unique_Warlock_001"
+    },
+    {
+      "displayName": "Boots_Unique_Warlock_001",
+      "snoId": "0x0026E5B2",
+      "internalName": "Boots_Unique_Warlock_001"
+    },
+    {
+      "displayName": "Boots_Unique_Warlock_002",
+      "snoId": "0x0026E5D0",
+      "internalName": "Boots_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Chest_Unique_Warlock_002",
+      "snoId": "0x0026E5D3",
+      "internalName": "Chest_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Gloves_Unique_Warlock_002",
+      "snoId": "0x0026E5D5",
+      "internalName": "Gloves_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Gloves_Unique_Warlock_003",
+      "snoId": "0x0026E5D8",
+      "internalName": "Gloves_Unique_Warlock_003"
+    },
+    {
+      "displayName": "Gloves_Unique_Warlock_004",
+      "snoId": "0x0026E5DA",
+      "internalName": "Gloves_Unique_Warlock_004"
+    },
+    {
+      "displayName": "Helm_Unique_Warlock_002",
+      "snoId": "0x0026E5DC",
+      "internalName": "Helm_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Helm_Unique_Warlock_003",
+      "snoId": "0x0026E5DE",
+      "internalName": "Helm_Unique_Warlock_003"
+    },
+    {
+      "displayName": "Helm_Unique_Warlock_004",
+      "snoId": "0x0026E5E0",
+      "internalName": "Helm_Unique_Warlock_004"
+    },
+    {
+      "displayName": "Helm_Unique_Warlock_005",
+      "snoId": "0x0026E5E2",
+      "internalName": "Helm_Unique_Warlock_005"
+    },
+    {
+      "displayName": "Pants_Unique_Warlock_002",
+      "snoId": "0x0026E5E4",
+      "internalName": "Pants_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Pants_Unique_Warlock_003",
+      "snoId": "0x0026E5E6",
+      "internalName": "Pants_Unique_Warlock_003"
+    },
+    {
+      "displayName": "Pants_Unique_Warlock_004",
+      "snoId": "0x0026E5E8",
+      "internalName": "Pants_Unique_Warlock_004"
+    },
+    {
+      "displayName": "Amulet_Unique_Warlock_002",
+      "snoId": "0x0026E5EA",
+      "internalName": "Amulet_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Amulet_Unique_Warlock_003",
+      "snoId": "0x0026E5EC",
+      "internalName": "Amulet_Unique_Warlock_003"
+    },
+    {
+      "displayName": "Amulet_Unique_Warlock_004",
+      "snoId": "0x0026E5EE",
+      "internalName": "Amulet_Unique_Warlock_004"
+    },
+    {
+      "displayName": "1HFocus_Unique_Warlock_002",
+      "snoId": "0x0026E5F0",
+      "internalName": "1HFocus_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_100_x2",
+      "snoId": "0x00270F30",
+      "internalName": "Helm_Unique_Druid_100_x2"
+    },
+    {
+      "displayName": "1HSword_Unique_Warlock_002",
+      "snoId": "0x00270F45",
+      "internalName": "1HSword_Unique_Warlock_002"
+    },
+    {
+      "displayName": "Helm_Unique_Druid_101_x2",
+      "snoId": "0x00270F70",
+      "internalName": "Helm_Unique_Druid_101_x2"
+    },
+    {
+      "displayName": "Amulet_Unique_Spiritborn_101",
+      "snoId": "0x00272ED0",
+      "internalName": "Amulet_Unique_Spiritborn_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Spiritborn_102",
+      "snoId": "0x00272ED2",
+      "internalName": "Amulet_Unique_Spiritborn_102"
+    },
+    {
+      "displayName": "Amulet_Unique_Spiritborn_103",
+      "snoId": "0x00272EFB",
+      "internalName": "Amulet_Unique_Spiritborn_103"
+    },
+    {
+      "displayName": "Gloves_Unique_Druid_01_x2",
+      "snoId": "0x00273986",
+      "internalName": "Gloves_Unique_Druid_01_x2"
+    },
+    {
+      "displayName": "Boots_Unique_Druid_01_x2",
+      "snoId": "0x00273AB7",
+      "internalName": "Boots_Unique_Druid_01_x2"
+    },
+    {
+      "displayName": "1HTotem_Unique_Druid_01_x2",
+      "snoId": "0x00273C36",
+      "internalName": "1HTotem_Unique_Druid_01_x2"
+    },
+    {
+      "displayName": "2HScythe_Unique_AF_001",
+      "snoId": "0x00273C44",
+      "internalName": "2HScythe_Unique_AF_001"
+    },
+    {
+      "displayName": "2HScythe_Unique_AF_001_Powerup",
+      "snoId": "0x00273C4B",
+      "internalName": "2HScythe_Unique_AF_001_Powerup"
+    },
+    {
+      "displayName": "Chest_Unique_Druid_97_x2",
+      "snoId": "0x00273C57",
+      "internalName": "Chest_Unique_Druid_97_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_01_x2",
+      "snoId": "0x00273E5D",
+      "internalName": "Ring_Unique_Druid_01_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_02_x2",
+      "snoId": "0x00273EC7",
+      "internalName": "Ring_Unique_Druid_02_x2"
+    },
+    {
+      "displayName": "2HPolearm_Unique_AF_001",
+      "snoId": "0x00274088",
+      "internalName": "2HPolearm_Unique_AF_001"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_03_x2",
+      "snoId": "0x00274230",
+      "internalName": "Ring_Unique_Druid_03_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_04_x2",
+      "snoId": "0x002742F2",
+      "internalName": "Ring_Unique_Druid_04_x2"
+    },
+    {
+      "displayName": "1HShield_Unique_AF_001",
+      "snoId": "0x00274308",
+      "internalName": "1HShield_Unique_AF_001"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_05_x2",
+      "snoId": "0x00274332",
+      "internalName": "Ring_Unique_Druid_05_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_06_x2",
+      "snoId": "0x0027484E",
+      "internalName": "Ring_Unique_Druid_06_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Druid_07_x2",
+      "snoId": "0x0027485A",
+      "internalName": "Ring_Unique_Druid_07_x2"
+    },
+    {
+      "displayName": "2HMace_Unique_Druid_100_x2",
+      "snoId": "0x00274862",
+      "internalName": "2HMace_Unique_Druid_100_x2"
+    },
+    {
+      "displayName": "2HBow_Unique_Rogue_002_x2",
+      "snoId": "0x002760BC",
+      "internalName": "2HBow_Unique_Rogue_002_x2"
+    },
+    {
+      "displayName": "Gloves_Unique_Rogue_001_x2",
+      "snoId": "0x002760EB",
+      "internalName": "Gloves_Unique_Rogue_001_x2"
+    },
+    {
+      "displayName": "Gloves_Unique_Rogue_002_x2",
+      "snoId": "0x0027616E",
+      "internalName": "Gloves_Unique_Rogue_002_x2"
+    },
+    {
+      "displayName": "1HDagger_Unique_Rogue_003_x2",
+      "snoId": "0x00276181",
+      "internalName": "1HDagger_Unique_Rogue_003_x2"
+    },
+    {
+      "displayName": "1HSword_Unique_Rogue_001_x2",
+      "snoId": "0x002761A2",
+      "internalName": "1HSword_Unique_Rogue_001_x2"
+    },
+    {
+      "displayName": "Boots_Unique_Rogue_001_x2",
+      "snoId": "0x002764DB",
+      "internalName": "Boots_Unique_Rogue_001_x2"
+    },
+    {
+      "displayName": "Amulet_Unique_Barb_102_x2",
+      "snoId": "0x00276526",
+      "internalName": "Amulet_Unique_Barb_102_x2"
+    },
+    {
+      "displayName": "Amulet_Unique_Barb_103_x2",
+      "snoId": "0x00276531",
+      "internalName": "Amulet_Unique_Barb_103_x2"
+    },
+    {
+      "displayName": "Amulet_Unique_Barb_104_x2",
+      "snoId": "0x00276534",
+      "internalName": "Amulet_Unique_Barb_104_x2"
+    },
+    {
+      "displayName": "Amulet_Unique_Barb_105_x2",
+      "snoId": "0x00276536",
+      "internalName": "Amulet_Unique_Barb_105_x2"
+    },
+    {
+      "displayName": "Pants_Unique_Rogue_001_x2",
+      "snoId": "0x0027665B",
+      "internalName": "Pants_Unique_Rogue_001_x2"
+    },
+    {
+      "displayName": "1HDagger_Unique_Rogue_004_x2",
+      "snoId": "0x002767F3",
+      "internalName": "1HDagger_Unique_Rogue_004_x2"
+    },
+    {
+      "displayName": "Chest_Unique_Barb_102_x2",
+      "snoId": "0x00276C39",
+      "internalName": "Chest_Unique_Barb_102_x2"
+    },
+    {
+      "displayName": "Gloves_Unique_Barb_102_x2",
+      "snoId": "0x00276C3D",
+      "internalName": "Gloves_Unique_Barb_102_x2"
+    },
+    {
+      "displayName": "1HDagger_Unique_Sorc_100_x2",
+      "snoId": "0x002770DF",
+      "internalName": "1HDagger_Unique_Sorc_100_x2"
+    },
+    {
+      "displayName": "1HFocus_Unique_Sorc_102_x2",
+      "snoId": "0x00277124",
+      "internalName": "1HFocus_Unique_Sorc_102_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Generic_104_x2",
+      "snoId": "0x00277143",
+      "internalName": "Ring_Unique_Generic_104_x2"
+    },
+    {
+      "displayName": "Helm_Unique_Sorc_102_x2",
+      "snoId": "0x0027714F",
+      "internalName": "Helm_Unique_Sorc_102_x2"
+    },
+    {
+      "displayName": "2HStaff_Unique_Sorc_101_x2",
+      "snoId": "0x00277549",
+      "internalName": "2HStaff_Unique_Sorc_101_x2"
+    },
+    {
+      "displayName": "1HFocus_Unique_Sorc_103_x2",
+      "snoId": "0x00277592",
+      "internalName": "1HFocus_Unique_Sorc_103_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Sorc_103_x2",
+      "snoId": "0x00277679",
+      "internalName": "Ring_Unique_Sorc_103_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Generic_105_x2",
+      "snoId": "0x002776F6",
+      "internalName": "Ring_Unique_Generic_105_x2"
+    },
+    {
+      "displayName": "Amulet_Unique_Sorc_103_x2",
+      "snoId": "0x00277719",
+      "internalName": "Amulet_Unique_Sorc_103_x2"
+    },
+    {
+      "displayName": "Ring_Unique_Sorc_104_x2",
+      "snoId": "0x00277736",
+      "internalName": "Ring_Unique_Sorc_104_x2"
+    },
+    {
+      "displayName": "Gloves_Unique_Sorc_103_x2",
+      "snoId": "0x00277A7D",
+      "internalName": "Gloves_Unique_Sorc_103_x2"
+    },
+    {
+      "displayName": "Gloves_Unique_Sorc_102_x2",
+      "snoId": "0x00277A9D",
+      "internalName": "Gloves_Unique_Sorc_102_x2"
+    },
+    {
+      "displayName": "Gloves_Unique_Necro_103",
+      "snoId": "0x00277C1C",
+      "internalName": "Gloves_Unique_Necro_103"
+    },
+    {
+      "displayName": "Chest_Unique_Sorc_100_x2",
+      "snoId": "0x00277CCF",
+      "internalName": "Chest_Unique_Sorc_100_x2"
+    },
+    {
+      "displayName": "Gloves_Unique_Necro_104",
+      "snoId": "0x00277CF2",
+      "internalName": "Gloves_Unique_Necro_104"
+    },
+    {
+      "displayName": "Helm_Unique_Necro_101",
+      "snoId": "0x00277D3D",
+      "internalName": "Helm_Unique_Necro_101"
+    },
+    {
+      "displayName": "Ring_Unique_Necro_100_x2",
+      "snoId": "0x00277D58",
+      "internalName": "Ring_Unique_Necro_100_x2"
+    },
+    {
+      "displayName": "Boots_Unique_Sorc_101_x2",
+      "snoId": "0x00277DC7",
+      "internalName": "Boots_Unique_Sorc_101_x2"
+    },
+    {
+      "displayName": "Chest_Unique_Necro_101_x2",
+      "snoId": "0x0027805D",
+      "internalName": "Chest_Unique_Necro_101_x2"
+    },
+    {
+      "displayName": "Boots_Unique_Necro_102",
+      "snoId": "0x0027828F",
+      "internalName": "Boots_Unique_Necro_102"
+    },
+    {
+      "displayName": "Amulet_Unique_Necro_100_x2",
+      "snoId": "0x002782A7",
+      "internalName": "Amulet_Unique_Necro_100_x2"
+    },
+    {
+      "displayName": "1HShield_Unique_Necro_101",
+      "snoId": "0x002782C1",
+      "internalName": "1HShield_Unique_Necro_101"
+    },
+    {
+      "displayName": "Amulet_Unique_Necro_102",
+      "snoId": "0x002782CB",
+      "internalName": "Amulet_Unique_Necro_102"
+    },
+    {
+      "displayName": "Ring_Unique_Necro_102",
+      "snoId": "0x00278D92",
+      "internalName": "Ring_Unique_Necro_102"
+    },
+    {
+      "displayName": "Gloves_Unique_Necro_105",
+      "snoId": "0x00279D1F",
+      "internalName": "Gloves_Unique_Necro_105"
+    },
+    {
+      "displayName": "S12_1HSword_Unique_Barb_101",
+      "snoId": "0x0027B52B",
+      "internalName": "S12_1HSword_Unique_Barb_101"
+    },
+    {
+      "displayName": "S12_1HSword_Unique_Barb_103",
+      "snoId": "0x0027B52D",
+      "internalName": "S12_1HSword_Unique_Barb_103"
+    },
+    {
+      "displayName": "S12_1HSword_Unique_Generic_001",
+      "snoId": "0x0027B52F",
+      "internalName": "S12_1HSword_Unique_Generic_001"
+    },
+    {
+      "displayName": "S12_1HSword_Unique_Generic_100",
+      "snoId": "0x0027B531",
+      "internalName": "S12_1HSword_Unique_Generic_100"
+    },
+    {
+      "displayName": "S12_1HSword_Unique_Paladin_001",
+      "snoId": "0x0027B533",
+      "internalName": "S12_1HSword_Unique_Paladin_001"
+    },
+    {
+      "displayName": "S12_1HSword_Unique_Paladin_002",
+      "snoId": "0x0027B535",
+      "internalName": "S12_1HSword_Unique_Paladin_002"
+    },
+    {
+      "displayName": "S12_BSK_1HSword_Unique_Barbarian_001",
+      "snoId": "0x0027B53B",
+      "internalName": "S12_BSK_1HSword_Unique_Barbarian_001"
+    },
+    {
+      "displayName": "S12_BSK_1HSword_Unique_Generic_001",
+      "snoId": "0x0027B53D",
+      "internalName": "S12_BSK_1HSword_Unique_Generic_001"
+    },
+    {
+      "displayName": "S12_1HAxe_Unique_Druid_100",
+      "snoId": "0x0027B53F",
+      "internalName": "S12_1HAxe_Unique_Druid_100"
+    },
+    {
+      "displayName": "S12_1HAxe_Unique_Generic_001",
+      "snoId": "0x0027B541",
+      "internalName": "S12_1HAxe_Unique_Generic_001"
+    },
+    {
+      "displayName": "S12_1HAxe_Unique_Generic_003",
+      "snoId": "0x0027B543",
+      "internalName": "S12_1HAxe_Unique_Generic_003"
+    },
+    {
+      "displayName": "S12_2HSword_Unique_Barb_002",
+      "snoId": "0x0027B545",
+      "internalName": "S12_2HSword_Unique_Barb_002"
+    },
+    {
+      "displayName": "S12_2HSword_Unique_Generic_001",
+      "snoId": "0x0027B547",
+      "internalName": "S12_2HSword_Unique_Generic_001"
+    },
+    {
+      "displayName": "S12_2HSword_Unique_Necro_100",
+      "snoId": "0x0027B549",
+      "internalName": "S12_2HSword_Unique_Necro_100"
+    },
+    {
+      "displayName": "S12_2HSword_Unique_Paladin_002",
+      "snoId": "0x0027B54B",
+      "internalName": "S12_2HSword_Unique_Paladin_002"
+    },
+    {
+      "displayName": "S12_2HPolearm_Unique_Generic_001",
+      "snoId": "0x0027B54D",
+      "internalName": "S12_2HPolearm_Unique_Generic_001"
+    },
+    {
+      "displayName": "S12_1HDagger_Unique_Generic_001",
+      "snoId": "0x0027B54F",
+      "internalName": "S12_1HDagger_Unique_Generic_001"
+    },
+    {
+      "displayName": "S12_1HDagger_Unique_Rogue_001",
+      "snoId": "0x0027B551",
+      "internalName": "S12_1HDagger_Unique_Rogue_001"
+    },
+    {
+      "displayName": "S12_1HDagger_Unique_Rogue_002",
+      "snoId": "0x0027B553",
+      "internalName": "S12_1HDagger_Unique_Rogue_002"
+    },
+    {
+      "displayName": "S12_BSK_1HDagger_Unique_Necro_001",
+      "snoId": "0x0027B555",
+      "internalName": "S12_BSK_1HDagger_Unique_Necro_001"
+    },
+    {
+      "displayName": "S12_BSK_1HDagger_Unique_Rogue_001",
+      "snoId": "0x0027B557",
+      "internalName": "S12_BSK_1HDagger_Unique_Rogue_001"
+    },
+    {
+      "displayName": "1HSword_Unique_Generic_002",
+      "snoId": "0x0027BAD5",
+      "internalName": "1HSword_Unique_Generic_002"
+    },
+    {
+      "displayName": "Ring_Unique_Generic_106_x2",
+      "snoId": "0x002806E1",
+      "internalName": "Ring_Unique_Generic_106_x2"
+    }
+  ]
+}

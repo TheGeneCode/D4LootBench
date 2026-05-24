@@ -11,6 +11,7 @@ namespace D4Loot.Core.Models;
 [JsonDerivedType(typeof(ItemTypeCondition),      "itemType")]
 [JsonDerivedType(typeof(AffixCondition),         "affix")]
 [JsonDerivedType(typeof(OptionalAffixCondition), "optionalAffix")]
+[JsonDerivedType(typeof(SpecificUniqueCondition), "specificUnique")]
 [JsonDerivedType(typeof(UnknownCondition),       "unknown")]
 public abstract record Condition;
 
@@ -44,6 +45,9 @@ public sealed record AffixCondition(IReadOnlyList<uint> AffixIds, int MinimumCou
 
 /// <summary>Type 7 — affix hash IDs with OR semantics: matches if the item has any of the listed affixes.</summary>
 public sealed record OptionalAffixCondition(IReadOnlyList<uint> AffixIds) : Condition;
+
+/// <summary>Type 8 — matches specific named Unique items by sno ID.</summary>
+public sealed record SpecificUniqueCondition(IReadOnlyList<uint> UniqueIds) : Condition;
 
 /// <summary>Preserves raw bytes for condition types not yet mapped, enabling lossless round-trips.</summary>
 public sealed record UnknownCondition(int ConditionType, byte[] RawBytes) : Condition;
