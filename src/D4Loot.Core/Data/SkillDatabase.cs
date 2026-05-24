@@ -185,11 +185,10 @@ public static class SkillDatabase
 
     public static IReadOnlyList<SkillEntry> Sorcerer { get; } =
     [
-        // Basic (CoreTOC stores these as Basic_1..4; display names not derivable from data alone)
-        new("Basic Skill 1",         0x001D674B, "Sorcerer", InGameVerified: false),
-        new("Basic Skill 2",         0x001D674D, "Sorcerer", InGameVerified: false),
-        new("Basic Skill 3",         0x001D6750, "Sorcerer", InGameVerified: false),
-        new("Basic Skill 4",         0x001D6752, "Sorcerer", InGameVerified: false),
+        new("Spark",                 0x001D674B, "Sorcerer", InGameVerified: true),
+        new("Fire Bolt",             0x001D674D, "Sorcerer", InGameVerified: true),
+        new("Frost Bolt",            0x001D6750, "Sorcerer", InGameVerified: true),
+        new("Arc Lash",              0x001D6752, "Sorcerer", InGameVerified: true),
         // Core
         new("Fireball",              0x001D673F, "Sorcerer", InGameVerified: false),
         new("Ice Shards",            0x001D6741, "Sorcerer", InGameVerified: false),
