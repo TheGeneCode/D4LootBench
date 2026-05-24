@@ -49,8 +49,8 @@ Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-
 ## Attribution Required (Before Public Release)
 - **Upsilon72/d4-filter-generator** (MIT) — original protobuf wire format reverse engineering, condition type encoding, affix hash IDs
 - **fnuecke/diablo4-loot-filter-viewer** (Unlicense/public domain) — complete `.proto` field layout, all 10 condition type semantics, `names.json` ID lookup
-- **DiabloTools/d4data** (⚠️ verify license) — `CoreTOC_flat.json`, authoritative datamined ID tables for all skills, item types, and affixes
-- **d4lfteam/d4lf** (⚠️ verify license) — affix name reference database
+- **DiabloTools/d4data** (MIT) — `CoreTOC_flat.json`, authoritative datamined ID tables for all skills, item types, and affixes
+- **d4lfteam/d4lf** (MIT) — affix name reference database
 - **Raxx** (filter author) — real-world filter export used to validate and extend the spec
 - Must appear in app About dialog and README. See `docs/filter-format.md` for full wording and license status.
 
@@ -61,7 +61,7 @@ Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-
   - `FilterCodec.Encode()` / `FilterCodec.Decode()` — bidirectional, lossless round-trip for all condition types
   - `AffixDatabase` (63 entries), `SkillDatabase` (all 9 classes, ~200 entries), `ItemTypeDatabase` (25 types), `FilterColors`
   - 15 unit tests passing, 0 warnings
-  - Attribution sources confirmed; two license checks pending before public release
+  - Attribution sources confirmed; all licenses verified
 
 ## What's Next
 - **Phase 2** — WPF shell: main window + JSON editor tab (AvalonEdit, round-trip import/export), then rule list and rule editor panel

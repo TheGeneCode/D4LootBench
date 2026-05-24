@@ -28,14 +28,14 @@ public sealed class FilterCodecTests
         var rule = new FilterRule(
             "Hide Junk",
             Visibility.HideAll,
-            FilterColors.Default,
+            FilterColors.Blue,
             [new RarityCondition(RarityFlags.Common | RarityFlags.Magic | RarityFlags.Rare)]
         );
         var decoded = FilterCodec.Decode(FilterCodec.Encode(new FilterRuleset("Test", [rule]))).Rules[0];
 
         decoded.Name.ShouldBe("Hide Junk");
         decoded.Visibility.ShouldBe(Visibility.HideAll);
-        decoded.Color.ShouldBe(FilterColors.Default);
+        decoded.Color.ShouldBe(FilterColors.Blue);
         decoded.IsEnabled.ShouldBeTrue();
     }
 
@@ -43,7 +43,7 @@ public sealed class FilterCodecTests
     public void Encode_ThenDecode_PreservesRarityCondition()
     {
         const RarityFlags mask = RarityFlags.Rare | RarityFlags.Legendary | RarityFlags.Unique;
-        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Default,
+        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Blue,
             [new RarityCondition(mask)]));
 
         decoded.Conditions.Count.ShouldBe(1);
@@ -84,7 +84,7 @@ public sealed class FilterCodecTests
     public void Encode_ThenDecode_PreservesItemTypeCondition()
     {
         uint[] typeIds = [0x00237e80u, 0x0022ed05u];
-        var decoded = RoundTripRule(new FilterRule("Talismans", Visibility.Show, FilterColors.Default,
+        var decoded = RoundTripRule(new FilterRule("Talismans", Visibility.Show, FilterColors.Blue,
             [new ItemTypeCondition(typeIds)]));
 
         decoded.Conditions[0].ShouldBeOfType<ItemTypeCondition>().TypeIds.ShouldBe(typeIds);
@@ -105,7 +105,7 @@ public sealed class FilterCodecTests
     [Fact]
     public void Encode_ThenDecode_PreservesItemPowerCondition()
     {
-        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Default,
+        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Blue,
             [new ItemPowerCondition(700, 925)]));
 
         var result = decoded.Conditions[0].ShouldBeOfType<ItemPowerCondition>();
@@ -116,7 +116,7 @@ public sealed class FilterCodecTests
     [Fact]
     public void Encode_ThenDecode_PreservesItemPropertiesCondition()
     {
-        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Default,
+        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Blue,
             [new ItemPropertiesCondition(4)]));
 
         decoded.Conditions[0].ShouldBeOfType<ItemPropertiesCondition>().PropertyMask.ShouldBe(4);
@@ -126,7 +126,7 @@ public sealed class FilterCodecTests
     public void Encode_ThenDecode_PreservesOptionalAffixCondition()
     {
         uint[] affixIds = [AffixDatabase.ByName["Critical Strike Chance"], AffixDatabase.ByName["Maximum Life"]];
-        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Default,
+        var decoded = RoundTripRule(new FilterRule("Test", Visibility.Show, FilterColors.Blue,
             [new OptionalAffixCondition(affixIds)]));
 
         decoded.Conditions[0].ShouldBeOfType<OptionalAffixCondition>().AffixIds.ShouldBe(affixIds);
@@ -167,8 +167,8 @@ public sealed class FilterCodecTests
 
     private static FilterRuleset SimpleRuleset(string name) => new(name,
     [
-        new FilterRule("Show All",  Visibility.Show,    FilterColors.Default, [new RarityCondition(RarityFlags.All)]),
-        new FilterRule("Hide Junk", Visibility.HideAll, FilterColors.Default, [new RarityCondition(RarityFlags.Common | RarityFlags.Magic)])
+        new FilterRule("Show All",  Visibility.Show,    FilterColors.Blue, [new RarityCondition(RarityFlags.All)]),
+        new FilterRule("Hide Junk", Visibility.HideAll, FilterColors.Blue, [new RarityCondition(RarityFlags.Common | RarityFlags.Magic)])
     ]);
 
     private static FilterRuleset BuildGenericCritRuleset()
@@ -190,9 +190,9 @@ public sealed class FilterCodecTests
 
         return new FilterRuleset("Generic Crit",
         [
-            new FilterRule("Legendary Talismans",      Visibility.Show,    FilterColors.Default,
+            new FilterRule("Legendary Talismans",      Visibility.Show,    FilterColors.Blue,
                 [new RarityCondition(RarityFlags.LegendaryPlus), new ItemTypeCondition([0x00237e80, 0x0022ed05])]),
-            new FilterRule("Hide Junk",                Visibility.HideAll, FilterColors.Default,
+            new FilterRule("Hide Junk",                Visibility.HideAll, FilterColors.Blue,
                 [new RarityCondition(RarityFlags.Common | RarityFlags.Magic | RarityFlags.Rare)]),
             new FilterRule("Check Rare - Build Affix", Visibility.Recolor, FilterColors.Orange,
                 [new RarityCondition(RarityFlags.Rare), new AffixCondition(allIds, 1)]),
@@ -204,7 +204,7 @@ public sealed class FilterCodecTests
                 [new RarityCondition(RarityFlags.LegendaryPlus)]),
             new FilterRule("Greater Affix - Loot",     Visibility.Recolor, FilterColors.Cyan,
                 [new GreaterAffixCondition(1)]),
-            new FilterRule("Show All - Catch All",     Visibility.Show,    FilterColors.Default,
+            new FilterRule("Show All - Catch All",     Visibility.Show,    FilterColors.Blue,
                 [new RarityCondition(RarityFlags.All)]),
         ]);
     }

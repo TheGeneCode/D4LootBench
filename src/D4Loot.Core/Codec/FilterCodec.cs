@@ -49,7 +49,8 @@ public static class FilterCodec
         var buf = new List<byte>();
         buf.AddRange(ProtoWriter.StringField(1, rule.Name));
         buf.AddRange(ProtoWriter.VarintField(2, (ulong)rule.Visibility));
-        buf.AddRange(ProtoWriter.Fixed32Field(3, rule.Color));
+        if (rule.Color != 0)
+            buf.AddRange(ProtoWriter.Fixed32Field(3, rule.Color));
         foreach (var cond in rule.Conditions)
             buf.AddRange(ProtoWriter.LenField(4, EncodeCondition(cond)));
         buf.AddRange(ProtoWriter.VarintField(5, rule.IsEnabled ? 1UL : 0UL));
@@ -62,7 +63,7 @@ public static class FilterCodec
 
         var name = "";
         var visibility = Visibility.Show;
-        var color = 0xFFFF0000u;
+        var color = 0u;
         var conditions = new List<Condition>();
         var isEnabled = true;
 

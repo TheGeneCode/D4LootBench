@@ -4,17 +4,18 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using D4Loot.App.Utilities;
+using D4Loot.App.Views;
 using D4Loot.Core.Data;
 using D4Loot.Core.Models;
 
 namespace D4Loot.App.ViewModels;
 
 /// <summary>A named color entry used in the color swatch palette.</summary>
-public sealed class NamedColor(string name, uint abgr)
+public sealed class NamedColor(string name, uint argb)
 {
     public string          Name  { get; } = name;
-    public uint            Abgr  { get; } = abgr;
-    public SolidColorBrush Brush { get; } = new(ColorUtility.AbgrToWpf(abgr));
+    public uint            Argb  { get; } = argb;
+    public SolidColorBrush Brush { get; } = new(ColorUtility.ArgbToWpf(argb));
 }
 
 public partial class FilterRuleViewModel : ObservableObject
@@ -22,12 +23,18 @@ public partial class FilterRuleViewModel : ObservableObject
     private readonly Func<FilterRuleViewModel, IEnumerable<uint>> _getPeerColors;
     private SolidColorBrush? _wpfBrush;
 
-    [ObservableProperty] private string     _name;
-    [ObservableProperty] private Visibility _visibility;
-    [ObservableProperty] private bool       _isEnabled;
+    [ObservableProperty] private string _name;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsRecolor))]
+    [NotifyPropertyChangedFor(nameof(DisplayBrush))]
+    private Visibility _visibility;
+
+    [ObservableProperty] private bool _isEnabled;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(WpfBrush))]
+    [NotifyPropertyChangedFor(nameof(DisplayBrush))]
     [NotifyPropertyChangedFor(nameof(ColorHex))]
     private uint _color;
 
@@ -35,7 +42,8 @@ public partial class FilterRuleViewModel : ObservableObject
 
     public static IReadOnlyList<NamedColor> StandardColors { get; } =
     [
-        new("Blue (Default)", FilterColors.Default),
+        new("Game Default",   FilterColors.GameDefault),
+        new("Blue",           FilterColors.Blue),
         new("Cyan",           FilterColors.Cyan),
         new("Green",          FilterColors.Green),
         new("Orange",         FilterColors.Orange),
@@ -44,22 +52,35 @@ public partial class FilterRuleViewModel : ObservableObject
 
     public static Visibility[] VisibilityValues { get; } = Enum.GetValues<Visibility>();
 
+    public bool IsRecolor => Visibility == Visibility.Recolor;
+
+    private static readonly SolidColorBrush GameDefaultBrush =
+        new(ColorUtility.ArgbToWpf(FilterColors.GameDefault));
+
+    public SolidColorBrush DisplayBrush => IsRecolor ? WpfBrush : GameDefaultBrush;
+
     public SolidColorBrush WpfBrush
     {
         get
         {
-            _wpfBrush ??= new SolidColorBrush(ColorUtility.AbgrToWpf(Color));
+            _wpfBrush ??= new SolidColorBrush(ColorUtility.ArgbToWpf(Color));
             return _wpfBrush;
         }
     }
 
     public string ColorHex
     {
-        get => Color.ToString("X8");
+        // Display as 6-char RRGGBB to match the in-game color picker format (alpha omitted, always FF).
+        get => $"{Color >> 16 & 0xFF:X2}{Color >> 8 & 0xFF:X2}{Color & 0xFF:X2}";
         set
         {
-            if (uint.TryParse(value, NumberStyles.HexNumber, null, out var parsed))
-                Color = parsed;
+            var s = value.TrimStart('#');
+            Color = s.Length switch
+            {
+                6 when uint.TryParse(s, NumberStyles.HexNumber, null, out var rgb)  => 0xFF000000u | rgb,
+                8 when uint.TryParse(s, NumberStyles.HexNumber, null, out var argb) => argb,
+                _ => Color
+            };
         }
     }
 
@@ -83,7 +104,19 @@ public partial class FilterRuleViewModel : ObservableObject
     partial void OnColorChanging(uint value) => _wpfBrush = null;
 
     [RelayCommand]
-    private void SelectColor(uint abgr) => Color = abgr;
+    private void SelectColor(uint argb) => Color = argb;
+
+    // ReSharper disable once UnusedMember.Local — called by generated PickColorCommand
+    [RelayCommand]
+    private void PickColor()
+    {
+        var dialog = new ColorPickerDialog(Color == 0 ? FilterColors.Gold : Color)
+        {
+            Owner = System.Windows.Application.Current.MainWindow
+        };
+        if (dialog.ShowDialog() == true)
+            Color = dialog.ResultColor;
+    }
 
     [RelayCommand]
     private void GenerateDistinctColor() =>

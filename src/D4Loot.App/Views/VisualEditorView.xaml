@@ -36,7 +36,7 @@
                     <DataTemplate DataType="{x:Type vm:FilterRuleViewModel}">
                         <DockPanel Margin="4,2" LastChildFill="True">
                             <Rectangle Width="10" Height="10" Margin="0,0,5,0"
-                                       Fill="{Binding WpfBrush}"
+                                       Fill="{Binding DisplayBrush}"
                                        Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                                        StrokeThickness="0.5"
                                        DockPanel.Dock="Left" VerticalAlignment="Center" />
@@ -108,53 +108,62 @@
                                           HorizontalAlignment="Left" />
                             </DockPanel>
 
-                            <!-- Color label -->
-                            <Label Content="Color" Padding="0,0,0,2" />
+                            <!-- Color section — only active when Visibility = Recolor -->
+                            <StackPanel IsEnabled="{Binding IsRecolor}">
+                                <Label Content="Color" Padding="0,0,0,2" />
 
-                            <!-- Swatch palette + Suggest button -->
-                            <WrapPanel Margin="0,0,0,6">
-                                <ItemsControl ItemsSource="{x:Static vm:FilterRuleViewModel.StandardColors}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type vm:NamedColor}">
-                                            <Button Command="{Binding DataContext.SelectColorCommand,
-                                                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding Abgr}"
-                                                    ToolTip="{Binding Name}"
-                                                    Padding="2" Margin="0,0,3,0"
-                                                    Width="30" Height="30">
-                                                <Rectangle Fill="{Binding Brush}" />
-                                            </Button>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                <!-- Swatch palette + Suggest button -->
+                                <WrapPanel Margin="0,0,0,6">
+                                    <ItemsControl ItemsSource="{x:Static vm:FilterRuleViewModel.StandardColors}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type vm:NamedColor}">
+                                                <Button Command="{Binding DataContext.SelectColorCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding Argb}"
+                                                        ToolTip="{Binding Name}"
+                                                        Padding="2" Margin="0,0,3,0"
+                                                        Width="30" Height="30"
+                                                        HorizontalContentAlignment="Stretch"
+                                                        VerticalContentAlignment="Stretch">
+                                                    <Rectangle Fill="{Binding Brush}" />
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
 
-                                <Button Content="Suggest"
-                                        Command="{Binding GenerateDistinctColorCommand}"
-                                        ToolTip="Generate a color visually distinct from all other rule colors"
-                                        Padding="8,2" Margin="6,0,0,0"
-                                        VerticalAlignment="Center" />
-                            </WrapPanel>
+                                    <Button Content="Suggest"
+                                            Command="{Binding GenerateDistinctColorCommand}"
+                                            ToolTip="Generate a color visually distinct from all other rule colors"
+                                            Padding="8,2" Margin="6,0,0,0"
+                                            VerticalAlignment="Center" />
+                                    <Button Content="Pick…"
+                                            Command="{Binding PickColorCommand}"
+                                            ToolTip="Open color picker"
+                                            Padding="8,2" Margin="6,0,0,0"
+                                            VerticalAlignment="Center" />
+                                </WrapPanel>
 
-                            <!-- Current color preview + ABGR hex -->
-                            <DockPanel Margin="0,0,0,14">
-                                <Rectangle Width="28" Height="28"
-                                           Fill="{Binding WpfBrush}"
-                                           Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                                           StrokeThickness="0.5"
-                                           DockPanel.Dock="Left" Margin="0,0,8,0" />
-                                <Label Content="ABGR hex:"
-                                       VerticalAlignment="Center"
-                                       Padding="0,0,6,0"
-                                       DockPanel.Dock="Left" />
-                                <TextBox Text="{Binding ColorHex, UpdateSourceTrigger=LostFocus}"
-                                         FontFamily="Cascadia Code, Consolas, Courier New"
-                                         MaxLength="8" Width="90"
-                                         VerticalAlignment="Center"
-                                         HorizontalAlignment="Left" />
-                            </DockPanel>
+                                <!-- Current color preview + ABGR hex -->
+                                <DockPanel Margin="0,0,0,14">
+                                    <Rectangle Width="28" Height="28"
+                                               Fill="{Binding WpfBrush}"
+                                               Stroke="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                                               StrokeThickness="0.5"
+                                               DockPanel.Dock="Left" Margin="0,0,8,0" />
+                                    <Label Content="RGB hex:"
+                                           VerticalAlignment="Center"
+                                           Padding="0,0,6,0"
+                                           DockPanel.Dock="Left" />
+                                    <TextBox Text="{Binding ColorHex, UpdateSourceTrigger=LostFocus}"
+                                             FontFamily="Cascadia Code, Consolas, Courier New"
+                                             MaxLength="8" Width="90"
+                                             VerticalAlignment="Center"
+                                             HorizontalAlignment="Left" />
+                                </DockPanel>
+                            </StackPanel>
 
                             <Separator Margin="0,0,0,10" />
 

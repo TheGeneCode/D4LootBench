@@ -9,12 +9,12 @@ credited in any public release of D4Loot:
 |--------|---------|-------------|
 | [Upsilon72/d4-filter-generator](https://github.com/Upsilon72/d4-filter-generator) | MIT | Original protobuf wire format reverse engineering; affix hash IDs; condition type encoding (Season 13) |
 | [fnuecke/diablo4-loot-filter-viewer](https://github.com/fnuecke/diablo4-loot-filter-viewer) | Unlicense (public domain) | Complete `.proto` field layout; condition type semantics for all 10 types; `names.json` ID lookup table |
-| [DiabloTools/d4data](https://github.com/DiabloTools/d4data) | ⚠️ verify before release | `CoreTOC_flat.json` — authoritative datamined ID tables for all skills, item types, and affixes (build 3.0.2.71886, May 2026) |
-| [d4lfteam/d4lf](https://github.com/d4lfteam/d4lf) | ⚠️ verify before release | Affix name reference database |
+| [DiabloTools/d4data](https://github.com/DiabloTools/d4data) | MIT | `CoreTOC_flat.json` — authoritative datamined ID tables for all skills, item types, and affixes (build 3.0.2.71886, May 2026) |
+| [d4lfteam/d4lf](https://github.com/d4lfteam/d4lf) | MIT | Affix name reference database |
 | Raxx (filter author) | N/A | Real-world filter export used to validate and extend the format spec |
 
 > **TODO before public release:**
-> - Verify DiabloTools/d4data and d4lfteam/d4lf licenses and confirm attribution wording is acceptable with their maintainers
+> - Confirm attribution wording is acceptable with DiabloTools/d4data and d4lfteam/d4lf maintainers
 > - Note: DiabloTools/d4data extracts Blizzard game assets — confirm community norm on crediting datamined data vs. the extraction tooling
 > - Add attribution to the app's About dialog and README
 
@@ -65,7 +65,7 @@ Fields are NOT in field-number order in the binary. Rules come first, then name/
 |-------|---|------|------|-------|
 | name     | 1 | LEN    | string | Rule label shown in game |
 | visibility | 2 | VARINT | Visibility | 0=SHOW, 2=RECOLOR, 3=HIDE_ALL |
-| color    | 3 | FIXED32 | uint32 | ABGR packed; `0xFFFF0000` = default red |
+| color    | 3 | FIXED32 | uint32 | ARGB packed; `0xFFE82222` = red; omitted → game default |
 | conditions | 4 | LEN  | Condition[] | Repeated; one per condition |
 | enabled  | 5 | VARINT | bool | Always `1` (true) |
 
@@ -76,20 +76,27 @@ RECOLOR  = 2  — item is visible with tint applied
 HIDE_ALL = 3  — item is hidden entirely
 ```
 
-### Color Format (ABGR packed uint32, little-endian)
+### Color Format (ARGB packed uint32, little-endian)
+
+The in-game color picker displays colors as 6-char RGB hex (e.g. `E82222`).
+The binary stores the full ARGB uint32; alpha is always `0xFF`.
+
 ```csharp
-uint MakeColor(byte r, byte g, byte b, byte a = 255)
-    => (uint)((a << 24) | (b << 16) | (g << 8) | r);
+uint PackColor(byte r, byte g, byte b, byte a = 255)
+    => (uint)((a << 24) | (r << 16) | (g << 8) | b);
 ```
 
 Known color constants:
 | Name | Value | RGB |
 |------|-------|-----|
-| Default (red) | `0xFFFF0000` | 0, 0, 255 — wait, this is ABGR so: R=0x00, G=0x00, B=0xFF |
-| Cyan  | `makeColor(0,255,255)` → `0xFFFFFF00` | (0,255,255) |
-| Green | `makeColor(0,200,0)` → `0xFF00C800` | (0,200,0) |
-| Orange | `makeColor(255,140,0)` → `0xFF008CFF` | (255,140,0) |
-| Gold  | `makeColor(255,215,0)` → `0xFF00D7FF` | (255,215,0) |
+| Blue   | `0xFF0000FF` | (0, 0, 255) |
+| Cyan   | `0xFF00FFFF` | (0, 255, 255) |
+| Green  | `0xFF00C800` | (0, 200, 0) |
+| Orange | `0xFFFF8C00` | (255, 140, 0) |
+| Gold   | `0xFFFFD700` | (255, 215, 0) |
+
+> **Note:** field 3 is omitted when the rule has no color override (game renders native item color).
+> `0` is the sentinel value in the model; the encoder skips field 3 when `Color == 0`.
 
 ---
 
