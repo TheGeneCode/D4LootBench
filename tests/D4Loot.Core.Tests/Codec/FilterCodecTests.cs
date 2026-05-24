@@ -150,6 +150,55 @@ public sealed class FilterCodecTests
         result.UniqueIds.ShouldBe(uniqueIds);
     }
 
+    [Fact]
+    public void Decode_TalismanSetCondition_RealSample()
+    {
+        // Single-rule filter: one type-9 condition with Berserker's Crucible set (0x0022fb41)
+        // and one set item Beru of the Crucible (0x002506e2).
+        const string code = "Ch4QAB0AAP//IhMICRVB+yIAGgoNQfsiABXiBiUAKAESEVRhaWxzbWFuIFNldCBsaXN0GAcgAQ==";
+        var ruleset = FilterCodec.Decode(code);
+
+        var cond = ruleset.Rules[0].Conditions
+            .OfType<TalismanSetCondition>()
+            .ShouldHaveSingleItem();
+
+        cond.SetIds.ShouldHaveSingleItem();
+        cond.SetIds[0].ShouldBe(0x0022fb41u);
+
+        cond.SetEntries.ShouldHaveSingleItem();
+        cond.SetEntries[0].SetId.ShouldBe(0x0022fb41u);
+        cond.SetEntries[0].ItemId.ShouldBe(0x002506e2u);
+    }
+
+    [Fact]
+    public void Encode_ThenDecode_PreservesTalismanSetCondition_Empty()
+    {
+        // CAk= is the Raxx "Set Charms (SELECT)" placeholder — type 9, no IDs
+        var decoded = RoundTripRule(new FilterRule("Set", Visibility.Show, FilterColors.Blue,
+            [new TalismanSetCondition()]));
+
+        var result = decoded.Conditions[0].ShouldBeOfType<TalismanSetCondition>();
+        result.SetIds.ShouldBeEmpty();
+        result.SetEntries.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Encode_ThenDecode_PreservesTalismanSetCondition_WithIds()
+    {
+        var cond = new TalismanSetCondition
+        {
+            SetIds     = [0x00112233, 0x00445566],
+            SetEntries = [new TalismanSetEntry(0x00112233, 0x00aabbcc)]
+        };
+        var decoded = RoundTripRule(new FilterRule("Set", Visibility.Show, FilterColors.Blue, [cond]));
+
+        var result = decoded.Conditions[0].ShouldBeOfType<TalismanSetCondition>();
+        result.SetIds.ShouldBe(cond.SetIds);
+        result.SetEntries.Count.ShouldBe(1);
+        result.SetEntries[0].SetId.ShouldBe(0x00112233u);
+        result.SetEntries[0].ItemId.ShouldBe(0x00aabbccu);
+    }
+
     // ── Encode produces valid Base64 ──────────────────────────────────────
 
     [Fact]

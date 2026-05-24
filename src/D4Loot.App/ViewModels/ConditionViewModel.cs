@@ -18,6 +18,7 @@ public sealed class ConditionViewModel
         AffixCondition          => "Required Affixes",
         OptionalAffixCondition  => "Optional Affixes",
         SpecificUniqueCondition => "Specific Unique",
+        TalismanSetCondition    => "Talisman Set",
         UnknownCondition u      => $"Unknown ({u.ConditionType})",
         _                       => "Unknown"
     };
@@ -33,11 +34,14 @@ public sealed class ConditionViewModel
         AffixCondition a           => $"min {a.MinimumCount} of {a.AffixIds.Count}",
         OptionalAffixCondition oa  => oa.MinimumCount > 0 ? $"min {oa.MinimumCount} of {oa.AffixIds.Count}" : $"any of {oa.AffixIds.Count}",
         SpecificUniqueCondition su => $"{su.UniqueIds.Count} unique{(su.UniqueIds.Count == 1 ? "" : "s")}",
+        TalismanSetCondition ts    => ts.SetIds.Count == 0 && ts.SetEntries.Count == 0
+                                        ? "any set"
+                                        : $"{ts.SetIds.Count} set{(ts.SetIds.Count == 1 ? "" : "s")}",
         UnknownCondition u         => $"{u.RawBytes.Length} raw byte(s)",
         _                          => ""
     };
 
-    public bool HasItems => Model is ItemTypeCondition or AffixCondition or OptionalAffixCondition or SpecificUniqueCondition;
+    public bool HasItems => Model is ItemTypeCondition or AffixCondition or OptionalAffixCondition or SpecificUniqueCondition or TalismanSetCondition;
 
     public IReadOnlyList<string> Items => Model switch
     {
@@ -45,6 +49,7 @@ public sealed class ConditionViewModel
         AffixCondition a           => a.AffixIds.Select(LookupName).ToList(),
         OptionalAffixCondition oa  => oa.AffixIds.Select(LookupName).ToList(),
         SpecificUniqueCondition su => su.UniqueIds.Select(LookupUniqueName).ToList(),
+        TalismanSetCondition ts    => ts.SetIds.Select(TalismanSetDatabase.GetSetName).ToList(),
         _                          => []
     };
 

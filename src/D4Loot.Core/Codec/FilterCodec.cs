@@ -191,6 +191,18 @@ public static class FilterCodec
                 foreach (var id in su.UniqueIds)
                     buf.AddRange(ProtoWriter.Fixed32Field(2, id));
                 break;
+            case TalismanSetCondition ts:
+                buf.AddRange(ProtoWriter.VarintField(1, 9));
+                foreach (var id in ts.SetIds)
+                    buf.AddRange(ProtoWriter.Fixed32Field(2, id));
+                foreach (var se in ts.SetEntries)
+                {
+                    var inner = new List<byte>();
+                    inner.AddRange(ProtoWriter.Fixed32Field(1, se.SetId));
+                    inner.AddRange(ProtoWriter.Fixed32Field(2, se.ItemId));
+                    buf.AddRange(ProtoWriter.LenField(3, [.. inner]));
+                }
+                break;
             case UnknownCondition u:
                 buf.AddRange(u.RawBytes);
                 break;
@@ -264,6 +276,11 @@ public static class FilterCodec
             6 => new AffixCondition(ids, (int)field4) { GreaterEntries = greaterEntries, Field5 = (int)field5 },
             7 => new OptionalAffixCondition(ids, (int)field4) { GreaterEntries = greaterEntries, Field5 = (int)field5 },
             8 => new SpecificUniqueCondition(ids),
+            9 => new TalismanSetCondition
+            {
+                SetIds = ids,
+                SetEntries = greaterEntries.Select(e => new TalismanSetEntry(e.AffixId, e.Value)).ToList()
+            },
             _ => new UnknownCondition(condType, condBytes)
         };
     }

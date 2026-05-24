@@ -12,6 +12,7 @@ namespace D4Loot.Core.Models;
 [JsonDerivedType(typeof(AffixCondition),         "affix")]
 [JsonDerivedType(typeof(OptionalAffixCondition), "optionalAffix")]
 [JsonDerivedType(typeof(SpecificUniqueCondition), "specificUnique")]
+[JsonDerivedType(typeof(TalismanSetCondition),   "talismanSet")]
 [JsonDerivedType(typeof(UnknownCondition),       "unknown")]
 public abstract record Condition;
 
@@ -52,6 +53,18 @@ public sealed record OptionalAffixCondition(IReadOnlyList<uint> AffixIds, int Mi
 
 /// <summary>Type 8 — matches specific named Unique items by sno ID.</summary>
 public sealed record SpecificUniqueCondition(IReadOnlyList<uint> UniqueIds) : Condition;
+
+/// <summary>A set/item pair inside a <see cref="TalismanSetCondition"/> (field 3 sub-message).</summary>
+public sealed record TalismanSetEntry(uint SetId, uint ItemId);
+
+/// <summary>Type 9 — Talisman Set Bonus: matches charms/seals belonging to specific sets.
+/// Field 2 carries set hash IDs; field 3 carries { set_id, item_id } pair sub-messages.
+/// Set IDs are not yet catalogued — they will display as hex until a TalismanSetDatabase is built.</summary>
+public sealed record TalismanSetCondition : Condition
+{
+    public IReadOnlyList<uint> SetIds { get; init; } = [];
+    public IReadOnlyList<TalismanSetEntry> SetEntries { get; init; } = [];
+}
 
 /// <summary>Preserves raw bytes for condition types not yet mapped, enabling lossless round-trips.</summary>
 public sealed record UnknownCondition(int ConditionType, byte[] RawBytes) : Condition;
