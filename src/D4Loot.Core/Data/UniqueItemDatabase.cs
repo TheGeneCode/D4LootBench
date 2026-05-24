@@ -19,6 +19,9 @@ public static class UniqueItemDatabase
 
     public static IReadOnlyDictionary<uint, UniqueItemEntry> BySnoId { get; }
 
+    /// <summary>Hash IDs are equivalent to SNO IDs in the filter wire format.</summary>
+    public static IReadOnlyDictionary<uint, UniqueItemEntry> ByHash => BySnoId;
+
     static UniqueItemDatabase()
     {
         var all = new List<UniqueItemEntry>();
@@ -44,4 +47,7 @@ public static class UniqueItemDatabase
 
     public static string GetDisplayName(uint snoId)
         => BySnoId.TryGetValue(snoId, out var entry) ? entry.Name : $"Unknown unique (0x{snoId:x8})";
+
+    public static string GetDisplayNameByHash(uint hash)
+        => ByHash.TryGetValue(hash, out var entry) ? entry.Name : $"Unknown unique (0x{hash:x8})";
 }
