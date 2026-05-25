@@ -3,7 +3,7 @@
 ## Attribution
 
 This format was reverse-engineered from community research. The following sources must be
-credited in any public release of D4Loot:
+credited in any public release of FilterForge:
 
 | Source | License | Contribution |
 |--------|---------|-------------|

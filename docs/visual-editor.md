@@ -12,9 +12,9 @@ Phase 2 ships the full WPF visual editor shell. Condition value editing (pickers
 
 | Layer | Responsibility |
 |-------|---------------|
-| `D4Loot.Core` | Immutable-ish domain models (mutable as of Phase 2 for editing ergonomics), codec, databases |
-| `D4Loot.App.ViewModels` | Observable wrappers, commands, business logic for the UI |
-| `D4Loot.App.Views` | XAML layout and code-behind (AvalonEdit sync, dialog wiring) |
+| `FilterForge.Core` | Immutable-ish domain models (mutable as of Phase 2 for editing ergonomics), codec, databases |
+| `FilterForge.App.ViewModels` | Observable wrappers, commands, business logic for the UI |
+| `FilterForge.App.Views` | XAML layout and code-behind (AvalonEdit sync, dialog wiring) |
 
 ### Main Window Layout
 
@@ -131,7 +131,7 @@ Conditions are shown as read-only rows (type name + summary string) with a Delet
 
 ### Converters Live in App.xaml Resources
 
-`BoolToBrushConverter` is registered as a global application resource keyed `ErrorBrushConverter`. Previously it was a nested class in `JsonEditorView.xaml.cs`. Moving it to `Converters/BoolToBrushConverter.cs` (namespace `D4Loot.App.Converters`) allows reuse in `MainWindow.xaml` and `RawEditorWindow.xaml` without duplication.
+`BoolToBrushConverter` is registered as a global application resource keyed `ErrorBrushConverter`. Previously it was a nested class in `JsonEditorView.xaml.cs`. Moving it to `Converters/BoolToBrushConverter.cs` (namespace `FilterForge.App.Converters`) allows reuse in `MainWindow.xaml` and `RawEditorWindow.xaml` without duplication.
 
 ---
 

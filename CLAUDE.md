@@ -1,11 +1,11 @@
-# D4Loot — Project Context
+# FilterForge — Project Context
 
 ## What This Is
 A standalone WPF desktop application for editing Diablo IV loot filter share codes. D4's in-game filter UI is clunky; this app lets players import a filter code, visually edit all its rules, then re-export the code to paste back into the game. Distribution via GitHub Releases as a self-contained single-file `.exe` — no installer, no hosting required.
 
 ## Technology Stack
 - **.NET 10 / WPF** (`net10.0-windows`) — Windows-only desktop app
-- **CommunityToolkit.Mvvm 8.4.2** — MVVM source generators (D4Loot.App)
+- **CommunityToolkit.Mvvm 8.4.2** — MVVM source generators (FilterForge.App)
 - **Microsoft.Extensions.DependencyInjection 10.0.0** — DI container for the App
 - **AvalonEdit 6.3.0** — JSON editor with syntax highlighting, folding, search
 - **Shouldly 4.3.0** — test assertions
@@ -13,21 +13,21 @@ A standalone WPF desktop application for editing Diablo IV loot filter share cod
 
 ## Solution Layout
 ```
-D4Loot.slnx
-├── src/D4Loot.Core/          # Pure .NET 10 class library — zero WPF dependency
+FilterForge.slnx
+├── src/FilterForge.Core/          # Pure .NET 10 class library — zero WPF dependency
 │   ├── Models/               # FilterRuleset, FilterRule, 10 Condition subtypes + UnknownCondition
 │   ├── Codec/                # FilterCodec (encode/decode), ProtoWriter, ProtoReader
 │   ├── Data/                 # IFilterDataService + per-category catalogs, *Database statics, d4-data.json
 │   ├── Validation/           # IFilterValidator, FilterValidator, ValidationResult
 │   └── Serialization/        # FilterJsonOptions, HexUInt32Converter, annotated {id,name} converters, FilterDataContext
-├── src/D4Loot.App/           # WPF app
+├── src/FilterForge.App/           # WPF app
 │   ├── ViewModels/           # MainWindowVM, VisualEditorVM, FilterRuleVM, RawEditorVM, ColorPickerVM, Conditions/*
 │   ├── Views/                # VisualEditorView, RawEditorWindow, ColorPickerDialog, IssuesPanel
 │   ├── Behaviors/            # ScrollNewItemsIntoView attached behavior
 │   ├── Converters/           # BoolToBrushConverter, ValidationSeverityConverter
 │   ├── Services/             # ServiceConfiguration (DI bootstrap)
 │   └── Utilities/            # ColorUtility (HSV/ABGR conversion, contrast helper)
-├── tests/D4Loot.Core.Tests/
+├── tests/FilterForge.Core.Tests/
 │   ├── Codec/                # FilterCodecTests — round-trip, real Raxx filter, idempotency
 │   ├── Validation/           # FilterValidatorTests — 19 tests for limits, boundaries, indices
 │   ├── SerializationTests/   # AnnotatedJsonTests — id-wins, name-only, legacy form, unknown hash
@@ -61,7 +61,7 @@ item types, uniques, talisman sets, plus name siblings on `GreaterAffixEntry` an
 `id` wins when present; `id` missing falls back to name lookup; mismatched `id`+`name`
 prefers `id` (validator surfaces a warning). Legacy string-hash form (`"AffixIds": ["0x…"]`)
 still deserializes. Converters resolve names through `FilterDataContext.Current`, set
-once at app startup. See `src/D4Loot.Core/Serialization/AnnotatedHashListConverter.cs`.
+once at app startup. See `src/FilterForge.Core/Serialization/AnnotatedHashListConverter.cs`.
 
 ## Phase Status
 - **Phase 0** ✅ — Format reverse-engineered; `docs/filter-format.md` written; all 10 condition types documented
@@ -74,12 +74,12 @@ once at app startup. See `src/D4Loot.Core/Serialization/AnnotatedHashListConvert
 ## Architecture Lockdown (Pre-Phase-4)
 Hardened seams and UX so Phase 4's AI assistant can be added without rewriting consumers.
 
-**Services added in `D4Loot.Core`:**
+**Services added in `FilterForge.Core`:**
 - `IFilterDataService` aggregates per-domain catalogs (`IAffixCatalog`, `ISkillCatalog`, `IItemTypeCatalog`, `IUniqueItemCatalog`, `ITalismanSetCatalog`). Default impl wraps the existing static `*Database` singletons; ViewModels and Phase 4 components consume it via constructor.
 - `IFilterValidator` + structured `ValidationResult` (severity, message, optional rule index). Replaces `FilterRuleset.Validate()`'s string list; the legacy API now delegates and is preserved for compat.
 - `FilterDataContext` — narrow static set once at app startup so JSON converters (which STJ constructs reflectively, parameter-less) can resolve names through the data service.
 
-**Services added in `D4Loot.App`:**
+**Services added in `FilterForge.App`:**
 - `IConditionViewModelFactory` centralizes the `Condition` ↔ `ConditionViewModel` dispatch table that previously lived as two large switch expressions in `FilterRuleViewModel`. Adding an 11th condition type now edits one file.
 - `ServiceConfiguration` (DI bootstrap) registers `IFilterDataService`, `IFilterValidator`, `IConditionViewModelFactory`, and `MainWindowViewModel`/`MainWindow`. `App.OnStartup` builds the container, sets `FilterDataContext.Current`, and resolves `MainWindow`.
 
@@ -111,8 +111,8 @@ Hardened seams and UX so Phase 4's AI assistant can be added without rewriting c
 ## Running / Testing
 ```powershell
 dotnet build          # full solution (0 warnings)
-dotnet test           # 58 tests in D4Loot.Core.Tests
-dotnet publish src/D4Loot.App -r win-x64 -p:PublishSingleFile=true --self-contained true
+dotnet test           # 58 tests in FilterForge.Core.Tests
+dotnet publish src/FilterForge.App -r win-x64 -p:PublishSingleFile=true --self-contained true
 ```
 
 ## Attribution Required (Before Public Release)

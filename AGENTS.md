@@ -1,11 +1,11 @@
-# D4Loot — Project Context
+# FilterForge — Project Context
 
 ## What This Is
 A standalone WPF desktop application for editing Diablo IV loot filter share codes. D4's in-game filter UI is clunky; this app lets players import a filter code, visually edit all its rules, then re-export the code to paste back into the game. Distribution via GitHub Releases as a self-contained single-file `.exe` — no installer, no hosting required.
 
 ## Technology Stack
 - **.NET 10 / WPF** (`net10.0-windows`) — Windows-only desktop app
-- **CommunityToolkit.Mvvm 8.4.2** — MVVM source generators (D4Loot.App)
+- **CommunityToolkit.Mvvm 8.4.2** — MVVM source generators (FilterForge.App)
 - **Microsoft.Extensions.DependencyInjection 10.0.0** — DI container for the App
 - **AvalonEdit 6.3.0** — JSON editor (syntax highlighting, folding, search)
 - **Shouldly 4.3.0** — test assertions (MIT license)
@@ -13,8 +13,8 @@ A standalone WPF desktop application for editing Diablo IV loot filter share cod
 
 ## Solution Layout
 ```
-D4Loot.slnx
-├── src/D4Loot.Core/                    # Pure .NET 10 class library — zero WPF dependency
+FilterForge.slnx
+├── src/FilterForge.Core/                    # Pure .NET 10 class library — zero WPF dependency
 │   ├── Codec/
 │   │   ├── FilterCodec.cs              # Encode/Decode, EncodeRule/DecodeRule, BuildCondition
 │   │   ├── ProtoReader.cs              # Manual protobuf wire format reader (69 lines)
@@ -44,9 +44,9 @@ D4Loot.slnx
 │   │   ├── IFilterValidator.cs         # Service interface used by export path, Raw Editor, future AI
 │   │   ├── FilterValidator.cs          # Game-enforced rule checks (count, name, item power, GA count, picks)
 │   │   └── ValidationResult.cs         # Severity + message + optional rule index
-│   └── D4Loot.Core.csproj
+│   └── FilterForge.Core.csproj
 │
-├── src/D4Loot.App/                     # WPF app (.NET 10, CommunityToolkit.Mvvm, Microsoft.Extensions.DependencyInjection)
+├── src/FilterForge.App/                     # WPF app (.NET 10, CommunityToolkit.Mvvm, Microsoft.Extensions.DependencyInjection)
 │   ├── App.xaml/.cs                    # OnStartup builds DI container, sets FilterDataContext, resolves MainWindow
 │   ├── MainWindow.xaml/.cs             # Shell window: toolbar (Validate badge), IssuesPanel, editor content
 │   ├── Behaviors/
@@ -88,9 +88,9 @@ D4Loot.slnx
 │   │   ├── RawEditorWindow.xaml/.cs    # AvalonEdit + Validate/Apply + IssuesPanel
 │   │   ├── ColorPickerDialog.xaml/.cs  # Full HSV color picker with hex input
 │   │   └── IssuesPanel.xaml/.cs        # Shared ValidationIssue list (used by MainWindow + RawEditorWindow)
-│   └── D4Loot.App.csproj
+│   └── FilterForge.App.csproj
 │
-├── tests/D4Loot.Core.Tests/
+├── tests/FilterForge.Core.Tests/
 │   ├── Codec/
 │   │   └── FilterCodecTests.cs         # 33 tests: round-trip, real Raxx filter, idempotency, all-conditions fixture, hash ID test
 │   ├── Validation/
@@ -100,7 +100,7 @@ D4Loot.slnx
 │   ├── Data/
 │   │   └── DatabaseInitTests.cs        # *Database singletons init without throwing
 │   ├── TestSetup.cs                    # ModuleInitializer wires FilterDataContext for all tests
-│   └── D4Loot.Core.Tests.csproj
+│   └── FilterForge.Core.Tests.csproj
 │
 ├── docs/
 │   ├── filter-format.md                # Full protobuf spec with field tables and hash IDs
@@ -214,10 +214,10 @@ Architecture hardening + high-impact UX polish so Phase 4 (AI) can ship without 
 - See design doc for architecture decisions
 
 ## What's Next (Ordered by Priority)
-1. **Phase 4 — AI rule assistant**: implement `D4Loot.Ai` project with Ollama provider, natural language rule generation
+1. **Phase 4 — AI rule assistant**: implement `FilterForge.Ai` project with Ollama provider, natural language rule generation
 2. **README.md**: write project README with attribution, usage, troubleshooting
 3. **About dialog**: in-app attribution, version info
-4. **D4Loot.App.Tests project** (deferred from Phase 3.5): VM tests, factory exhaustiveness, ColorUtility round-trip
+4. **FilterForge.App.Tests project** (deferred from Phase 3.5): VM tests, factory exhaustiveness, ColorUtility round-trip
 5. **Polish**: remaining unique display names (~53 unresolved); deferred UX (Ctrl+Z for undo, rule list search, bulk operations, copy/paste conditions across rules, theme revisit)
 
 ## Key Decisions Made
@@ -238,7 +238,7 @@ Architecture hardening + high-impact UX polish so Phase 4 (AI) can ship without 
 ## Running / Testing
 ```powershell
 dotnet build          # full solution (0 warnings)
-dotnet test           # 58 tests in D4Loot.Core.Tests
+dotnet test           # 58 tests in FilterForge.Core.Tests
 ```
 
 ## Ad-Hoc Verification
@@ -249,7 +249,7 @@ Always prefer adding a temporary xunit test or a `dotnet run verify.cs` approach
 
 ## Publish (for distribution)
 ```powershell
-dotnet publish src/D4Loot.App -r win-x64 -p:PublishSingleFile=true --self-contained true
+dotnet publish src/FilterForge.App -r win-x64 -p:PublishSingleFile=true --self-contained true
 ```
 
 ## Locally Cloned Reference Repos

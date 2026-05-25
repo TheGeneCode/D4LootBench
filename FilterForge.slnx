@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FilterForge.App/FilterForge.App.csproj" />
+    <Project Path="src/FilterForge.Core/FilterForge.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FilterForge.Core.Tests/FilterForge.Core.Tests.csproj" />
+  </Folder>
+</Solution>

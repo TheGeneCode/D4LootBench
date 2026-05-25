@@ -1,0 +1,86 @@
+<UserControl
+    x:Class="ThunderEagle.FilterForge.App.Views.ItemPickerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cond="clr-namespace:ThunderEagle.FilterForge.App.ViewModels.Conditions"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=cond:PickerViewModel, IsDesignTimeCreatable=False}">
+
+    <StackPanel>
+        <!-- Search box -->
+        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="0,0,0,4"
+                 ToolTip="Filter available items" />
+
+        <!-- Two-panel picker -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Available items -->
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Available" FontSize="11"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                           Margin="0,0,0,2" />
+                <ListBox ItemsSource="{Binding FilteredAvailable}"
+                         SelectedItem="{Binding SelectedAvailable, Mode=TwoWay}"
+                         DisplayMemberPath="DisplayName"
+                         MinHeight="200"
+                         ToolTip="Double-click an item to add it"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick"
+                                      Command="{Binding AddItemCommand}" />
+                    </ListBox.InputBindings>
+                </ListBox>
+            </StackPanel>
+
+            <!-- Add / Remove buttons -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="6,0">
+                <Button Content="→"
+                        Command="{Binding AddItemCommand}"
+                        Width="32" Margin="0,0,0,6"
+                        ToolTip="Add selected" />
+                <Button Content="←"
+                        Command="{Binding RemoveItemCommand}"
+                        Width="32"
+                        ToolTip="Remove selected" />
+            </StackPanel>
+
+            <!-- Selected items -->
+            <StackPanel Grid.Column="2">
+                <DockPanel Margin="0,0,0,2" LastChildFill="False">
+                    <TextBlock FontSize="11"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                               VerticalAlignment="Center"
+                               DockPanel.Dock="Left">
+                        <Run Text="Selected" />
+                        <Run Text="{Binding SelectionCountDisplay, Mode=OneWay}" />
+                    </TextBlock>
+                    <Button Content="Clear all"
+                            Command="{Binding ClearAllCommand}"
+                            FontSize="10"
+                            Padding="6,1"
+                            DockPanel.Dock="Right"
+                            ToolTip="Remove every selected item" />
+                </DockPanel>
+                <ListBox ItemsSource="{Binding Selected}"
+                         SelectedItem="{Binding SelectedCurrent, Mode=TwoWay}"
+                         DisplayMemberPath="DisplayName"
+                         MinHeight="200"
+                         ToolTip="Double-click an item to remove it"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick"
+                                      Command="{Binding RemoveItemCommand}" />
+                    </ListBox.InputBindings>
+                </ListBox>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>

@@ -1,9 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/D4Loot.App/D4Loot.App.csproj" />
-    <Project Path="src/D4Loot.Core/D4Loot.Core.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/D4Loot.Core.Tests/D4Loot.Core.Tests.csproj" />
-  </Folder>
-</Solution>
