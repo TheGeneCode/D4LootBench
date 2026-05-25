@@ -149,7 +149,7 @@ public partial class MainWindowViewModel : ObservableObject
             return;
         }
         var json = JsonSerializer.Serialize(ruleset, FilterJsonOptions.Default);
-        ShowRawEditorRequested?.Invoke(new RawEditorViewModel(json, ApplyFromRawEditor));
+        ShowRawEditorRequested?.Invoke(new RawEditorViewModel(_validator, json, ApplyFromRawEditor));
     }
 
     private void ApplyFromRawEditor(FilterRuleset ruleset)
