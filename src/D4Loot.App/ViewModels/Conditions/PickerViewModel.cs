@@ -52,6 +52,7 @@ public sealed partial class PickerViewModel : ObservableObject
             OnPropertyChanged(nameof(IsAtMax));
             OnPropertyChanged(nameof(SelectionCountDisplay));
             AddItemCommand.NotifyCanExecuteChanged();
+            ClearAllCommand.NotifyCanExecuteChanged();
         };
     }
 
@@ -108,4 +109,13 @@ public sealed partial class PickerViewModel : ObservableObject
     }
 
     private bool CanRemove() => SelectedCurrent is not null;
+
+    [RelayCommand(CanExecute = nameof(CanClearAll))]
+    private void ClearAll()
+    {
+        Selected.Clear();
+        SelectedCurrent = null;
+    }
+
+    private bool CanClearAll() => Selected.Count > 0;
 }

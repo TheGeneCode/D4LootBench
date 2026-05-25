@@ -30,7 +30,8 @@
                 <ListBox ItemsSource="{Binding FilteredAvailable}"
                          SelectedItem="{Binding SelectedAvailable, Mode=TwoWay}"
                          DisplayMemberPath="DisplayName"
-                         Height="140"
+                         MinHeight="200"
+                         ToolTip="Double-click an item to add it"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick"
@@ -53,16 +54,26 @@
 
             <!-- Selected items -->
             <StackPanel Grid.Column="2">
-                <TextBlock FontSize="11"
-                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
-                           Margin="0,0,0,2">
-                    <Run Text="Selected" />
-                    <Run Text="{Binding SelectionCountDisplay, Mode=OneWay}" />
-                </TextBlock>
+                <DockPanel Margin="0,0,0,2" LastChildFill="False">
+                    <TextBlock FontSize="11"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                               VerticalAlignment="Center"
+                               DockPanel.Dock="Left">
+                        <Run Text="Selected" />
+                        <Run Text="{Binding SelectionCountDisplay, Mode=OneWay}" />
+                    </TextBlock>
+                    <Button Content="Clear all"
+                            Command="{Binding ClearAllCommand}"
+                            FontSize="10"
+                            Padding="6,1"
+                            DockPanel.Dock="Right"
+                            ToolTip="Remove every selected item" />
+                </DockPanel>
                 <ListBox ItemsSource="{Binding Selected}"
                          SelectedItem="{Binding SelectedCurrent, Mode=TwoWay}"
                          DisplayMemberPath="DisplayName"
-                         Height="140"
+                         MinHeight="200"
+                         ToolTip="Double-click an item to remove it"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick"
