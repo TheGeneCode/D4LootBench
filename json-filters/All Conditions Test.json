@@ -107,8 +107,8 @@
         {
           "$type": "optionalAffix",
           "AffixIds": [
-            "0x001d5def",
-            "0x001d5df1"
+            "0x001beaba",
+            "0x001beabe"
           ],
           "MinimumCount": 1,
           "GreaterEntries": [],

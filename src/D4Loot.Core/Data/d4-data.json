@@ -10,38 +10,6 @@
       ]
     },
     {
-      "displayName": "% Dexterity",
-      "hash": "0x001d5def",
-      "classes": [
-        "Rogue",
-        "Spiritborn"
-      ]
-    },
-    {
-      "displayName": "% Intelligence",
-      "hash": "0x001d5df1",
-      "classes": [
-        "Sorcerer",
-        "Necromancer"
-      ]
-    },
-    {
-      "displayName": "% Strength",
-      "hash": "0x001d5df3",
-      "classes": [
-        "Barbarian",
-        "Paladin"
-      ]
-    },
-    {
-      "displayName": "% Willpower",
-      "hash": "0x001d5df5",
-      "classes": [
-        "Druid",
-        "Warlock"
-      ]
-    },
-    {
       "displayName": "+Arc Lash",
       "hash": "0x001d6752",
       "classes": [
