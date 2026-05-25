@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using D4Loot.Core.Serialization;
 
 namespace D4Loot.Core.Models;
 
@@ -31,7 +32,9 @@ public sealed record GreaterAffixCondition(int MinimumCount) : Condition;
 public sealed record CodexCondition : Condition;
 
 /// <summary>Type 5 — item type hash IDs (e.g. Charm, Seal).</summary>
-public sealed record ItemTypeCondition(IReadOnlyList<uint> TypeIds) : Condition;
+public sealed record ItemTypeCondition(
+    [property: JsonConverter(typeof(AnnotatedItemTypeListConverter))]
+    IReadOnlyList<uint> TypeIds) : Condition;
 
 /// <summary>
 /// Flags a single affix as "must be greater" inside an <see cref="AffixCondition"/> or
@@ -40,10 +43,14 @@ public sealed record ItemTypeCondition(IReadOnlyList<uint> TypeIds) : Condition;
 /// observed equalling the affix hash. The field is preserved verbatim (<see cref="AffixIdEcho"/>)
 /// for lossless round-trips in case some game state uses a different value we haven't seen.
 /// </summary>
+[JsonConverter(typeof(GreaterAffixEntryConverter))]
 public sealed record GreaterAffixEntry(uint AffixId, uint AffixIdEcho);
 
 /// <summary>Max 15 affix IDs per condition (game-enforced).</summary>
-public sealed record AffixCondition(IReadOnlyList<uint> AffixIds, int MinimumCount) : Condition
+public sealed record AffixCondition(
+    [property: JsonConverter(typeof(AnnotatedAffixListConverter))]
+    IReadOnlyList<uint> AffixIds,
+    int MinimumCount) : Condition
 {
     public const int MaxSelectionCount = 15;
 
@@ -52,7 +59,10 @@ public sealed record AffixCondition(IReadOnlyList<uint> AffixIds, int MinimumCou
 }
 
 /// <summary>Type 7 — affix hash IDs with OR semantics: matches if the item has any of the listed affixes.</summary>
-public sealed record OptionalAffixCondition(IReadOnlyList<uint> AffixIds, int MinimumCount) : Condition
+public sealed record OptionalAffixCondition(
+    [property: JsonConverter(typeof(AnnotatedAffixListConverter))]
+    IReadOnlyList<uint> AffixIds,
+    int MinimumCount) : Condition
 {
     public const int MaxSelectionCount = 15;
 
@@ -62,12 +72,15 @@ public sealed record OptionalAffixCondition(IReadOnlyList<uint> AffixIds, int Mi
 
 /// <summary>Type 8 — matches specific named Unique items by sno ID.</summary>
 /// <remarks>Max 10 unique items per condition (game-enforced).</remarks>
-public sealed record SpecificUniqueCondition(IReadOnlyList<uint> UniqueIds) : Condition
+public sealed record SpecificUniqueCondition(
+    [property: JsonConverter(typeof(AnnotatedUniqueListConverter))]
+    IReadOnlyList<uint> UniqueIds) : Condition
 {
     public const int MaxSelectionCount = 10;
 }
 
 /// <summary>A set/item pair inside a <see cref="TalismanSetCondition"/> (field 3 sub-message).</summary>
+[JsonConverter(typeof(TalismanSetEntryConverter))]
 public sealed record TalismanSetEntry(uint SetId, uint ItemId);
 
 /// <summary>Type 9 — Talisman Set Bonus: matches charms/seals belonging to specific sets.
@@ -78,7 +91,9 @@ public sealed record TalismanSetCondition : Condition
 {
     public const int MaxSelectionCount = 5;
 
+    [JsonConverter(typeof(AnnotatedTalismanSetListConverter))]
     public IReadOnlyList<uint> SetIds { get; init; } = [];
+
     public IReadOnlyList<TalismanSetEntry> SetEntries { get; init; } = [];
 }
 
