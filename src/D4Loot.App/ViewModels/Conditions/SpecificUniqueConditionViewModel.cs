@@ -8,17 +8,31 @@ public sealed partial class SpecificUniqueConditionViewModel : ConditionViewMode
 {
     public PickerViewModel Picker { get; }
 
+    private readonly ILookup<string, uint> _displayNameToSnoIds;
+
     public SpecificUniqueConditionViewModel()
     {
-        Picker = new PickerViewModel(
-            UniqueItemDatabase.Released.Select(e => new PickerEntry(e.SnoId, e.Name)));
+        _displayNameToSnoIds = UniqueItemDatabase.Released
+            .ToLookup(e => e.Name, e => e.SnoId);
+
+        var source = _displayNameToSnoIds
+            .Select(g => new PickerEntry(g.First(), g.Key))
+            .OrderBy(e => e.DisplayName)
+            .ToList();
+
+        Picker = new PickerViewModel(source);
         Picker.Selected.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Summary));
     }
 
     public SpecificUniqueConditionViewModel(SpecificUniqueCondition m) : this()
     {
+        var seen = new HashSet<string>();
         foreach (var id in m.UniqueIds)
-            Picker.Selected.Add(new PickerEntry(id, UniqueItemDatabase.GetDisplayName(id)));
+        {
+            var name = UniqueItemDatabase.GetDisplayName(id);
+            if (seen.Add(name))
+                Picker.Selected.Add(new PickerEntry(id, name));
+        }
     }
 
     public override string TypeName => "Specific Unique";
@@ -26,5 +40,9 @@ public sealed partial class SpecificUniqueConditionViewModel : ConditionViewMode
         $"{Picker.Selected.Count} unique{(Picker.Selected.Count == 1 ? "" : "s")}";
 
     public override Condition BuildModel() =>
-        new SpecificUniqueCondition(Picker.Selected.Select(e => e.Hash).ToList());
+        new SpecificUniqueCondition(
+            Picker.Selected
+                .SelectMany(e => _displayNameToSnoIds[e.DisplayName])
+                .Distinct()
+                .ToList());
 }
