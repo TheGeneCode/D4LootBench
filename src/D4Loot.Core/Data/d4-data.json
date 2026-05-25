@@ -1,4 +1,4 @@
-{
+﻿{
   "formatVersion": 1,
   "source": "DiabloTools/d4data CoreTOC_flat.json (build 3.0.2.71886)",
   "affixes": [
@@ -2122,6 +2122,101 @@
       "displayName": "Demonology Skills",
       "hash": "0x0026ADC8",
       "class": "Warlock"
+    },
+    {
+      "displayName": "Apocalypse",
+      "hash": "0x0021E4CA",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Attack",
+      "hash": "0x00222129",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Brimstone",
+      "hash": "0x0024D832",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Demonform",
+      "hash": "0x0021CACD",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Demonic Strike",
+      "hash": "0x00239FDE",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Eviscerated",
+      "hash": "0x002396E1",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Fiend of Abaddon",
+      "hash": "0x00223F68",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Metamorphosis",
+      "hash": "0x0021CCB7",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Rampage",
+      "hash": "0x0021E4E1",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Shadowform",
+      "hash": "0x0021D798",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Sigil of Calamity",
+      "hash": "0x0021E4B9",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Terror Swarm",
+      "hash": "0x0021D18D",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Volatility",
+      "hash": "0x00260CE7",
+      "class": "Warlock"
+    },
+    {
+      "displayName": "Attack",
+      "hash": "0x0023C35D",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Fortress",
+      "hash": "0x00231C97",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Heaven's Fury",
+      "hash": "0x0022AF3A",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Phalanx",
+      "hash": "0x002070C6",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Sunder",
+      "hash": "0x00201C5E",
+      "class": "Paladin"
+    },
+    {
+      "displayName": "Zenith",
+      "hash": "0x002323FF",
+      "class": "Paladin"
     }
   ],
   "itemTypes": [
@@ -7696,231 +7791,1391 @@
       "hash": "0x002806E1"
     }
   ],
-  "talismanSets": [
+    "talismanSets": [
     {
       "displayName": "Sescheron's Fury",
       "internalName": "Talisman_Barb_01.stl",
-      "items": []
+      "hash": "0x0022fb15",
+      "items": [
+        {
+          "displayName": "Phoba of Sescheron's Fury",
+          "internalName": "Item_Talisman_Charm_Set_Barb_01_01.stl",
+          "hash": "0x0025069a"
+        },
+        {
+          "displayName": "Fer of Sescheron's Fury",
+          "internalName": "Item_Talisman_Charm_Set_Barb_01_02.stl",
+          "hash": "0x002506a8"
+        },
+        {
+          "displayName": "Mlor of Sescheron's Fury",
+          "internalName": "Item_Talisman_Charm_Set_Barb_01_03.stl",
+          "hash": "0x002506b5"
+        },
+        {
+          "displayName": "Linta of Sescheron's Fury",
+          "internalName": "Item_Talisman_Charm_Set_Barb_01_04.stl",
+          "hash": "0x002506b8"
+        },
+        {
+          "displayName": "Berú of Sescheron's Fury",
+          "internalName": "Item_Talisman_Charm_Set_Barb_01_05.stl",
+          "hash": "0x002506cd"
+        }
+      ]
     },
     {
       "displayName": "Berserker's Crucible",
       "internalName": "Talisman_Barb_02.stl",
-      "items": []
+      "hash": "0x0022fb41",
+      "items": [
+        {
+          "displayName": "Phoba of the Crucible",
+          "internalName": "Item_Talisman_Charm_Set_Barb_02_01.stl",
+          "hash": "0x002506d4"
+        },
+        {
+          "displayName": "Fer of the Crucible",
+          "internalName": "Item_Talisman_Charm_Set_Barb_02_02.stl",
+          "hash": "0x002506d7"
+        },
+        {
+          "displayName": "Mlor of the Crucible",
+          "internalName": "Item_Talisman_Charm_Set_Barb_02_03.stl",
+          "hash": "0x002506dc"
+        },
+        {
+          "displayName": "Linta of the Crucible",
+          "internalName": "Item_Talisman_Charm_Set_Barb_02_04.stl",
+          "hash": "0x002506df"
+        },
+        {
+          "displayName": "Berú of the Crucible",
+          "internalName": "Item_Talisman_Charm_Set_Barb_02_05.stl",
+          "hash": "0x002506e2"
+        }
+      ]
     },
     {
       "displayName": "Arms of Arreat",
       "internalName": "Talisman_Barb_03.stl",
-      "items": []
+      "hash": "0x0022fce9",
+      "items": [
+        {
+          "displayName": "Phoba of Arreat",
+          "internalName": "Item_Talisman_Charm_Set_Barb_03_01.stl",
+          "hash": "0x002506e6"
+        },
+        {
+          "displayName": "Fer of Arreat",
+          "internalName": "Item_Talisman_Charm_Set_Barb_03_02.stl",
+          "hash": "0x002506ea"
+        },
+        {
+          "displayName": "Mlor of Arreat",
+          "internalName": "Item_Talisman_Charm_Set_Barb_03_03.stl",
+          "hash": "0x002506ee"
+        },
+        {
+          "displayName": "Linta of Arreat",
+          "internalName": "Item_Talisman_Charm_Set_Barb_03_04.stl",
+          "hash": "0x002506f1"
+        },
+        {
+          "displayName": "Berú of Arreat",
+          "internalName": "Item_Talisman_Charm_Set_Barb_03_05.stl",
+          "hash": "0x002506f9"
+        }
+      ]
     },
     {
       "displayName": "Bloodletter's Flow",
       "internalName": "Talisman_Barb_04.stl",
-      "items": []
+      "hash": "0x0022fceb",
+      "items": [
+        {
+          "displayName": "Phoba of the Bloodletter",
+          "internalName": "Item_Talisman_Charm_Set_Barb_04_01.stl",
+          "hash": "0x00250701"
+        },
+        {
+          "displayName": "Fer of the Bloodletter",
+          "internalName": "Item_Talisman_Charm_Set_Barb_04_02.stl",
+          "hash": "0x00250704"
+        },
+        {
+          "displayName": "Mlor of the Bloodletter",
+          "internalName": "Item_Talisman_Charm_Set_Barb_04_03.stl",
+          "hash": "0x0025070a"
+        },
+        {
+          "displayName": "Linta of the Bloodletter",
+          "internalName": "Item_Talisman_Charm_Set_Barb_04_04.stl",
+          "hash": "0x0025070d"
+        },
+        {
+          "displayName": "Berú of the Bloodletter",
+          "internalName": "Item_Talisman_Charm_Set_Barb_04_05.stl",
+          "hash": "0x00250711"
+        }
+      ]
     },
     {
       "displayName": "Bul-Kathos' Pride",
       "internalName": "Talisman_Barb_05.stl",
-      "items": []
+      "hash": "0x0022fcee",
+      "items": [
+        {
+          "displayName": "Phoba of Bul-Kathos' Pride",
+          "internalName": "Item_Talisman_Charm_Set_Barb_05_01.stl",
+          "hash": "0x00250715"
+        },
+        {
+          "displayName": "Fer of Bul-Kathos' Pride",
+          "internalName": "Item_Talisman_Charm_Set_Barb_05_02.stl",
+          "hash": "0x0025071b"
+        },
+        {
+          "displayName": "Mlor of Bul-Kathos' Pride",
+          "internalName": "Item_Talisman_Charm_Set_Barb_05_03.stl",
+          "hash": "0x0025071f"
+        },
+        {
+          "displayName": "Linta of Bul-Kathos' Pride",
+          "internalName": "Item_Talisman_Charm_Set_Barb_05_04.stl",
+          "hash": "0x00250721"
+        },
+        {
+          "displayName": "Berú of Bul-Kathos' Pride",
+          "internalName": "Item_Talisman_Charm_Set_Barb_05_05.stl",
+          "hash": "0x00250725"
+        }
+      ]
     },
     {
       "displayName": "Storm Shepherd's Call",
       "internalName": "Talisman_Druid_01.stl",
-      "items": []
+      "hash": "0x00230326",
+      "items": [
+        {
+          "displayName": "Phoba of the Den Mother",
+          "internalName": "Item_Talisman_Charm_Set_Druid_01_01.stl",
+          "hash": "0x0025072a"
+        },
+        {
+          "displayName": "Fer of the Den Mother",
+          "internalName": "Item_Talisman_Charm_Set_Druid_01_02.stl",
+          "hash": "0x0025072d"
+        },
+        {
+          "displayName": "Mlor of the Den Mother",
+          "internalName": "Item_Talisman_Charm_Set_Druid_01_03.stl",
+          "hash": "0x00250731"
+        },
+        {
+          "displayName": "Linta of the Den Mother",
+          "internalName": "Item_Talisman_Charm_Set_Druid_01_04.stl",
+          "hash": "0x00250734"
+        },
+        {
+          "displayName": "Berú of the Den Mother",
+          "internalName": "Item_Talisman_Charm_Set_Druid_01_05.stl",
+          "hash": "0x00250737"
+        }
+      ]
     },
     {
       "displayName": "Song of the Old Mountain",
       "internalName": "Talisman_Druid_02.stl",
-      "items": []
+      "hash": "0x00230380",
+      "items": [
+        {
+          "displayName": "Phoba of the Red Wolf Moon",
+          "internalName": "Item_Talisman_Charm_Set_Druid_02_01.stl",
+          "hash": "0x0025073b"
+        },
+        {
+          "displayName": "Fer of the Red Wolf Moon",
+          "internalName": "Item_Talisman_Charm_Set_Druid_02_02.stl",
+          "hash": "0x0025073f"
+        },
+        {
+          "displayName": "Mlor of the Red Wolf Moon",
+          "internalName": "Item_Talisman_Charm_Set_Druid_02_03.stl",
+          "hash": "0x00250742"
+        },
+        {
+          "displayName": "Linta of the Red Wolf Moon",
+          "internalName": "Item_Talisman_Charm_Set_Druid_02_04.stl",
+          "hash": "0x00250749"
+        },
+        {
+          "displayName": "Berú of the Red Wolf Moon",
+          "internalName": "Item_Talisman_Charm_Set_Druid_02_05.stl",
+          "hash": "0x0025074c"
+        }
+      ]
     },
     {
       "displayName": "Might of the Den Mother",
       "internalName": "Talisman_Druid_03.stl",
-      "items": []
+      "hash": "0x00230383",
+      "items": [
+        {
+          "displayName": "Phoba of the Storm Shepherd",
+          "internalName": "Item_Talisman_Charm_Set_Druid_03_01.stl",
+          "hash": "0x00250750"
+        },
+        {
+          "displayName": "Fer of the Storm Shepherd",
+          "internalName": "Item_Talisman_Charm_Set_Druid_03_02.stl",
+          "hash": "0x00250755"
+        },
+        {
+          "displayName": "Mlor of the Storm Shepherd",
+          "internalName": "Item_Talisman_Charm_Set_Druid_03_03.stl",
+          "hash": "0x00250757"
+        },
+        {
+          "displayName": "Linta of the Storm Shepherd",
+          "internalName": "Item_Talisman_Charm_Set_Druid_03_04.stl",
+          "hash": "0x0025075b"
+        },
+        {
+          "displayName": "Berú of the Storm Shepherd",
+          "internalName": "Item_Talisman_Charm_Set_Druid_03_05.stl",
+          "hash": "0x00250760"
+        }
+      ]
     },
     {
       "displayName": "Rush of the Red Wolf Moon",
       "internalName": "Talisman_Druid_04.stl",
-      "items": []
+      "hash": "0x00230386",
+      "items": [
+        {
+          "displayName": "Phoba of the Old Mountain",
+          "internalName": "Item_Talisman_Charm_Set_Druid_04_01.stl",
+          "hash": "0x00250763"
+        },
+        {
+          "displayName": "Fer of the Old Mountain",
+          "internalName": "Item_Talisman_Charm_Set_Druid_04_02.stl",
+          "hash": "0x00250773"
+        },
+        {
+          "displayName": "Mlor of the Old Mountain",
+          "internalName": "Item_Talisman_Charm_Set_Druid_04_03.stl",
+          "hash": "0x00250776"
+        },
+        {
+          "displayName": "Linta of the Old Mountain",
+          "internalName": "Item_Talisman_Charm_Set_Druid_04_04.stl",
+          "hash": "0x0025077b"
+        },
+        {
+          "displayName": "Berú of the Old Mountain",
+          "internalName": "Item_Talisman_Charm_Set_Druid_04_05.stl",
+          "hash": "0x0025077e"
+        }
+      ]
     },
     {
       "displayName": "Nafain's Bestiary",
       "internalName": "Talisman_Druid_05.stl",
-      "items": []
+      "hash": "0x00230389",
+      "items": [
+        {
+          "displayName": "Phoba of Nafain's Bestiary",
+          "internalName": "Item_Talisman_Charm_Set_Druid_05_01.stl",
+          "hash": "0x00250782"
+        },
+        {
+          "displayName": "Fer of Nafain's Bestiary",
+          "internalName": "Item_Talisman_Charm_Set_Druid_05_02.stl",
+          "hash": "0x00250785"
+        },
+        {
+          "displayName": "Mlor of Nafain's Bestiary",
+          "internalName": "Item_Talisman_Charm_Set_Druid_05_03.stl",
+          "hash": "0x00250788"
+        },
+        {
+          "displayName": "Linta of Nafain's Bestiary",
+          "internalName": "Item_Talisman_Charm_Set_Druid_05_04.stl",
+          "hash": "0x0025078b"
+        },
+        {
+          "displayName": "Berú of Nafain's Bestiary",
+          "internalName": "Item_Talisman_Charm_Set_Druid_05_05.stl",
+          "hash": "0x0025078e"
+        }
+      ]
     },
     {
       "displayName": "Radament's Desecration",
       "internalName": "Talisman_Necro_01.stl",
-      "items": []
+      "hash": "0x00230c68",
+      "items": [
+        {
+          "displayName": "Phoba of the Waking Touch",
+          "internalName": "Item_Talisman_Charm_Set_Necro_01_01.stl",
+          "hash": "0x00250791"
+        },
+        {
+          "displayName": "Fer of the Waking Touch",
+          "internalName": "Item_Talisman_Charm_Set_Necro_01_02.stl",
+          "hash": "0x00250793"
+        },
+        {
+          "displayName": "Mlor of the Waking Touch",
+          "internalName": "Item_Talisman_Charm_Set_Necro_01_03.stl",
+          "hash": "0x00250796"
+        },
+        {
+          "displayName": "Linta of the Waking Touch",
+          "internalName": "Item_Talisman_Charm_Set_Necro_01_04.stl",
+          "hash": "0x00250799"
+        },
+        {
+          "displayName": "Berú of the Waking Touch",
+          "internalName": "Item_Talisman_Charm_Set_Necro_01_05.stl",
+          "hash": "0x0025079b"
+        }
+      ]
     },
     {
       "displayName": "Art of the Bone Weaver",
       "internalName": "Talisman_Necro_02.stl",
-      "items": []
+      "hash": "0x00230d68",
+      "items": [
+        {
+          "displayName": "Phoba of the Bone Weaver",
+          "internalName": "Item_Talisman_Charm_Set_Necro_02_01.stl",
+          "hash": "0x0025079f"
+        },
+        {
+          "displayName": "Fer of the Bone Weaver",
+          "internalName": "Item_Talisman_Charm_Set_Necro_02_02.stl",
+          "hash": "0x002507a1"
+        },
+        {
+          "displayName": "Mlor of the Bone Weaver",
+          "internalName": "Item_Talisman_Charm_Set_Necro_02_03.stl",
+          "hash": "0x002507a5"
+        },
+        {
+          "displayName": "Linta of the Bone Weaver",
+          "internalName": "Item_Talisman_Charm_Set_Necro_02_04.stl",
+          "hash": "0x002507a8"
+        },
+        {
+          "displayName": "Berú of the Bone Weaver",
+          "internalName": "Item_Talisman_Charm_Set_Necro_02_05.stl",
+          "hash": "0x002507ac"
+        }
+      ]
     },
     {
       "displayName": "Word of the Blood Binder",
       "internalName": "Talisman_Necro_03.stl",
-      "items": []
+      "hash": "0x00230d6a",
+      "items": [
+        {
+          "displayName": "Phoba of the Blood Binder",
+          "internalName": "Item_Talisman_Charm_Set_Necro_03_01.stl",
+          "hash": "0x002507b1"
+        },
+        {
+          "displayName": "Fer of the Blood Binder",
+          "internalName": "Item_Talisman_Charm_Set_Necro_03_02.stl",
+          "hash": "0x002507b4"
+        },
+        {
+          "displayName": "Mlor of the Blood Binder",
+          "internalName": "Item_Talisman_Charm_Set_Necro_03_03.stl",
+          "hash": "0x002507b9"
+        },
+        {
+          "displayName": "Linta of the Blood Binder",
+          "internalName": "Item_Talisman_Charm_Set_Necro_03_04.stl",
+          "hash": "0x002507bc"
+        },
+        {
+          "displayName": "Berú of the Blood Binder",
+          "internalName": "Item_Talisman_Charm_Set_Necro_03_05.stl",
+          "hash": "0x002507c0"
+        }
+      ]
     },
     {
       "displayName": "Peace of the Black Shroud",
       "internalName": "Talisman_Necro_04.stl",
-      "items": []
+      "hash": "0x00230d6c",
+      "items": [
+        {
+          "displayName": "Phoba of the Black Shroud",
+          "internalName": "Item_Talisman_Charm_Set_Necro_04_01.stl",
+          "hash": "0x002507c7"
+        },
+        {
+          "displayName": "Fer of the Black Shroud",
+          "internalName": "Item_Talisman_Charm_Set_Necro_04_02.stl",
+          "hash": "0x002507c9"
+        },
+        {
+          "displayName": "Mlor of the Black Shroud",
+          "internalName": "Item_Talisman_Charm_Set_Necro_04_03.stl",
+          "hash": "0x002507ce"
+        },
+        {
+          "displayName": "Linta of the Black Shroud",
+          "internalName": "Item_Talisman_Charm_Set_Necro_04_04.stl",
+          "hash": "0x002507d3"
+        },
+        {
+          "displayName": "Berú of the Black Shroud",
+          "internalName": "Item_Talisman_Charm_Set_Necro_04_05.stl",
+          "hash": "0x002507d7"
+        }
+      ]
     },
     {
       "displayName": "Rathma's Waking Touch",
       "internalName": "Talisman_Necro_05.stl",
-      "items": []
+      "hash": "0x00230d6e",
+      "items": [
+        {
+          "displayName": "Phoba of Desecration",
+          "internalName": "Item_Talisman_Charm_Set_Necro_05_01.stl",
+          "hash": "0x002507dc"
+        },
+        {
+          "displayName": "Fer of Desecration",
+          "internalName": "Item_Talisman_Charm_Set_Necro_05_02.stl",
+          "hash": "0x002507e0"
+        },
+        {
+          "displayName": "Mlor of Desecration",
+          "internalName": "Item_Talisman_Charm_Set_Necro_05_03.stl",
+          "hash": "0x002507e3"
+        },
+        {
+          "displayName": "Linta of Desecration",
+          "internalName": "Item_Talisman_Charm_Set_Necro_05_04.stl",
+          "hash": "0x002507e6"
+        },
+        {
+          "displayName": "Berú of Desecration",
+          "internalName": "Item_Talisman_Charm_Set_Necro_05_05.stl",
+          "hash": "0x002507eb"
+        }
+      ]
     },
     {
       "displayName": "Cathan's Righteous Will",
       "internalName": "Talisman_Pala_01.stl",
-      "items": []
+      "hash": "0x0023b4cb",
+      "items": [
+        {
+          "displayName": "Phoba of Righteous Will",
+          "internalName": "Item_Talisman_Charm_Set_Pala_01_01.stl",
+          "hash": "0x00250e7e"
+        },
+        {
+          "displayName": "Fer of Righteous Will",
+          "internalName": "Item_Talisman_Charm_Set_Pala_01_02.stl",
+          "hash": "0x00250e80"
+        },
+        {
+          "displayName": "Mlor of Righteous Will",
+          "internalName": "Item_Talisman_Charm_Set_Pala_01_03.stl",
+          "hash": "0x00250e82"
+        },
+        {
+          "displayName": "Linta of Righteous Will",
+          "internalName": "Item_Talisman_Charm_Set_Pala_01_04.stl",
+          "hash": "0x00250e84"
+        },
+        {
+          "displayName": "Berú of Righteous Will",
+          "internalName": "Item_Talisman_Charm_Set_Pala_01_05.stl",
+          "hash": "0x00250e86"
+        }
+      ]
     },
     {
       "displayName": "Cathan's Dauntless Faith",
       "internalName": "Talisman_Pala_02.stl",
-      "items": []
+      "hash": "0x0023b56a",
+      "items": [
+        {
+          "displayName": "Phoba of Dauntless Faith",
+          "internalName": "Item_Talisman_Charm_Set_Pala_02_01.stl",
+          "hash": "0x00250e88"
+        },
+        {
+          "displayName": "Fer of Dauntless Faith",
+          "internalName": "Item_Talisman_Charm_Set_Pala_02_02.stl",
+          "hash": "0x00250e8a"
+        },
+        {
+          "displayName": "Mlor of Dauntless Faith",
+          "internalName": "Item_Talisman_Charm_Set_Pala_02_03.stl",
+          "hash": "0x00250e8c"
+        },
+        {
+          "displayName": "Linta of Dauntless Faith",
+          "internalName": "Item_Talisman_Charm_Set_Pala_02_04.stl",
+          "hash": "0x00250e8e"
+        },
+        {
+          "displayName": "Berú of Dauntless Faith",
+          "internalName": "Item_Talisman_Charm_Set_Pala_02_05.stl",
+          "hash": "0x00250e90"
+        }
+      ]
     },
     {
       "displayName": "Heaven's Radiant Fire",
       "internalName": "Talisman_Pala_03.stl",
-      "items": []
+      "hash": "0x0023b56c",
+      "items": [
+        {
+          "displayName": "Phoba of Radiant Fire",
+          "internalName": "Item_Talisman_Charm_Set_Pala_03_01.stl",
+          "hash": "0x00250e92"
+        },
+        {
+          "displayName": "Fer of Radiant Fire",
+          "internalName": "Item_Talisman_Charm_Set_Pala_03_02.stl",
+          "hash": "0x00250e94"
+        },
+        {
+          "displayName": "Mlor of Radiant Fire",
+          "internalName": "Item_Talisman_Charm_Set_Pala_03_03.stl",
+          "hash": "0x00250e96"
+        },
+        {
+          "displayName": "Linta of Radiant Fire",
+          "internalName": "Item_Talisman_Charm_Set_Pala_03_04.stl",
+          "hash": "0x00250e98"
+        },
+        {
+          "displayName": "Berú of Radiant Fire",
+          "internalName": "Item_Talisman_Charm_Set_Pala_03_05.stl",
+          "hash": "0x00250e9a"
+        }
+      ]
     },
     {
       "displayName": "Light's Epiphany",
       "internalName": "Talisman_Pala_04.stl",
-      "items": []
+      "hash": "0x0023b56e",
+      "items": [
+        {
+          "displayName": "Phoba of Light's Epiphany",
+          "internalName": "Item_Talisman_Charm_Set_Pala_04_01.stl",
+          "hash": "0x00250e9c"
+        },
+        {
+          "displayName": "Fer of Light's Epiphany",
+          "internalName": "Item_Talisman_Charm_Set_Pala_04_02.stl",
+          "hash": "0x00250e9e"
+        },
+        {
+          "displayName": "Mlor of Light's Epiphany",
+          "internalName": "Item_Talisman_Charm_Set_Pala_04_03.stl",
+          "hash": "0x00250ea1"
+        },
+        {
+          "displayName": "Linta of Light's Epiphany",
+          "internalName": "Item_Talisman_Charm_Set_Pala_04_04.stl",
+          "hash": "0x00250ea3"
+        },
+        {
+          "displayName": "Berú of Light's Epiphany",
+          "internalName": "Item_Talisman_Charm_Set_Pala_04_05.stl",
+          "hash": "0x00250ea5"
+        }
+      ]
     },
     {
       "displayName": "Cathan's Iron Conviction",
       "internalName": "Talisman_Pala_05.stl",
-      "items": []
+      "hash": "0x0023b570",
+      "items": [
+        {
+          "displayName": "Phoba of Iron Conviction",
+          "internalName": "Item_Talisman_Charm_Set_Pala_05_01.stl",
+          "hash": "0x00250ea7"
+        },
+        {
+          "displayName": "Fer of Iron Conviction",
+          "internalName": "Item_Talisman_Charm_Set_Pala_05_02.stl",
+          "hash": "0x00250ea9"
+        },
+        {
+          "displayName": "Mlor of Iron Conviction",
+          "internalName": "Item_Talisman_Charm_Set_Pala_05_03.stl",
+          "hash": "0x00250eab"
+        },
+        {
+          "displayName": "Linta of Iron Conviction",
+          "internalName": "Item_Talisman_Charm_Set_Pala_05_04.stl",
+          "hash": "0x00250ead"
+        },
+        {
+          "displayName": "Berú of Iron Conviction",
+          "internalName": "Item_Talisman_Charm_Set_Pala_05_05.stl",
+          "hash": "0x00250eaf"
+        }
+      ]
     },
     {
       "displayName": "Nilfur's Narrow Eye",
       "internalName": "Talisman_Rogue_01.stl",
-      "items": []
+      "hash": "0x00230a6a",
+      "items": [
+        {
+          "displayName": "Phoba of the Narrow Eye",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_01_01.stl",
+          "hash": "0x00250eb1"
+        },
+        {
+          "displayName": "Fer of the Narrow Eye",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_01_02.stl",
+          "hash": "0x00250eb3"
+        },
+        {
+          "displayName": "Mlor of the Narrow Eye",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_01_03.stl",
+          "hash": "0x00250eb5"
+        },
+        {
+          "displayName": "Linta of the Narrow Eye",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_01_04.stl",
+          "hash": "0x00250eb7"
+        },
+        {
+          "displayName": "Berú of the Narrow Eye",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_01_05.stl",
+          "hash": "0x00250eba"
+        }
+      ]
     },
     {
       "displayName": "Way of the Blurring Blade",
       "internalName": "Talisman_Rogue_02.stl",
-      "items": []
+      "hash": "0x00230aa2",
+      "items": [
+        {
+          "displayName": "Phoba of the Blurring Blade",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_02_01.stl",
+          "hash": "0x00250ebd"
+        },
+        {
+          "displayName": "Fer of the Blurring Blade",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_02_02.stl",
+          "hash": "0x00250ebf"
+        },
+        {
+          "displayName": "Mlor of the Blurring Blade",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_02_03.stl",
+          "hash": "0x00250ec1"
+        },
+        {
+          "displayName": "Linta of the Blurring Blade",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_02_04.stl",
+          "hash": "0x00250ec3"
+        },
+        {
+          "displayName": "Berú of the Blurring Blade",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_02_05.stl",
+          "hash": "0x00250ec5"
+        }
+      ]
     },
     {
       "displayName": "Applied Alchemy",
       "internalName": "Talisman_Rogue_03.stl",
-      "items": []
+      "hash": "0x00230ac8",
+      "items": [
+        {
+          "displayName": "Phoba of Applied Alchemy",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_03_01.stl",
+          "hash": "0x00250ec7"
+        },
+        {
+          "displayName": "Fer of Applied Alchemy",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_03_02.stl",
+          "hash": "0x00250ec9"
+        },
+        {
+          "displayName": "Mlor of Applied Alchemy",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_03_03.stl",
+          "hash": "0x00250ecb"
+        },
+        {
+          "displayName": "Linta of Applied Alchemy",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_03_04.stl",
+          "hash": "0x00250ecd"
+        },
+        {
+          "displayName": "Berú of Applied Alchemy",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_03_05.stl",
+          "hash": "0x00250ecf"
+        }
+      ]
     },
     {
       "displayName": "Spellbound Steel",
       "internalName": "Talisman_Rogue_04.stl",
-      "items": []
+      "hash": "0x00230aca",
+      "items": [
+        {
+          "displayName": "Phoba of Spellbound Steel",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_04_01.stl",
+          "hash": "0x00250ed1"
+        },
+        {
+          "displayName": "Fer of Spellbound Steel",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_04_02.stl",
+          "hash": "0x00250ed3"
+        },
+        {
+          "displayName": "Mlor of Spellbound Steel",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_04_03.stl",
+          "hash": "0x00250ed5"
+        },
+        {
+          "displayName": "Linta of Spellbound Steel",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_04_04.stl",
+          "hash": "0x00250ed7"
+        },
+        {
+          "displayName": "Berú of Spellbound Steel",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_04_05.stl",
+          "hash": "0x00250ed9"
+        }
+      ]
     },
     {
       "displayName": "Legacy of the Sightless",
       "internalName": "Talisman_Rogue_05.stl",
-      "items": []
+      "hash": "0x00230acc",
+      "items": [
+        {
+          "displayName": "Phoba of the Sightless",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_05_01.stl",
+          "hash": "0x00250edb"
+        },
+        {
+          "displayName": "Fer of the Sightless",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_05_02.stl",
+          "hash": "0x00250edd"
+        },
+        {
+          "displayName": "Mlor of the Sightless",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_05_03.stl",
+          "hash": "0x00250edf"
+        },
+        {
+          "displayName": "Linta of the Sightless",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_05_04.stl",
+          "hash": "0x00250ee1"
+        },
+        {
+          "displayName": "Berú of the Sightless",
+          "internalName": "Item_Talisman_Charm_Set_Rogue_05_05.stl",
+          "hash": "0x00250ee3"
+        }
+      ]
     },
     {
       "displayName": "Slaughter",
       "internalName": "Talisman_Small_Generic01.stl",
-      "items": []
+      "hash": "0x00232f8a",
+      "items": [
+        {
+          "displayName": "Phoba of Slaughter",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic01_01.stl",
+          "hash": "0x002328b0"
+        },
+        {
+          "displayName": "Fer of Slaughter",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic01_02.stl",
+          "hash": "0x00255b18"
+        },
+        {
+          "displayName": "Mlor of Slaughter",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic01_03.stl",
+          "hash": "0x00255b1a"
+        }
+      ]
     },
     {
       "displayName": "Practiced Technique",
       "internalName": "Talisman_Small_Generic02.stl",
-      "items": []
+      "hash": "0x002331e6",
+      "items": [
+        {
+          "displayName": "Phoba of Lethality",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic02_01.stl",
+          "hash": "0x00233a66"
+        },
+        {
+          "displayName": "Fer of Lethality",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic02_02.stl",
+          "hash": "0x00255b1e"
+        },
+        {
+          "displayName": "Mlor of Lethality",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic02_03.stl",
+          "hash": "0x00255b22"
+        }
+      ]
     },
     {
       "displayName": "Survival",
       "internalName": "Talisman_Small_Generic03.stl",
-      "items": []
+      "hash": "0x00233c93",
+      "items": [
+        {
+          "displayName": "Phoba of Cruel Fate",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic03_01.stl",
+          "hash": "0x00233c95"
+        },
+        {
+          "displayName": "Fer of Cruel Fate",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic03_02.stl",
+          "hash": "0x00255b24"
+        },
+        {
+          "displayName": "Mlor of Cruel Fate",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic03_03.stl",
+          "hash": "0x00255b28"
+        }
+      ]
     },
     {
       "displayName": "Dark Pact",
       "internalName": "Talisman_Small_Generic06.stl",
-      "items": []
+      "hash": "0x00235120",
+      "items": [
+        {
+          "displayName": "Phoba of Dark Pact",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic06_01.stl",
+          "hash": "0x002353a6"
+        },
+        {
+          "displayName": "Fer of Dark Pact",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic06_02.stl",
+          "hash": "0x00255b32"
+        },
+        {
+          "displayName": "Mlor of Dark Pact",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic06_03.stl",
+          "hash": "0x00255b34"
+        }
+      ]
     },
     {
       "displayName": "Mastery",
       "internalName": "Talisman_Small_Generic09.stl",
-      "items": []
+      "hash": "0x00235942",
+      "items": [
+        {
+          "displayName": "Phoba of Mastery",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic09_01.stl",
+          "hash": "0x0023598d"
+        },
+        {
+          "displayName": "Fer of Mastery",
+          "internalName": "Item_Talisman_Charm_Set_Small_Generic09_02.stl",
+          "hash": "0x00255b3d"
+        }
+      ]
     },
     {
       "displayName": "Habacalva's Cauldron",
       "internalName": "Talisman_Sorc_01.stl",
-      "items": []
+      "hash": "0x002243bf",
+      "items": [
+        {
+          "displayName": "Phoba of the Cauldron",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_01_01.stl",
+          "hash": "0x00250e4c"
+        },
+        {
+          "displayName": "Fer of the Cauldron",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_01_02.stl",
+          "hash": "0x00250e4e"
+        },
+        {
+          "displayName": "Mlor of the Cauldron",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_01_03.stl",
+          "hash": "0x00250e50"
+        },
+        {
+          "displayName": "Linta of the Cauldron",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_01_04.stl",
+          "hash": "0x00250e52"
+        },
+        {
+          "displayName": "Berú of the Cauldron",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_01_05.stl",
+          "hash": "0x00250e54"
+        }
+      ]
     },
     {
       "displayName": "Breath of the Frozen Sea",
       "internalName": "Talisman_Sorc_02.stl",
-      "items": []
+      "hash": "0x002242e0",
+      "items": [
+        {
+          "displayName": "Phoba of the Frozen Sea",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_02_01.stl",
+          "hash": "0x00250e56"
+        },
+        {
+          "displayName": "Fer of the Frozen Sea",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_02_02.stl",
+          "hash": "0x00250e58"
+        },
+        {
+          "displayName": "Mlor of the Frozen Sea",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_02_03.stl",
+          "hash": "0x00250e5a"
+        },
+        {
+          "displayName": "Linta of the Frozen Sea",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_02_04.stl",
+          "hash": "0x00250e5c"
+        },
+        {
+          "displayName": "Berú of the Frozen Sea",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_02_05.stl",
+          "hash": "0x00250e5e"
+        }
+      ]
     },
     {
       "displayName": "Cain's Wild Lightning",
       "internalName": "Talisman_Sorc_03.stl",
-      "items": []
+      "hash": "0x00225065",
+      "items": [
+        {
+          "displayName": "Phoba of Wild Lightning",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_03_01.stl",
+          "hash": "0x00250e60"
+        },
+        {
+          "displayName": "Fer of Wild Lightning",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_03_02.stl",
+          "hash": "0x00250e62"
+        },
+        {
+          "displayName": "Mlor of Wild Lightning",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_03_03.stl",
+          "hash": "0x00250e64"
+        },
+        {
+          "displayName": "Linta of Wild Lightning",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_03_04.stl",
+          "hash": "0x00250e66"
+        },
+        {
+          "displayName": "Berú of Wild Lightning",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_03_05.stl",
+          "hash": "0x00250e68"
+        }
+      ]
     },
     {
       "displayName": "Tal Rasha's Threefold Way",
       "internalName": "Talisman_Sorc_04.stl",
-      "items": []
+      "hash": "0x002250e4",
+      "items": [
+        {
+          "displayName": "Phoba of the Threefold",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_04_01.stl",
+          "hash": "0x00250e6a"
+        },
+        {
+          "displayName": "Fer of the Threefold",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_04_02.stl",
+          "hash": "0x00250e6c"
+        },
+        {
+          "displayName": "Mlor of the Threefold",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_04_03.stl",
+          "hash": "0x00250e6e"
+        },
+        {
+          "displayName": "Linta of the Threefold",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_04_04.stl",
+          "hash": "0x00250e70"
+        },
+        {
+          "displayName": "Berú of the Threefold",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_04_05.stl",
+          "hash": "0x00250e72"
+        }
+      ]
     },
     {
       "displayName": "Tiraj's Uncanny Insight",
       "internalName": "Talisman_Sorc_05.stl",
-      "items": []
+      "hash": "0x00225135",
+      "items": [
+        {
+          "displayName": "Phoba of Uncanny Insight",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_05_01.stl",
+          "hash": "0x00250e74"
+        },
+        {
+          "displayName": "Fer of Uncanny Insight",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_05_02.stl",
+          "hash": "0x00250e76"
+        },
+        {
+          "displayName": "Mlor of Uncanny Insight",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_05_03.stl",
+          "hash": "0x00250e78"
+        },
+        {
+          "displayName": "Linta of Uncanny Insight",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_05_04.stl",
+          "hash": "0x00250e7a"
+        },
+        {
+          "displayName": "Berú of Uncanny Insight",
+          "internalName": "Item_Talisman_Charm_Set_Sorc_05_05.stl",
+          "hash": "0x00250e7c"
+        }
+      ]
     },
     {
       "displayName": "Balazan's Bite",
       "internalName": "Talisman_Spirit_01.stl",
-      "items": []
+      "hash": "0x00231392",
+      "items": [
+        {
+          "displayName": "Phoba of Balazan's Bite",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_01_01.stl",
+          "hash": "0x00250ee5"
+        },
+        {
+          "displayName": "Fer of Balazan's Bite",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_01_02.stl",
+          "hash": "0x00250ee7"
+        },
+        {
+          "displayName": "Mlor of Balazan's Bite",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_01_03.stl",
+          "hash": "0x00250ee9"
+        },
+        {
+          "displayName": "Linta of Balazan's Bite",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_01_04.stl",
+          "hash": "0x00250eeb"
+        },
+        {
+          "displayName": "Berú of Balazan's Bite",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_01_05.stl",
+          "hash": "0x00250eed"
+        }
+      ]
     },
     {
       "displayName": "Wumba's Embrace",
       "internalName": "Talisman_Spirit_02.stl",
-      "items": []
+      "hash": "0x002314de",
+      "items": [
+        {
+          "displayName": "Phoba of Wumba's Embrace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_02_01.stl",
+          "hash": "0x00250eef"
+        },
+        {
+          "displayName": "Fer of Wumba's Embrace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_02_02.stl",
+          "hash": "0x00250ef1"
+        },
+        {
+          "displayName": "Mlor of Wumba's Embrace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_02_03.stl",
+          "hash": "0x00250ef3"
+        },
+        {
+          "displayName": "Linta of Wumba's Embrace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_02_04.stl",
+          "hash": "0x00250ef5"
+        },
+        {
+          "displayName": "Berú of Wumba's Embrace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_02_05.stl",
+          "hash": "0x00250ef7"
+        }
+      ]
     },
     {
       "displayName": "Rezoka's Rage",
       "internalName": "Talisman_Spirit_03.stl",
-      "items": []
+      "hash": "0x002314e0",
+      "items": [
+        {
+          "displayName": "Phoba of Rezoka's Rage",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_03_01.stl",
+          "hash": "0x00250efa"
+        },
+        {
+          "displayName": "Fer of Rezoka's Rage",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_03_02.stl",
+          "hash": "0x00250efc"
+        },
+        {
+          "displayName": "Mlor of Rezoka's Rage",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_03_03.stl",
+          "hash": "0x00250efe"
+        },
+        {
+          "displayName": "Linta of Rezoka's Rage",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_03_04.stl",
+          "hash": "0x00250f00"
+        },
+        {
+          "displayName": "Berú of Rezoka's Rage",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_03_05.stl",
+          "hash": "0x00250f05"
+        }
+      ]
     },
     {
       "displayName": "Kwatli's Grace",
       "internalName": "Talisman_Spirit_04.stl",
-      "items": []
+      "hash": "0x002314e3",
+      "items": [
+        {
+          "displayName": "Phoba of Kwatli's Grace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_04_01.stl",
+          "hash": "0x00250f0a"
+        },
+        {
+          "displayName": "Fer of Kwatli's Grace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_04_02.stl",
+          "hash": "0x00250f0c"
+        },
+        {
+          "displayName": "Mlor of Kwatli's Grace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_04_03.stl",
+          "hash": "0x00250f0e"
+        },
+        {
+          "displayName": "Linta of Kwatli's Grace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_04_04.stl",
+          "hash": "0x00250f11"
+        },
+        {
+          "displayName": "Berú of Kwatli's Grace",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_04_05.stl",
+          "hash": "0x00250f13"
+        }
+      ]
     },
     {
       "displayName": "Bliss of the Multitude",
       "internalName": "Talisman_Spirit_05.stl",
-      "items": []
+      "hash": "0x002314e7",
+      "items": [
+        {
+          "displayName": "Phoba of the Multitude",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_05_01.stl",
+          "hash": "0x00250f15"
+        },
+        {
+          "displayName": "Fer of the Multitude",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_05_02.stl",
+          "hash": "0x00250f18"
+        },
+        {
+          "displayName": "Mlor of the Multitude",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_05_03.stl",
+          "hash": "0x00250f1a"
+        },
+        {
+          "displayName": "Linta of the Multitude",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_05_04.stl",
+          "hash": "0x00250f1c"
+        },
+        {
+          "displayName": "Berú of the Multitude",
+          "internalName": "Item_Talisman_Charm_Set_Spirit_05_05.stl",
+          "hash": "0x00250f1e"
+        }
+      ]
     },
     {
       "displayName": "Fulcrum of Mefis",
       "internalName": "Talisman_Warlock_01.stl",
-      "items": []
+      "hash": "0x0023b610",
+      "items": [
+        {
+          "displayName": "Phoba of Mefis' Fulcrum",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_01_01.stl",
+          "hash": "0x00250f20"
+        },
+        {
+          "displayName": "Fer of Mefis' Fulcrum",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_01_02.stl",
+          "hash": "0x00250f23"
+        },
+        {
+          "displayName": "Mlor of Mefis' Fulcrum",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_01_03.stl",
+          "hash": "0x00250f25"
+        },
+        {
+          "displayName": "Linta of Mefis' Fulcrum",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_01_04.stl",
+          "hash": "0x00250f27"
+        },
+        {
+          "displayName": "Berú of Mefis' Fulcrum",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_01_05.stl",
+          "hash": "0x00250f29"
+        }
+      ]
     },
     {
       "displayName": "Flesh of Abaddon",
       "internalName": "Talisman_Warlock_02.stl",
-      "items": []
+      "hash": "0x0023b613",
+      "items": [
+        {
+          "displayName": "Phoba of Abaddon's Flesh",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_02_01.stl",
+          "hash": "0x00250f32"
+        },
+        {
+          "displayName": "Fer of Abaddon's Flesh",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_02_02.stl",
+          "hash": "0x00250f34"
+        },
+        {
+          "displayName": "Mlor of Abaddon's Flesh",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_02_03.stl",
+          "hash": "0x00250f36"
+        },
+        {
+          "displayName": "Linta of Abaddon's Flesh",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_02_04.stl",
+          "hash": "0x00250f38"
+        },
+        {
+          "displayName": "Berú of Abaddon's Flesh",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_02_05.stl",
+          "hash": "0x00250f3b"
+        }
+      ]
     },
     {
       "displayName": "Shadow of Harash",
       "internalName": "Talisman_Warlock_03.stl",
-      "items": []
+      "hash": "0x0023b616",
+      "items": [
+        {
+          "displayName": "Phoba of Harash's Shadow",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_03_01.stl",
+          "hash": "0x00250fb8"
+        },
+        {
+          "displayName": "Fer of Harash's Shadow",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_03_02.stl",
+          "hash": "0x00250fbb"
+        },
+        {
+          "displayName": "Mlor of Harash's Shadow",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_03_03.stl",
+          "hash": "0x00250fbe"
+        },
+        {
+          "displayName": "Linta of Harash's Shadow",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_03_04.stl",
+          "hash": "0x00250fcb"
+        },
+        {
+          "displayName": "Berú of Harash's Shadow",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_03_05.stl",
+          "hash": "0x00250fcd"
+        }
+      ]
     },
     {
       "displayName": "Rite of the Nameless",
       "internalName": "Talisman_Warlock_04.stl",
-      "items": []
+      "hash": "0x0023b618",
+      "items": [
+        {
+          "displayName": "Phoba of the Nameless",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_04_01.stl",
+          "hash": "0x00250fd0"
+        },
+        {
+          "displayName": "Fer of the Nameless",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_04_02.stl",
+          "hash": "0x00250fd4"
+        },
+        {
+          "displayName": "Mlor of the Nameless",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_04_03.stl",
+          "hash": "0x00250fd6"
+        },
+        {
+          "displayName": "Linta of the Nameless",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_04_04.stl",
+          "hash": "0x00250fdb"
+        },
+        {
+          "displayName": "Berú of the Nameless",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_04_05.stl",
+          "hash": "0x00250fdd"
+        }
+      ]
     },
     {
       "displayName": "Chains of Horazon",
       "internalName": "Talisman_Warlock_05.stl",
-      "items": []
+      "hash": "0x0023b61a",
+      "items": [
+        {
+          "displayName": "Phoba of Horazon's Chains",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_05_01.stl",
+          "hash": "0x00250fe0"
+        },
+        {
+          "displayName": "Fer of Horazon's Chains",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_05_02.stl",
+          "hash": "0x00250fe3"
+        },
+        {
+          "displayName": "Mlor of Horazon's Chains",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_05_03.stl",
+          "hash": "0x00250fe7"
+        },
+        {
+          "displayName": "Linta of Horazon's Chains",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_05_04.stl",
+          "hash": "0x00250fea"
+        },
+        {
+          "displayName": "Berú of Horazon's Chains",
+          "internalName": "Item_Talisman_Charm_Set_Warlock_05_05.stl",
+          "hash": "0x00250fec"
+        }
+      ]
     },
     {
       "displayName": "Hatred's March",

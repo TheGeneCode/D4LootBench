@@ -267,6 +267,34 @@ public sealed class FilterCodecTests
         FilterCodec.Encode(FilterCodec.Decode(code1)).ShouldBe(code1);
     }
 
+    // ── TalismanSetDatabase name resolution ──────────────────────────────
+
+    [Fact]
+    public void TalismanSetDatabase_ResolvesSetName_BerserkersCrucible()
+    {
+        TalismanSetDatabase.GetSetName(0x0022fb41u).ShouldBe("Berserker's Crucible");
+    }
+
+    [Fact]
+    public void TalismanSetDatabase_ResolvesItemName_BeruOfTheCrucible()
+    {
+        TalismanSetDatabase.GetItemName(0x002506e2u).ShouldBe("Berú of the Crucible");
+    }
+
+    [Fact]
+    public void TalismanSetDatabase_All_Contains45ResolvedSets()
+    {
+        // 45 class/generic sets have hashes; 5 X1_QST Hatred sets do not
+        TalismanSetDatabase.All.Count.ShouldBe(45);
+    }
+
+    [Fact]
+    public void TalismanSetDatabase_BerserkersCrucible_HasFiveItems()
+    {
+        var set = TalismanSetDatabase.ByHash[0x0022fb41u];
+        set.Items.Count.ShouldBe(5);
+    }
+
     // ── JSON round-trip ──────────────────────────────────────────────────
 
     [Fact]

@@ -48,8 +48,8 @@ Complete S04_ affix set (all 236 type-104 S04_ entries from CoreTOC) including:
 ## Gap 2: Skills (Low-Medium Priority)
 
 ### Status
-- **Coverage:** 223 skills across 9 classes
-- **Estimated Total:** 250+ skills (including variants)
+- **Coverage:** 242 skills across 9 classes
+- **Estimated Total:** ~250 skills
 
 ### What We Have
 - All 9 classes documented (Barbarian, Sorcerer, Necromancer, Druid, Rogue, Paladin, Spiritborn, Warlock)
@@ -57,10 +57,9 @@ Complete S04_ affix set (all 236 type-104 S04_ entries from CoreTOC) including:
 - Coverage includes new Warlock class (Season 13)
 
 ### What's Missing
-- Season 13 additions (Warlock skills are included but may be incomplete)
-- Skill variants and specializations
-- Passive skills (if used in filter conditions)
-- Unverified/datamined skills that haven't been confirmed in-game
+- Paladin: ~4 placeholder `(PH)` skills (unreleased WIP content — intentionally omitted)
+- Spiritborn: 1 placeholder `(PH) Invoke` (unreleased)
+- Skill variants and specializations not used in SkillRankBonus affixes
 
 ### Impact on Filters
 **Low** — Most player filters focus on affixes and item properties. Skill-based conditions are less common.
@@ -167,36 +166,39 @@ If value-based affix filtering is added in the future, this becomes critical.
 
 ---
 
-## Gap 7: Talisman Item Mappings (Low Priority)
+## Gap 7: Talisman Item Mappings (RESOLVED ✅)
 
 ### Status
-- **Coverage:** 50 talisman sets with display names
-- **Issue:** Which items belong to each talisman set?
+- **Coverage:** 45 talisman sets fully populated (5 X1_QST Hatred sets have no type-109 CoreTOC entry — skipped)
+- **Items:** 239 charm items with hashes and display names
 
 ### What We Have
 ```json
 {
   "displayName": "Berserker's Crucible",
   "internalName": "Talisman_Barb_02.stl",
-  "items": []  // ← Empty!
+  "hash": "0x0022fb41",
+  "items": [
+    { "displayName": "Phoba of the Crucible", "internalName": "Item_Talisman_Charm_Set_Barb_02_01.stl", "hash": "0x002506d4" },
+    { "displayName": "Berú of the Crucible",  "internalName": "Item_Talisman_Charm_Set_Barb_02_05.stl", "hash": "0x002506e2" }
+  ]
 }
 ```
 
-### What's Missing
-- Item → set membership mapping
-- For each talisman set, list the specific unique items (charms/talisman conversions) that are part of it
+### Resolution Method
+- **Set hashes:** CoreTOC type-109 (`Talisman_{Class}_{N}`) snoID = set hash used in filter field 2
+- **Item hashes:** CoreTOC type-73 StringList (`Talisman_Charm_Set_{Class}_{N}_{I}`) snoID = item hash used in filter field 3
+- **Display names:** `Item_Talisman_Charm_Set_*.stl.json` → `arStrings[Name].szText`
+- **Generic sets** (Small_Generic01/02/03/06/09): 3 items each (not 5)
+- **X1_QST Hatred sets:** no type-109 entry found in CoreTOC; left without hash/items
 
-### Impact on Filters
-**None** — The filter codec already decoded Berserker's Crucible correctly (field 3 contains item mappings).
-This is just for display/UI enhancement (showing "which items are in this set").
-
-### How to Resolve
-1. Extract from `Item_Talisman_Charm_Set_*.stl.json` files (already found in d4data)
-2. Parse to find talisman charm definitions
-3. Map back to set names
+### Coverage
+- 8 classes × 5 sets × 5 items = 200 class-specific charm items
+- 5 generic sets × 3 items = 15 generic items + Small_Generic sets 04/05/07/08/10 (not in d4-data.json)
+- 4 new tests added verifying set name, item name, set count, and item count per set
 
 ### Priority
-**LOW** — UI feature, not core functionality. Can be added post-launch.
+**RESOLVED** — Set and item names now resolve correctly in `TalismanSetDatabase`.
 
 ---
 
@@ -205,12 +207,12 @@ This is just for display/UI enhancement (showing "which items are in this set").
 | Gap | Category | Items | Coverage | Impact | Priority |
 |-----|----------|-------|----------|--------|----------|
 | 1 | Affixes (S04 + X2/S11) | 251 / 501 | 50% | Low | ✅ RESOLVED (standard affixes complete) |
-| 2 | Skills | 223 / 250+ | 89% | Low | MEDIUM |
+| 2 | Skills | 242 / ~250 | 97% | Low | MEDIUM |
 | 3 | Unique Affix Maps | 0 / TBD | 0% | None | LOW |
 | 4 | Item Type Affix Maps | 0 / TBD | 0% | None | VERY LOW |
 | 5 | Affix Value Ranges | 0 / TBD | 0% | Low | MEDIUM |
 | 6 | Undocumented Items | 7 / 901 | 99.2% | None | VERY LOW |
-| 7 | Talisman Item Maps | 0 / 50 | 0% | None | LOW |
+| 7 | Talisman Item Maps | 239 / 239 | 100% | None | ✅ RESOLVED |
 
 ---
 
@@ -221,14 +223,14 @@ This is just for display/UI enhancement (showing "which items are in this set").
 - Unique items: 901 (99.2% resolved)
 - Talisman sets: 50 (100% resolved)
 - Item types: 27 (100% resolved)
-- Skills: 223 (89% coverage)
+- Skills: 242 (97% coverage — all real skills; only unreleased PH placeholders omitted)
 - Affixes: 251 (all standard S04 item affixes covered, including 102 named skill ranks + 52 passives)
 
 ### Post-Launch (Phase 2)
 1. **Gap 2:** Verify Warlock skill completeness; collect unknown skills from player filters
 2. **Gap 1:** Expand affix database reactively as players encounter unknowns
 3. **Gap 5:** If value-based affix filtering is added, document affix ranges
-4. **Gap 7:** Extract talisman item mappings for set tooltips/UI enhancement
+4. ✅ **Gap 7:** Talisman item mappings complete (239 items across 45 sets)
 
 ### Never (Low ROI)
 - Gaps 3, 4, 6 — Minimal impact, high effort
@@ -289,4 +291,4 @@ To add new items/affixes/skills:
 ---
 
 ## Last Updated
-May 24, 2026 — Affix database expanded to 251 entries (S04 complete: all named skill ranks + passives resolved from d4data Power STL files)
+May 24, 2026 — Gap 7 resolved; 19 missing skills added for Warlock (13) and Paladin (6): total now 242 across 9 classes (97%)
