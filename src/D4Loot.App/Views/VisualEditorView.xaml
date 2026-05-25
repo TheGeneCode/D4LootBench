@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:D4Loot.App.ViewModels"
+    xmlns:behaviors="clr-namespace:D4Loot.App.Behaviors"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=vm:VisualEditorViewModel, IsDesignTimeCreatable=False}">
 
@@ -212,7 +213,8 @@
                             </DockPanel>
 
                             <!-- Condition rows — templates resolved from Application.Resources by VM type -->
-                            <ItemsControl ItemsSource="{Binding Conditions}" />
+                            <ItemsControl ItemsSource="{Binding Conditions}"
+                                          behaviors:ScrollNewItemsIntoView.Enabled="True" />
 
                         </StackPanel>
                     </DataTemplate>
