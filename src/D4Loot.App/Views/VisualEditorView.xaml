@@ -11,8 +11,8 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="260" MinWidth="160" />
-            <ColumnDefinition Width="4" />
+            <ColumnDefinition Width="320" MinWidth="200" />
+            <ColumnDefinition Width="6" />
             <ColumnDefinition Width="*" MinWidth="340" />
         </Grid.ColumnDefinitions>
 
@@ -74,7 +74,20 @@
         <!-- ── Splitter ──────────────────────────────────────────────── -->
         <GridSplitter Grid.Column="1"
                       HorizontalAlignment="Stretch"
-                      Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                      Width="6"
+                      ShowsPreview="True"
+                      ResizeBehavior="PreviousAndNext"
+                      Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+            <GridSplitter.Template>
+                <ControlTemplate TargetType="GridSplitter">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Rectangle Width="2" Fill="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                                   Margin="0,40" RadiusX="1" RadiusY="1" />
+                    </Grid>
+                </ControlTemplate>
+            </GridSplitter.Template>
+        </GridSplitter>
 
         <!-- ── Rule Editor (right panel) ────────────────────────────── -->
         <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
@@ -103,7 +116,7 @@
                 <!-- Rule editor template (DataContext = FilterRuleViewModel) -->
                 <ContentControl.Resources>
                     <DataTemplate DataType="{x:Type vm:FilterRuleViewModel}">
-                        <StackPanel Margin="14,10" MaxWidth="580">
+                        <StackPanel Margin="14,10">
 
                             <!-- Name -->
                             <Label Content="Name" Padding="0,0,0,2" />
