@@ -9,8 +9,16 @@
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="3" />
-        <Setter Property="Margin" Value="0,0,0,4" />
-        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="Padding" Value="10,8" />
+    </Style>
+
+    <!-- Shared style for the condition type header TextBlock -->
+    <Style x:Key="ConditionHeaderStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Width" Value="140" />
+        <Setter Property="Margin" Value="0,0,10,0" />
     </Style>
 
     <!-- ── Codex of Power ─────────────────────────────────────────────── -->
@@ -21,8 +29,8 @@
                         Command="{Binding DataContext.DeleteConditionCommand,
                                   RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                         CommandParameter="{Binding}" />
-                <TextBlock Text="Codex of Power" FontWeight="SemiBold" VerticalAlignment="Center"
-                           MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                <TextBlock Text="Codex of Power" Style="{StaticResource ConditionHeaderStyle}"
+                           DockPanel.Dock="Left" />
                 <TextBlock Text="Matches all Codex upgrade drops" VerticalAlignment="Center"
                            Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                            FontStyle="Italic" />
@@ -39,8 +47,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -51,11 +59,26 @@
                     <Label Content="Max:" DockPanel.Dock="Left" Padding="0,0,4,0" VerticalAlignment="Center" />
                     <TextBox DockPanel.Dock="Left" Width="70"
                              Text="{Binding Maximum, UpdateSourceTrigger=PropertyChanged}"
-                             ToolTip="Set to 0 for no upper bound" />
+                             ToolTip="Set to 0 for no upper bound (game cap 900)" />
                     <TextBlock Text="(0 = no upper bound)" Margin="8,0,0,0" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                                FontSize="11" />
                 </DockPanel>
+                <TextBlock Text="Clamped to game cap 900"
+                           Margin="0,4,0,0"
+                           FontSize="11"
+                           Foreground="#C88A00">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MaximumWasClamped}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </StackPanel>
         </Border>
     </DataTemplate>
@@ -69,8 +92,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -92,8 +115,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -129,8 +152,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -156,8 +179,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -175,8 +198,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -203,8 +226,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -232,8 +255,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
@@ -251,8 +274,8 @@
                             Command="{Binding DataContext.DeleteConditionCommand,
                                       RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}" />
-                    <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
-                               MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
                     <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
                                Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                 </DockPanel>
