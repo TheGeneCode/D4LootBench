@@ -133,8 +133,8 @@ The condition type discriminator is field 1. The complete enum (from
 | 3 | Codex Upgrade Check | `CodexCondition` | ✅ fully modelled |
 | 4 | Greater Affix Check | `GreaterAffixCondition` | ✅ fully modelled |
 | 5 | Item Type Match | `ItemTypeCondition` | ✅ fully modelled |
-| 6 | Has Required Affixes | `AffixCondition` | ✅ fully modelled (GA pairs decoded; Field5 semantics unknown) |
-| 7 | Has Optional Affixes | `OptionalAffixCondition` | ✅ fully modelled (GA pairs decoded; Field5 semantics unknown) |
+| 6 | Has Required Affixes | `AffixCondition` | ✅ fully modelled (GA pairs decoded; Field5 observed always 0) |
+| 7 | Has Optional Affixes | `OptionalAffixCondition` | ✅ fully modelled (GA pairs decoded; Field5 observed always 0) |
 | 8 | Is Specific Unique | `SpecificUniqueCondition` | ✅ modelled (~900 IDs, all internal names — no player-friendly labels) |
 | 9 | Talisman Set Bonus | `TalismanSetCondition` | ✅ modelled (SetIds + SetEntries decoded; no set ID database yet) |
 
@@ -251,8 +251,25 @@ field 4  (varint)           = minimum_count
 ```
 
 `params2` encodes Greater Affix requirements as pairs of affix hash IDs. Codec decodes
-field 3 into `GreaterEntries` on `AffixCondition`. Note: Field 5 (`Value3`) is preserved
-on decode (`AffixCondition.Field5`) but its semantics are not yet understood.
+field 3 into `GreaterEntries` on `AffixCondition`.
+
+**Greater Affix pair shape.** Each field 3 sub-message holds two fixed32 IDs.
+Across every game-exported sample we have collected (Raxx 2024 Universal/Main-Stat/Specific
+GA rules; six hand-built samples with mixed configurations of 2/0, 2/1, 3/1, 3/2 and
+all-greater shapes), the **second uint always equals the first** — i.e. the affix hash is
+echoed. The model preserves it as `GreaterAffixEntry.AffixIdEcho` for lossless round-trips
+in case some unobserved game state uses it differently, but encoders should write the same
+value to both slots.
+
+**Mixed greater / non-greater shape.** AffixIds (field 2) carries the complete required
+list — both regular-required and must-be-greater hashes. GreaterEntries (field 3) carries
+only the must-be-greater subset. For a 3-affix rule where 1 is greater, AffixIds.Count = 3
+and GreaterEntries.Count = 1; D4 imports this correctly.
+
+**Field 5 observation.** Across every observed game-exported sample (including the mixed
+configurations above), field 5 is absent or zero. The model retains `AffixCondition.Field5`
+for verbatim round-trips in case patches reintroduce it, but the encoder skips field 5
+when the value is 0 — matching the game's own writes.
 
 ---
 
@@ -264,7 +281,7 @@ Same field layout as Type 6.
 Items match if they have *any* of the listed affixes (OR semantics vs Type 6's AND/count).
 Model class: `OptionalAffixCondition` — structurally identical to `AffixCondition`
 (AffixIds, MinimumCount, GreaterEntries, Field5) with a different type discriminator.
-Field 5 semantics unknown (same as Type 6).
+Same Field 5 / GA-pair / mixed-shape observations as Type 6.
 
 ---
 
@@ -299,6 +316,21 @@ is built. fnuecke's `names.json` has matching entries prefixed `Talisman_`.
 
 All IDs confirmed via Upsilon72/d4-filter-generator; `0x001beab8` additionally verified
 against fnuecke/diablo4-loot-filter-viewer `names.json` (`S04_CooldownReductionCDR`).
+
+### Phantom affixes in CoreTOC (not filter-selectable)
+
+DiabloTools/d4data's `CoreTOC_flat.json` contains a cluster of `% X` primary-stat entries
+at hashes `0x001d5ded` (`% Armor`), `0x001d5def` (`% Dexterity`), `0x001d5df1`
+(`% Intelligence`), `0x001d5df3` (`% Strength`), `0x001d5df5` (`% Willpower`). These hashes
+exist in the game data dump but **D4's in-game filter editor does not expose them** — share
+codes that reference them import with the affix silently dropped from the rule. The real
+flat-stat affixes are at the `0x001bea**` range (e.g. Dexterity `0x001beaba`, Intelligence
+`0x001beabe`).
+
+The `%` prefix alone is not a disqualifier — `% Cooldown Reduction` at `0x001beab8` is a
+legitimate filter affix, confirmed by a game-exported sample. Future contributors
+regenerating `d4-data.json` from CoreTOC should re-prune the `0x001d5ded..0x001d5df5`
+cluster.
 
 ### Offensive
 | Affix | Hash |

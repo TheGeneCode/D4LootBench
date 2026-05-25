@@ -6,6 +6,7 @@ A standalone WPF desktop application for editing Diablo IV loot filter share cod
 ## Technology Stack
 - **.NET 10 / WPF** (`net10.0-windows`) — Windows-only desktop app
 - **CommunityToolkit.Mvvm 8.4.2** — MVVM source generators (D4Loot.App)
+- **Microsoft.Extensions.DependencyInjection 10.0.0** — DI container for the App
 - **AvalonEdit 6.3.0** — JSON editor (syntax highlighting, folding, search)
 - **Shouldly 4.3.0** — test assertions (MIT license)
 - **xUnit** — test runner
@@ -27,51 +28,78 @@ D4Loot.slnx
 │   │   ├── SkillDatabase.cs            # ~200 skills for all 9 classes, mixed verified/datamined
 │   │   └── UniqueItemDatabase.cs       # ~900 unique entries (~848 with resolved display names, IsReleased flag, classes[])
 │   ├── Models/
-│   │   ├── Condition.cs                # 10 concrete records + UnknownCondition, GreaterAffixEntry, TalismanSetEntry
+│   │   ├── Condition.cs                # 10 concrete records + UnknownCondition, GreaterAffixEntry (AffixId+AffixIdEcho), TalismanSetEntry
 │   │   ├── Enums.cs                    # Visibility (Show/Recolor/HideAll), RarityFlags [Flags]
 │   │   ├── FilterRule.cs               # Name, Visibility, Color, Conditions list, IsEnabled
-│   │   └── FilterRuleset.cs            # Rules list, Name, Count, Version=1
+│   │   └── FilterRuleset.cs            # Rules list, Name, Count, Version=1; Validate() delegates to FilterValidator
 │   ├── Serialization/
-│   │   ├── FilterJsonOptions.cs        # STJ serializer config for polymorphic conditions
-│   │   └── HexUInt32Converter.cs       # Custom JSON converter for uint32 → hex string
+│   │   ├── FilterJsonOptions.cs        # STJ serializer config (annotated converters, pretty-printed)
+│   │   ├── FilterDataContext.cs        # Static set-once holder for IFilterDataService used by JSON converters
+│   │   ├── HexUInt32Converter.cs       # uint32 ↔ "0x..." hex string
+│   │   ├── AnnotatedHashListConverter.cs   # Abstract base for { id, name } list output
+│   │   ├── AnnotatedListConverters.cs  # Affix/ItemType/Unique/TalismanSet list converters
+│   │   ├── GreaterAffixEntryConverter.cs   # { affixId, affixName, affixIdEcho }
+│   │   └── TalismanSetEntryConverter.cs    # { setId, setName, itemId, itemName }
+│   ├── Validation/
+│   │   ├── IFilterValidator.cs         # Service interface used by export path, Raw Editor, future AI
+│   │   ├── FilterValidator.cs          # Game-enforced rule checks (count, name, item power, GA count, picks)
+│   │   └── ValidationResult.cs         # Severity + message + optional rule index
 │   └── D4Loot.Core.csproj
 │
-├── src/D4Loot.App/                     # WPF app (.NET 10, CommunityToolkit.Mvvm 8.4.2)
+├── src/D4Loot.App/                     # WPF app (.NET 10, CommunityToolkit.Mvvm, Microsoft.Extensions.DependencyInjection)
+│   ├── App.xaml/.cs                    # OnStartup builds DI container, sets FilterDataContext, resolves MainWindow
+│   ├── MainWindow.xaml/.cs             # Shell window: toolbar (Validate badge), IssuesPanel, editor content
+│   ├── Behaviors/
+│   │   └── ScrollNewItemsIntoView.cs   # Attached behavior: BringIntoView on items added to ItemsControl at runtime
 │   ├── Converters/
-│   │   └── BoolToBrushConverter.cs
+│   │   ├── BoolToBrushConverter.cs
+│   │   ├── ConditionTypeNameConverter.cs
+│   │   └── ValidationSeverityConverter.cs   # Severity glyph + brush for IssuesPanel
+│   ├── Services/
+│   │   └── ServiceConfiguration.cs     # DI bootstrap; registers IFilterDataService, IFilterValidator, IConditionViewModelFactory, MainWindow(VM)
 │   ├── Utilities/
 │   │   └── ColorUtility.cs             # HSV/ABGR conversion, contrast helper
 │   ├── ViewModels/
-│   │   ├── MainWindowViewModel.cs      # Top-level orchestrator: import/export, raw editor, status
-│   │   ├── VisualEditorViewModel.cs    # Rule collection management, add/delete/move/reorder
-│   │   ├── FilterRuleViewModel.cs      # Single rule editing: color, visibility, conditions
-│   │   ├── ConditionViewModel.cs       # Condition display: type name, summary, full list
-│   │   ├── RawEditorViewModel.cs       # JSON editing with Apply callback
-│   │   └── ColorPickerViewModel.cs     # HSV state, ABGR ↔ hex sync
+│   │   ├── MainWindowViewModel.cs      # Orchestrator + Validate command + Issues collection
+│   │   ├── VisualEditorViewModel.cs    # Rule collection management, AddRule CanExecute=rules<25
+│   │   ├── FilterRuleViewModel.cs      # Rule editing + Undo-delete-condition single-level stash
+│   │   ├── ConditionViewModel.cs       # Abstract base; subclasses below
+│   │   ├── RawEditorViewModel.cs       # JSON editing with Validate + Apply commands, Issues collection
+│   │   ├── ColorPickerViewModel.cs     # HSV state, ABGR ↔ hex sync
 │   │   └── Conditions/                 # Per-type condition editing ViewModels
+│   │       ├── IConditionViewModelFactory.cs / ConditionViewModelFactory.cs  # Dispatch model↔VM and CreateNew(type)
+│   │       ├── PickerViewModel.cs      # Available/Selected pair, search, max selection, ClearAll
+│   │       ├── ConditionViewModelHelpers.cs    # FormatRarityFlags
 │   │       ├── AffixConditionViewModel.cs
+│   │       ├── OptionalAffixConditionViewModel.cs
+│   │       ├── GreaterAffixConditionViewModel.cs
 │   │       ├── ItemPowerConditionViewModel.cs
 │   │       ├── ItemTypeConditionViewModel.cs
+│   │       ├── ItemPropertiesConditionViewModel.cs
 │   │       ├── RarityConditionViewModel.cs
+│   │       ├── CodexConditionViewModel.cs
 │   │       ├── SpecificUniqueConditionViewModel.cs
 │   │       ├── TalismanSetConditionViewModel.cs
-│   │       └── ...
+│   │       └── UnknownConditionViewModel.cs
 │   ├── Views/
-│   │   ├── VisualEditorView.xaml/.cs   # Main rule editor: rule list + editor panel + conditions
-│   │   ├── RawEditorWindow.xaml/.cs    # AvalonEdit JSON editor with fold/search/apply
+│   │   ├── VisualEditorView.xaml/.cs   # Rule list + editor panel + ScrollNewItemsIntoView on conditions
+│   │   ├── ConditionTemplates.xaml     # DataTemplates for every condition type; shared card/header styles
+│   │   ├── ItemPickerControl.xaml/.cs  # Available/Selected dual-list with Clear all
+│   │   ├── RawEditorWindow.xaml/.cs    # AvalonEdit + Validate/Apply + IssuesPanel
 │   │   ├── ColorPickerDialog.xaml/.cs  # Full HSV color picker with hex input
-│   │   └── Conditions/                 # Per-type DataTemplates for condition editors
-│   │       ├── AffixConditionView.xaml
-│   │       ├── AffixConditionView.xaml
-│   │       ├── GreaterAffixView.xaml
-│   │       └── ...
-│   ├── App.xaml/.cs                    # Application entry point
-│   ├── MainWindow.xaml/.cs             # Shell window with tab navigation
+│   │   └── IssuesPanel.xaml/.cs        # Shared ValidationIssue list (used by MainWindow + RawEditorWindow)
 │   └── D4Loot.App.csproj
 │
 ├── tests/D4Loot.Core.Tests/
 │   ├── Codec/
 │   │   └── FilterCodecTests.cs         # 33 tests: round-trip, real Raxx filter, idempotency, all-conditions fixture, hash ID test
+│   ├── Validation/
+│   │   └── FilterValidatorTests.cs     # 19 tests: rule count, name boundary, item power cap, GA count, selection limits, multi-issue indices
+│   ├── SerializationTests/
+│   │   └── AnnotatedJsonTests.cs       # 6 tests: legacy form read, annotated round-trip, id-wins, name-only resolve, unknown-hash round-trip
+│   ├── Data/
+│   │   └── DatabaseInitTests.cs        # *Database singletons init without throwing
+│   ├── TestSetup.cs                    # ModuleInitializer wires FilterDataContext for all tests
 │   └── D4Loot.Core.Tests.csproj
 │
 ├── docs/
@@ -149,17 +177,48 @@ Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-
 - **New rule naming** — auto-named Rule #{n} instead of hardcoded
 - Data expansion: affixes 63→251, talisman sets (50) populated, unique display names 848/901, classes[] tagging, seasonal/transmog duplicates pruned
 
+### Phase 3.5 ✅ — Pre-Phase-4 Lockdown
+Architecture hardening + high-impact UX polish so Phase 4 (AI) can ship without rewriting consumers. **58 tests** passing (33 codec + 19 validator + 6 annotated JSON), 0 warnings.
+
+**Service abstractions:**
+- `IFilterDataService` aggregates per-category catalogs (`IAffixCatalog`, `ISkillCatalog`, `IItemTypeCatalog`, `IUniqueItemCatalog`, `ITalismanSetCatalog`). Default impl wraps the existing static `*Database` singletons.
+- `IConditionViewModelFactory` centralizes `Condition` ↔ `*ConditionViewModel` dispatch. The pair of switches in `FilterRuleViewModel` is gone; adding an 11th condition type edits one file.
+- `IFilterValidator` + structured `ValidationResult`. `FilterRuleset.Validate()` delegates and is preserved for compat.
+- `Microsoft.Extensions.DependencyInjection` wires everything in `App.OnStartup`.
+
+**JSON format change — annotated `{id, name}`:**
+- Filter JSON now emits hash IDs as `{ "id": "0x…", "name": "…" }` across affixes, item types, uniques, talisman sets; `GreaterAffixEntry` becomes `{ affixId, affixName, affixIdEcho }`; `TalismanSetEntry` becomes `{ setId, setName, itemId, itemName }`.
+- Hash IDs remain authoritative. On read: `id` wins when present; missing `id` resolves via name; mismatched `id`+`name` keeps `id` and validator surfaces a warning. Legacy string-hash form still reads.
+- Converters resolve names via `FilterDataContext.Current` (narrow static set in `App.OnStartup` and the test ModuleInitializer; required because STJ reflectively constructs converters with no ctor args).
+
+**Model cleanup:** `GreaterAffixEntry.Value` → `AffixIdEcho`. Every game-exported sample (six configurations spanning 2/0, 2/1, 3/1, 3/2, and all-greater shapes) writes this second field equal to the affix hash itself.
+
+**UX upgrades:**
+- Conditions auto-scroll into view when added (off-screen-append problem solved).
+- One-level Undo for condition delete (button next to `+ Add`; cleared after restore or next delete).
+- Item picker lists: `MinHeight=200` (was fixed 140), `Clear all` button, double-click tooltips.
+- Rule editor: removed `MaxWidth=580`, left panel 260→320 default, visible 2px GridSplitter handle.
+- Pre-emptive validation: `Validate` toolbar button shows live issue count; `IssuesPanel` docks below toolbar when findings exist; `Copy Code` / `Save JSON` disabled by `CanExecute` when blocking errors present; `Add Rule` disabled at 25-rule cap with explanatory tooltip.
+- ItemPower silent-clamp now shows "Clamped to game cap 900" hint when triggered.
+- Condition cards: 4px → 10px gap; header column unified at 140px so all summaries align.
+- Raw Editor: new `Validate` command runs parse + IFilterValidator without applying. Reused `IssuesPanel`.
+
+**Data cleanup:** Phantom `% Armor` (`0x001d5ded`) and four phantom primary-stat affixes (`0x001d5def..0x001d5df5`) removed from `d4-data.json`. These hashes exist in DiabloTools/d4data CoreTOC but are not selectable in D4's in-game filter editor — share codes referencing them import with the affix silently dropped. Policy and detection criteria documented in `docs/filter-format.md`.
+
+**Field 5 observation:** Across every game-exported sample we collected, Field 5 of `AffixCondition`/`OptionalAffixCondition` is absent or zero. Codec round-trips it verbatim but writes 0. See `docs/filter-format.md` Type 6 section.
+
 ### Phase 4 ❌ — AI Rule Assistant (Not Started)
 - Design doc exists at `docs/ai-assistant.md`
-- Initial scaffolding was removed; no code committed
 - Ollama-first approach recommended when implemented
+- Architecture seams now in place (IFilterDataService, IFilterValidator, annotated JSON for LLM-friendly content)
 - See design doc for architecture decisions
 
 ## What's Next (Ordered by Priority)
 1. **Phase 4 — AI rule assistant**: implement `D4Loot.Ai` project with Ollama provider, natural language rule generation
 2. **README.md**: write project README with attribution, usage, troubleshooting
 3. **About dialog**: in-app attribution, version info
-4. **Polish**: remaining unique display names (~53 unresolved), UX refinements
+4. **D4Loot.App.Tests project** (deferred from Phase 3.5): VM tests, factory exhaustiveness, ColorUtility round-trip
+5. **Polish**: remaining unique display names (~53 unresolved); deferred UX (Ctrl+Z for undo, rule list search, bulk operations, copy/paste conditions across rules, theme revisit)
 
 ## Key Decisions Made
 - **WPF over MAUI** — audience is 100% Windows, simpler deployment
@@ -169,12 +228,17 @@ Sources: Upsilon72/d4-filter-generator (Season 13), fnuecke/diablo4-loot-filter-
 - **UnknownCondition type** preserves raw bytes for condition types not yet mapped, ensuring lossless round-trips on future game patches
 - **JSON editor before visual editor** — AvalonEdit tab gives immediate insight into filter structure; doubles as a power-user/debug feature in the final app
 - **Per-type condition editor ViewModels** — each condition type gets its own ViewModel + DataTemplate; avoids monolithic switch and enables type-specific pickers
+- **DI via Microsoft.Extensions.DependencyInjection** — standard, supports Phase 4 cleanly; bootstrap in `App.OnStartup`
+- **Validator-as-service (IFilterValidator)** — replaces `FilterRuleset.Validate()` string-list with structured `ValidationResult` so the UI can navigate to offending rules and Phase 4 can validate AI suggestions
+- **Annotated `{id, name}` JSON over wire form** — makes filter JSON human-editable AND lets an LLM reason about content; legacy string-hash form still reads for backward compat. Static `FilterDataContext` provides the data service to STJ converters (which are reflectively constructed with no ctor args)
+- **Undo over modal confirm for delete** — confirmations punish power users on every click; one-level undo is the better tradeoff
+- **Phantom `% X` primary stats removed from `d4-data.json`** — hashes `0x001d5ded..0x001d5df5` exist in CoreTOC but D4's filter editor doesn't expose them. See `docs/filter-format.md`.
 - **AI assistant deferred** — focusing on core editing UX first; AI is an additive feature, not a prerequisite
 
 ## Running / Testing
 ```powershell
 dotnet build          # full solution (0 warnings)
-dotnet test           # 33 tests in D4Loot.Core.Tests
+dotnet test           # 58 tests in D4Loot.Core.Tests
 ```
 
 ## Ad-Hoc Verification
