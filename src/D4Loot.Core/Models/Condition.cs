@@ -33,10 +33,14 @@ public sealed record CodexCondition : Condition;
 /// <summary>Type 5 — item type hash IDs (e.g. Charm, Seal).</summary>
 public sealed record ItemTypeCondition(IReadOnlyList<uint> TypeIds) : Condition;
 
-/// <summary>Type 6 — affix hash IDs with a minimum-present threshold (AND/count semantics).</summary>
-/// <remarks>Field 3 in the wire format encodes greater-affix pairs: each sub-message
-/// stores an affix ID plus a companion value (meaning TBD).</remarks>
-public sealed record GreaterAffixEntry(uint AffixId, uint Value);
+/// <summary>
+/// Flags a single affix as "must be greater" inside an <see cref="AffixCondition"/> or
+/// <see cref="OptionalAffixCondition"/>. Maps to one field-3 sub-message in the wire format,
+/// where field 1 is the affix hash and field 2 carries a second uint we have only ever
+/// observed equalling the affix hash. The field is preserved verbatim (<see cref="AffixIdEcho"/>)
+/// for lossless round-trips in case some game state uses a different value we haven't seen.
+/// </summary>
+public sealed record GreaterAffixEntry(uint AffixId, uint AffixIdEcho);
 
 /// <summary>Max 15 affix IDs per condition (game-enforced).</summary>
 public sealed record AffixCondition(IReadOnlyList<uint> AffixIds, int MinimumCount) : Condition

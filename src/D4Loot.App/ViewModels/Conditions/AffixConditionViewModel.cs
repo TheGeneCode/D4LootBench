@@ -37,7 +37,7 @@ public sealed partial class AffixConditionViewModel : ConditionViewModel
         foreach (var ge in m.GreaterEntries)
         {
             if (!_preservedGreaterValues.ContainsKey(ge.AffixId))
-                _preservedGreaterValues[ge.AffixId] = ge.Value;
+                _preservedGreaterValues[ge.AffixId] = ge.AffixIdEcho;
         }
 
         Picker = MakePicker();

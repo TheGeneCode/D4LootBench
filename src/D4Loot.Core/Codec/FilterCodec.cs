@@ -163,7 +163,7 @@ public static class FilterCodec
                 {
                     var inner = new List<byte>();
                     inner.AddRange(ProtoWriter.Fixed32Field(1, ge.AffixId));
-                    inner.AddRange(ProtoWriter.Fixed32Field(2, ge.Value));
+                    inner.AddRange(ProtoWriter.Fixed32Field(2, ge.AffixIdEcho));
                     buf.AddRange(ProtoWriter.LenField(3, [.. inner]));
                 }
                 buf.AddRange(ProtoWriter.VarintField(4, (ulong)a.MinimumCount));
@@ -178,7 +178,7 @@ public static class FilterCodec
                 {
                     var inner = new List<byte>();
                     inner.AddRange(ProtoWriter.Fixed32Field(1, ge.AffixId));
-                    inner.AddRange(ProtoWriter.Fixed32Field(2, ge.Value));
+                    inner.AddRange(ProtoWriter.Fixed32Field(2, ge.AffixIdEcho));
                     buf.AddRange(ProtoWriter.LenField(3, [.. inner]));
                 }
                 if (oa.MinimumCount != 0)
@@ -284,7 +284,7 @@ public static class FilterCodec
             9 => new TalismanSetCondition
             {
                 SetIds = ids,
-                SetEntries = greaterEntries.Select(e => new TalismanSetEntry(e.AffixId, e.Value)).ToList()
+                SetEntries = greaterEntries.Select(e => new TalismanSetEntry(e.AffixId, e.AffixIdEcho)).ToList()
             },
             _ => new UnknownCondition(condType, condBytes)
         };

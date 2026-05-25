@@ -91,7 +91,7 @@
           "GreaterEntries": [
             {
               "AffixId": "0x001beab8",
-              "Value": "0x001beab8"
+              "AffixIdEcho": "0x001beab8"
             }
           ],
           "Field5": 0
