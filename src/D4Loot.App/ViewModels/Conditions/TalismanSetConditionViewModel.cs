@@ -12,7 +12,10 @@ public sealed partial class TalismanSetConditionViewModel : ConditionViewModel
     public TalismanSetConditionViewModel()
     {
         SetPicker = new PickerViewModel(
-            TalismanSetDatabase.All.Select(e => new PickerEntry(e.Hash, e.Name)));
+            TalismanSetDatabase.All.Select(e => new PickerEntry(e.Hash, e.Name)))
+        {
+            MaxSelectionCount = TalismanSetCondition.MaxSelectionCount
+        };
         ItemPicker = new PickerViewModel([]);
 
         SetPicker.Selected.CollectionChanged += OnSetsChanged;

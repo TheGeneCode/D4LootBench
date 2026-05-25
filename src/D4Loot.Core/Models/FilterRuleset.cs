@@ -2,6 +2,9 @@ namespace D4Loot.Core.Models;
 
 public sealed class FilterRuleset
 {
+    /// <summary>Game-enforced maximum of 25 rules per filter.</summary>
+    public const int MaxRuleCount = 25;
+
     public FilterRuleset() { }
 
     public FilterRuleset(string name, IEnumerable<FilterRule> rules)
@@ -20,8 +23,8 @@ public sealed class FilterRuleset
     {
         var errors = new List<string>();
 
-        if (Rules.Count > 25)
-            errors.Add($"Filter has {Rules.Count} rules — maximum is 25.");
+        if (Rules.Count > MaxRuleCount)
+            errors.Add($"Filter has {Rules.Count} rules — maximum is {MaxRuleCount}.");
 
         foreach (var (rule, i) in Rules.Select((r, i) => (r, i)))
         {
@@ -42,6 +45,26 @@ public sealed class FilterRuleset
                     case GreaterAffixCondition ga:
                         if (ga.MinimumCount < 1 || ga.MinimumCount > 4)
                             errors.Add($"{prefix}: greater affix minimum count is {ga.MinimumCount} — game allows 1–4.");
+                        break;
+
+                    case AffixCondition a:
+                        if (a.AffixIds.Count > AffixCondition.MaxSelectionCount)
+                            errors.Add($"{prefix}: required affixes has {a.AffixIds.Count} affixes — maximum is {AffixCondition.MaxSelectionCount}.");
+                        break;
+
+                    case OptionalAffixCondition oa:
+                        if (oa.AffixIds.Count > OptionalAffixCondition.MaxSelectionCount)
+                            errors.Add($"{prefix}: optional affixes has {oa.AffixIds.Count} affixes — maximum is {OptionalAffixCondition.MaxSelectionCount}.");
+                        break;
+
+                    case SpecificUniqueCondition su:
+                        if (su.UniqueIds.Count > SpecificUniqueCondition.MaxSelectionCount)
+                            errors.Add($"{prefix}: specific uniques has {su.UniqueIds.Count} items — maximum is {SpecificUniqueCondition.MaxSelectionCount}.");
+                        break;
+
+                    case TalismanSetCondition ts:
+                        if (ts.SetIds.Count > TalismanSetCondition.MaxSelectionCount)
+                            errors.Add($"{prefix}: talisman sets has {ts.SetIds.Count} sets — maximum is {TalismanSetCondition.MaxSelectionCount}.");
                         break;
                 }
             }

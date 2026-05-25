@@ -56,11 +56,17 @@ public sealed partial class AffixConditionViewModel : ConditionViewModel
         GreaterPicker.ReplaceSource(source);
     }
 
-    private static PickerViewModel MakePicker() =>
-        new(AffixDatabase.ByHash.Select(kv => new PickerEntry(kv.Key, kv.Value.Name)));
+    private PickerViewModel MakePicker() =>
+        new(AffixDatabase.ByHash.Select(kv => new PickerEntry(kv.Key, kv.Value.Name)))
+        {
+            MaxSelectionCount = AffixCondition.MaxSelectionCount
+        };
 
-    private static PickerViewModel MakeGreaterPicker() =>
-        new(Enumerable.Empty<PickerEntry>());
+    private PickerViewModel MakeGreaterPicker() =>
+        new(Enumerable.Empty<PickerEntry>())
+        {
+            MaxSelectionCount = AffixCondition.MaxSelectionCount
+        };
 
     private static PickerEntry ToPickerEntry(GreaterAffixEntry ge) =>
         new(ge.AffixId, AffixDatabase.GetDisplayName(ge.AffixId));

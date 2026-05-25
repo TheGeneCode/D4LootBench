@@ -34,8 +34,11 @@ public sealed partial class OptionalAffixConditionViewModel : ConditionViewModel
         Picker.Selected.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Summary));
     }
 
-    private static PickerViewModel MakePicker() =>
-        new(AffixDatabase.ByHash.Select(kv => new PickerEntry(kv.Key, kv.Value.Name)));
+    private PickerViewModel MakePicker() =>
+        new(AffixDatabase.ByHash.Select(kv => new PickerEntry(kv.Key, kv.Value.Name)))
+        {
+            MaxSelectionCount = OptionalAffixCondition.MaxSelectionCount
+        };
 
     public override void ApplyClassFilter(PlayerClass playerClass)
     {

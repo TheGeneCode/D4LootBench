@@ -35,10 +35,31 @@ public sealed partial class PickerViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(RemoveItemCommand))]
     private PickerEntry? _selectedCurrent;
 
+    /// <summary>Optional game-enforced limit on total selected items.</summary>
+    public int? MaxSelectionCount { get; init; }
+
+    /// <summary>Optional external limit check (e.g., shared limit across pickers).</summary>
+    public Func<bool>? ExternalAtMax { get; set; }
+
+    public bool IsAtMax =>
+        (MaxSelectionCount.HasValue && Selected.Count >= MaxSelectionCount.Value) ||
+        (ExternalAtMax is not null && ExternalAtMax());
+
+    public string SelectionCountDisplay =>
+        MaxSelectionCount.HasValue
+            ? $"{Selected.Count} / {MaxSelectionCount.Value}"
+            : $"{Selected.Count}";
+
     public PickerViewModel(IEnumerable<PickerEntry> source)
     {
         _source = source.OrderBy(e => e.DisplayName).ToList();
-        Selected.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FilteredAvailable));
+        Selected.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(FilteredAvailable));
+            OnPropertyChanged(nameof(IsAtMax));
+            OnPropertyChanged(nameof(SelectionCountDisplay));
+            AddItemCommand.NotifyCanExecuteChanged();
+        };
     }
 
     /// <summary>Replaces the available-item source, removing stale selections.</summary>
@@ -81,7 +102,7 @@ public sealed partial class PickerViewModel : ObservableObject
         }
     }
 
-    private bool CanAdd() => SelectedAvailable is not null;
+    private bool CanAdd() => SelectedAvailable is not null && !IsAtMax;
 
     [RelayCommand(CanExecute = nameof(CanRemove))]
     private void RemoveItem()

@@ -20,7 +20,10 @@ public sealed partial class SpecificUniqueConditionViewModel : ConditionViewMode
             .OrderBy(e => e.DisplayName)
             .ToList();
 
-        Picker = new PickerViewModel(source);
+        Picker = new PickerViewModel(source)
+        {
+            MaxSelectionCount = SpecificUniqueCondition.MaxSelectionCount
+        };
         Picker.Selected.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Summary));
     }
 

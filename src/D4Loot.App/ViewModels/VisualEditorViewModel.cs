@@ -24,11 +24,14 @@ public partial class VisualEditorViewModel : ObservableObject
 
     public static IReadOnlyList<PlayerClass> PlayerClasses { get; } = Enum.GetValues<PlayerClass>();
 
+    public string RuleCountDisplay => $"{Rules.Count} / {FilterRuleset.MaxRuleCount}";
+
     public VisualEditorViewModel(FilterRuleset ruleset)
     {
         _filterName = ruleset.Name;
         foreach (var rule in ruleset.Rules)
             Rules.Add(MakeRuleVm(rule));
+        Rules.CollectionChanged += (_, _) => OnPropertyChanged(nameof(RuleCountDisplay));
     }
 
     public FilterRuleset BuildRuleset() =>

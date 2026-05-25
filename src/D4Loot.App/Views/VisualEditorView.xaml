@@ -18,13 +18,19 @@
         <!-- ── Rule List (left panel) ───────────────────────────────── -->
         <DockPanel Grid.Column="0">
 
-            <!-- Filter name + class filter -->
+            <!-- Filter name + rule count + class filter -->
             <DockPanel DockPanel.Dock="Top" Margin="4,4,4,2" LastChildFill="True">
                 <ComboBox ItemsSource="{x:Static vm:VisualEditorViewModel.PlayerClasses}"
                           SelectedItem="{Binding SelectedClass}"
                           DockPanel.Dock="Right"
                           Width="94"
                           ToolTip="Filter skills and affixes by class (UI only — not saved in the filter)" />
+                <TextBlock Text="{Binding RuleCountDisplay}"
+                           VerticalAlignment="Center"
+                           FontSize="11"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                           DockPanel.Dock="Right"
+                           Margin="0,0,6,0" />
                 <TextBox Text="{Binding FilterName, UpdateSourceTrigger=PropertyChanged}"
                          ToolTip="Filter name"
                          Margin="0,0,4,0" />
