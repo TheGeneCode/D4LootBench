@@ -1,0 +1,211 @@
+{
+  "Name": "All Conditions Test",
+  "Rules": [
+    {
+      "Name": "IP Range 800-900",
+      "Visibility": "Recolor",
+      "Color": "0xff00c800",
+      "Conditions": [
+        {
+          "$type": "itemPower",
+          "Minimum": 800,
+          "Maximum": 900
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Legendary+ Items",
+      "Visibility": "Show",
+      "Color": "0xffff8c00",
+      "Conditions": [
+        {
+          "$type": "rarity",
+          "Mask": "LegendaryPlus"
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Ancestral Items",
+      "Visibility": "Show",
+      "Color": "0xffffd700",
+      "Conditions": [
+        {
+          "$type": "itemProperties",
+          "PropertyMask": 4
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "2+ Greater Affixes",
+      "Visibility": "Show",
+      "Color": "0xffa822e8",
+      "Conditions": [
+        {
+          "$type": "greaterAffix",
+          "MinimumCount": 2
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Codex Upgrades",
+      "Visibility": "Recolor",
+      "Color": "0xff0000ff",
+      "Conditions": [
+        {
+          "$type": "codex"
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Charms & Seals",
+      "Visibility": "Show",
+      "Color": "0xff00ffff",
+      "Conditions": [
+        {
+          "$type": "itemType",
+          "TypeIds": [
+            "0x0022ed05",
+            "0x00237e80"
+          ]
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Required: CDR + Armor",
+      "Visibility": "Show",
+      "Color": "0xffff0000",
+      "Conditions": [
+        {
+          "$type": "affix",
+          "AffixIds": [
+            "0x001beab8",
+            "0x001d5ded"
+          ],
+          "MinimumCount": 2,
+          "GreaterEntries": [
+            {
+              "AffixId": "0x001beab8",
+              "Value": "0x001beab8"
+            }
+          ],
+          "Field5": 0
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Optional: Dex or Int",
+      "Visibility": "Show",
+      "Color": "0xff00c800",
+      "Conditions": [
+        {
+          "$type": "optionalAffix",
+          "AffixIds": [
+            "0x001d5def",
+            "0x001d5df1"
+          ],
+          "MinimumCount": 1,
+          "GreaterEntries": [],
+          "Field5": 0
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Specific Uniques",
+      "Visibility": "Show",
+      "Color": "0xffff8c00",
+      "Conditions": [
+        {
+          "$type": "specificUnique",
+          "UniqueIds": [
+            "0x0002D7AB",
+            "0x00032D88"
+          ]
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Sword 800+ Item Power",
+      "Visibility": "Show",
+      "Color": "0xff22e8ae",
+      "Conditions": [
+        {
+          "$type": "itemPower",
+          "Minimum": 800,
+          "Maximum": 0
+        },
+        {
+          "$type": "itemType",
+          "TypeIds": [
+            "0x0006D14C",
+            "0x0006D14F"
+          ]
+        },
+        {
+          "$type": "rarity",
+          "Mask": "Rare, Legendary, Unique, Mythic"
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Sescheron's Fury Set",
+      "Visibility": "Show",
+      "Color": "0xffa822e8",
+      "Conditions": [
+        {
+          "$type": "talismanSet",
+          "SetIds": [
+            "0x0022fb15"
+          ],
+          "SetEntries": [
+            { "SetId": "0x0022fb15", "ItemId": "0x0025069a" },
+            { "SetId": "0x0022fb15", "ItemId": "0x002506a8" },
+            { "SetId": "0x0022fb15", "ItemId": "0x002506b5" },
+            { "SetId": "0x0022fb15", "ItemId": "0x002506b8" },
+            { "SetId": "0x0022fb15", "ItemId": "0x002506cd" }
+          ]
+        },
+        {
+          "$type": "rarity",
+          "Mask": "Talisman"
+        },
+        {
+          "$type": "itemType",
+          "TypeIds": [
+            "0x0022ed05"
+          ]
+        }
+      ],
+      "IsEnabled": true
+    },
+    {
+      "Name": "Talisman Set Empty",
+      "Visibility": "Recolor",
+      "Color": "0xffa822e8",
+      "Conditions": [
+        {
+          "$type": "talismanSet",
+          "SetIds": [],
+          "SetEntries": []
+        }
+      ],
+      "IsEnabled": false
+    },
+    {
+      "Name": "Catchall HideAll",
+      "Visibility": "HideAll",
+      "Color": "0xffff0000",
+      "Conditions": [],
+      "IsEnabled": true
+    }
+  ]
+}

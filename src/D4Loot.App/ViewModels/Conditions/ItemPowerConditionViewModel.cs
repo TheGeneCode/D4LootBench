@@ -18,7 +18,13 @@ public sealed partial class ItemPowerConditionViewModel : ConditionViewModel
     public ItemPowerConditionViewModel(ItemPowerCondition m)
     {
         _minimum = m.Minimum;
-        _maximum = m.Maximum;
+        _maximum = m.Maximum > 900 ? 900 : m.Maximum;
+    }
+
+    partial void OnMaximumChanged(int value)
+    {
+        if (value > 900)
+            Maximum = 900;
     }
 
     public override string TypeName => "Item Power";

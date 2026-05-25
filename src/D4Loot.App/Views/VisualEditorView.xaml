@@ -101,6 +101,7 @@
                             <!-- Name -->
                             <Label Content="Name" Padding="0,0,0,2" />
                             <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                     MaxLength="24"
                                      Margin="0,0,0,10" />
 
                             <!-- Enabled + Visibility -->

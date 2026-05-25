@@ -147,8 +147,8 @@ public static class FilterCodec
                 break;
             case GreaterAffixCondition ga:
                 buf.AddRange(ProtoWriter.VarintField(1, 4));
-                buf.AddRange(ProtoWriter.VarintField(4, 1));
-                buf.AddRange(ProtoWriter.VarintField(6, (ulong)ga.MinimumCount));
+                buf.AddRange(ProtoWriter.VarintField(4, (ulong)ga.MinimumCount));
+                buf.AddRange(ProtoWriter.VarintField(6, 1));
                 break;
             case ItemTypeCondition it:
                 buf.AddRange(ProtoWriter.VarintField(1, 5));
@@ -276,7 +276,7 @@ public static class FilterCodec
             1 => new RarityCondition((RarityFlags)field4),
             2 => new ItemPropertiesCondition((int)field4),
             3 => new CodexCondition(),
-            4 => new GreaterAffixCondition((int)field6),
+            4 => new GreaterAffixCondition((int)field4),
             5 => new ItemTypeCondition(ids),
             6 => new AffixCondition(ids, (int)field4) { GreaterEntries = greaterEntries, Field5 = (int)field5 },
             7 => new OptionalAffixCondition(ids, (int)field4) { GreaterEntries = greaterEntries, Field5 = (int)field5 },

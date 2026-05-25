@@ -1,6 +1,8 @@
+using System.Text.Json;
 using D4Loot.Core.Codec;
 using D4Loot.Core.Data;
 using D4Loot.Core.Models;
+using D4Loot.Core.Serialization;
 using Shouldly;
 
 namespace D4Loot.Core.Tests.Codec;
@@ -444,6 +446,30 @@ public sealed class FilterCodecTests
         // Log the IDs for inspection
         var idStrs = unique.UniqueIds.Select(id => $"0x{id:x8}").ToList();
         System.Diagnostics.Debug.WriteLine($"Unique IDs: {string.Join(", ", idStrs)}");
+    }
+
+    [Fact]
+    public void LoadAllConditionsJson_EncodeDecode_RoundTrips()
+    {
+        var jsonPath = Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\..\json-filters\All Conditions Test.json");
+        var json = File.ReadAllText(Path.GetFullPath(jsonPath));
+        var ruleset = JsonSerializer.Deserialize<FilterRuleset>(json, FilterJsonOptions.Default)!;
+
+        FilterCodec.Decode(FilterCodec.Encode(ruleset)).Rules.Count.ShouldBe(ruleset.Rules.Count);
+
+        var code = FilterCodec.Encode(ruleset);
+        var decoded = FilterCodec.Decode(code);
+
+        for (int i = 0; i < ruleset.Rules.Count; i++)
+        {
+            var o = ruleset.Rules[i];
+            var d = decoded.Rules[i];
+            d.Name.ShouldBe(o.Name);
+            d.Visibility.ShouldBe(o.Visibility);
+            d.Color.ShouldBe(o.Color);
+            d.IsEnabled.ShouldBe(o.IsEnabled);
+            d.Conditions.Count.ShouldBe(o.Conditions.Count);
+        }
     }
 }
 

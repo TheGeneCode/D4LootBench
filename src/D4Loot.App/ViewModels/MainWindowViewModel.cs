@@ -79,9 +79,10 @@ public partial class MainWindowViewModel : ObservableObject
         try
         {
             var ruleset = Editor!.BuildRuleset();
-            if (ruleset.Rules.Count > 25)
+            var errors = ruleset.Validate();
+            if (errors.Count > 0)
             {
-                SetStatus($"Filter has {ruleset.Rules.Count} rules — maximum is 25. Remove {ruleset.Rules.Count - 25} rule(s) before exporting.", error: true);
+                SetStatus(string.Join(" ", errors), error: true);
                 return;
             }
             Clipboard.SetText(FilterCodec.Encode(ruleset));
@@ -107,7 +108,14 @@ public partial class MainWindowViewModel : ObservableObject
 
         try
         {
-            var json = JsonSerializer.Serialize(Editor.BuildRuleset(), FilterJsonOptions.Default);
+            var ruleset = Editor.BuildRuleset();
+            var errors = ruleset.Validate();
+            if (errors.Count > 0)
+            {
+                SetStatus(string.Join(" ", errors), error: true);
+                return;
+            }
+            var json = JsonSerializer.Serialize(ruleset, FilterJsonOptions.Default);
             File.WriteAllText(dlg.FileName, json);
             SetStatus($"Saved \"{Path.GetFileName(dlg.FileName)}\".", error: false);
         }
@@ -122,7 +130,14 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(HasEditor))]
     private void OpenRawEditor()
     {
-        var json = JsonSerializer.Serialize(Editor!.BuildRuleset(), FilterJsonOptions.Default);
+        var ruleset = Editor!.BuildRuleset();
+        var errors = ruleset.Validate();
+        if (errors.Count > 0)
+        {
+            SetStatus(string.Join(" ", errors), error: true);
+            return;
+        }
+        var json = JsonSerializer.Serialize(ruleset, FilterJsonOptions.Default);
         ShowRawEditorRequested?.Invoke(new RawEditorViewModel(json, ApplyFromRawEditor));
     }
 

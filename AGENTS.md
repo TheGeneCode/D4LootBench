@@ -146,6 +146,12 @@ dotnet build          # full solution
 dotnet test           # 15+ tests in D4Loot.Core.Tests
 ```
 
+## Ad-Hoc Verification
+Use `dotnet run verify.cs` (no extra install — built into .NET 10) for one-off C# scripts that
+reference the solution. Write a top-level statement file, add project references inline, and run.
+Do NOT use `dotnet script` — that requires installing a separate global tool (`dotnet-script`).
+Always prefer adding a temporary xunit test or a `dotnet run verify.cs` approach instead.
+
 ## Publish (Phase 4)
 ```powershell
 dotnet publish src/D4Loot.App -r win-x64 -p:PublishSingleFile=true --self-contained true
