@@ -1,11 +1,11 @@
-# FilterForge — Project Context
+# D4LootBench — Project Context
 
 ## What This Is
 A standalone WPF desktop application for editing Diablo IV loot filter share codes. D4's in-game filter UI is clunky; this app lets players import a filter code, visually edit all its rules, then re-export the code to paste back into the game. Distribution via GitHub Releases as a self-contained single-file `.exe` — no installer, no hosting required.
 
 ## Technology Stack
 - **.NET 10 / WPF** (`net10.0-windows`) — Windows-only desktop app
-- **CommunityToolkit.Mvvm 8.4.2** — MVVM source generators (FilterForge.App)
+- **CommunityToolkit.Mvvm 8.4.2** — MVVM source generators (D4LootBench.App)
 - **Microsoft.Extensions.DependencyInjection 10.0.0** — DI container for the App
 - **AvalonEdit 6.3.0** — JSON editor with syntax highlighting, folding, search
 - **Shouldly 4.3.0** — test assertions
@@ -13,14 +13,14 @@ A standalone WPF desktop application for editing Diablo IV loot filter share cod
 
 ## Solution Layout
 ```
-FilterForge.slnx
-├── src/FilterForge.Core/          # Pure .NET 10 class library — zero WPF dependency
+D4LootBench.slnx
+├── src/D4LootBench.Core/          # Pure .NET 10 class library — zero WPF dependency
 │   ├── Models/               # FilterRuleset, FilterRule, 10 Condition subtypes + UnknownCondition
 │   ├── Codec/                # FilterCodec (encode/decode), ProtoWriter, ProtoReader
 │   ├── Data/                 # IFilterDataService + per-category catalogs, *Database statics, d4-data.json
 │   ├── Validation/           # IFilterValidator, FilterValidator, ValidationResult
 │   └── Serialization/        # FilterJsonOptions, HexUInt32Converter, annotated {id,name} converters, FilterDataContext
-├── src/FilterForge.Ai/            # Pure .NET 10 class library — no WPF dependency
+├── src/D4LootBench.Ai/            # Pure .NET 10 class library — no WPF dependency
 │   ├── ILlmProvider.cs       # Core abstraction (GetCompletionAsync)
 │   ├── LlmSettings.cs        # Provider enum + config model (BaseUrl, ModelName, ApiKey)
 │   ├── LlmCompletion.cs      # Result wrapper (Content, Error, IsSuccess)
@@ -31,14 +31,14 @@ FilterForge.slnx
 │   └── Providers/
 │       ├── OllamaProvider.cs # HTTP to localhost OpenAI-compat endpoint
 │       └── MockLlmProvider.cs # Hardcoded response for UI dev / test mode
-├── src/FilterForge.App/           # WPF app
+├── src/D4LootBench.App/           # WPF app
 │   ├── ViewModels/           # MainWindowVM, VisualEditorVM, FilterRuleVM, RawEditorVM, ColorPickerVM, AiAssistantVM, Conditions/*
 │   ├── Views/                # VisualEditorView, RawEditorWindow, ColorPickerDialog, IssuesPanel, AiAssistantView
 │   ├── Behaviors/            # ScrollNewItemsIntoView attached behavior
 │   ├── Converters/           # BoolToBrushConverter, ValidationSeverityConverter
 │   ├── Services/             # ServiceConfiguration, LlmSettingsService, LlmProviderFactory, SettingsAwareLlmProvider
 │   └── Utilities/            # ColorUtility (HSV/ABGR conversion, contrast helper)
-├── tests/FilterForge.Core.Tests/
+├── tests/D4LootBench.Core.Tests/
 │   ├── Codec/                # FilterCodecTests — round-trip, real Raxx filter, idempotency
 │   ├── Validation/           # FilterValidatorTests — 19 tests for limits, boundaries, indices
 │   ├── SerializationTests/   # AnnotatedJsonTests — id-wins, name-only, legacy form, unknown hash
@@ -92,8 +92,8 @@ Filter JSON emits hash IDs as `{ "id": "0x…", "name": "…" }` objects across 
 ## Running / Testing
 ```powershell
 dotnet build          # full solution (0 warnings)
-dotnet test           # 58 tests in FilterForge.Core.Tests
-dotnet publish src/FilterForge.App -r win-x64 -p:PublishSingleFile=true --self-contained true
+dotnet test           # 58 tests in D4LootBench.Core.Tests
+dotnet publish src/D4LootBench.App -r win-x64 -p:PublishSingleFile=true --self-contained true
 ```
 
 ## Ad-Hoc Verification

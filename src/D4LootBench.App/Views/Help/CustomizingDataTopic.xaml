@@ -1,0 +1,65 @@
+<UserControl
+    x:Class="D4LootBench.App.Views.Help.CustomizingDataTopic"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d">
+
+    <FlowDocumentScrollViewer>
+        <FlowDocument FontFamily="Segoe UI" FontSize="13" PagePadding="20,16">
+
+            <Paragraph FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12">
+                Customizing Game Data
+            </Paragraph>
+
+            <Paragraph>
+                D4LootBench bundles a <Run FontFamily="Consolas">d4-data.json</Run> file that contains the
+                names and IDs for all affixes, skills, item types, unique items, and talisman sets. If
+                Blizzard adds new items in a patch and we haven't updated the bundled data yet, you can
+                edit this file yourself.
+            </Paragraph>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,12,0,6">
+                Extracting the data file
+            </Paragraph>
+
+            <Paragraph>
+                Click the button below to write the bundled <Run FontFamily="Consolas">d4-data.json</Run>
+                to the same folder as <Run FontFamily="Consolas">D4LootBench.exe</Run>. Once extracted,
+                you can open and edit it with any text editor.
+                <Bold>Restart D4LootBench after saving your changes</Bold> — the app reads the file on
+                startup and will pick up your edits automatically.
+            </Paragraph>
+
+            <BlockUIContainer Margin="0,6,0,12">
+                <Button x:Name="ExtractButton"
+                        Content="Extract d4-data.json…"
+                        Width="200"
+                        HorizontalAlignment="Left"
+                        Padding="10,4"
+                        Click="OnExtractClick" />
+            </BlockUIContainer>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,4,0,6">
+                File format
+            </Paragraph>
+
+            <Paragraph>
+                The JSON schema is documented in the repository. See
+                <Hyperlink NavigateUri="https://github.com/ThunderEagle/D4LootBench/blob/main/docs/d4-data-format.md"
+                           RequestNavigate="OnHyperlinkNavigate">
+                    docs/d4-data-format.md
+                </Hyperlink>
+                for a full reference. Contributions and corrections are welcome — see
+                <Hyperlink NavigateUri="https://github.com/ThunderEagle/D4LootBench/blob/main/CONTRIBUTING.md"
+                           RequestNavigate="OnHyperlinkNavigate">
+                    CONTRIBUTING.md
+                </Hyperlink>
+                for guidelines.
+            </Paragraph>
+
+        </FlowDocument>
+    </FlowDocumentScrollViewer>
+
+</UserControl>

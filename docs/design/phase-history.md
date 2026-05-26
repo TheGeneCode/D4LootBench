@@ -1,4 +1,4 @@
-# FilterForge — Phase History
+# D4LootBench — Phase History
 
 Detailed record of what was built in each phase and key architectural decisions made along the way. Preserved for portfolio / future reference; not needed as active AI session context.
 
@@ -92,9 +92,9 @@ Phantom `% Armor` (`0x001d5ded`) and four phantom primary-stat affixes (`0x001d5
 
 Design context: `docs/design/ai-assistant.md`
 
-### FilterForge.Ai library
+### D4LootBench.Ai library
 
-New pure class library with no WPF dependency, added alongside `FilterForge.Core` and `FilterForge.App`.
+New pure class library with no WPF dependency, added alongside `D4LootBench.Core` and `D4LootBench.App`.
 
 - `ILlmProvider` — core abstraction (`GetCompletionAsync`)
 - `LlmSettings` / `LlmCompletion` / `RuleGenerationResult` — config and result models
@@ -104,9 +104,9 @@ New pure class library with no WPF dependency, added alongside `FilterForge.Core
 - `OllamaProvider` — HTTP to localhost OpenAI-compat endpoint (`/v1/chat/completions`)
 - `MockLlmProvider` — hardcoded response for UI dev / test mode
 
-### App-layer additions (FilterForge.App)
+### App-layer additions (D4LootBench.App)
 
-- `LlmSettingsService` — loads/saves `%AppData%\FilterForge\ai-settings.json`; API key encrypted at rest via Windows DPAPI (`ProtectedData.Protect/Unprotect`, `DataProtectionScope.CurrentUser`). Case-insensitive deserialization handles legacy PascalCase files. Plain text never written to disk.
+- `LlmSettingsService` — loads/saves `%AppData%\D4LootBench\ai-settings.json`; API key encrypted at rest via Windows DPAPI (`ProtectedData.Protect/Unprotect`, `DataProtectionScope.CurrentUser`). Case-insensitive deserialization handles legacy PascalCase files. Plain text never written to disk.
 - `SettingsAwareLlmProvider : ILlmProvider` — singleton wrapper that reads `LlmSettingsService.Current` on every call so provider/model changes take effect without restart.
 - `LlmProviderFactory` — static `Create(LlmSettings)` factory producing `MockLlmProvider` or `OllamaProvider`.
 - `AiAssistantViewModel` — generates rules via `RuleAssistant`; manages provider settings UI; queries model lists dynamically (Ollama: `/api/tags`; Anthropic: `/v1/models` with `x-api-key`; OpenAI: `/v1/models` filtered to chat models; all with static fallbacks shown immediately on provider switch). Created by `MainWindowViewModel` (not DI) so the add-rule callback can close over `Editor`.

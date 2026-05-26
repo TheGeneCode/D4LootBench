@@ -17,7 +17,7 @@ function New-RoundedRectPath([float]$x, [float]$y, [float]$w, [float]$h, [float]
     return $p
 }
 
-function Draw-FilterForgeIcon([System.Drawing.Graphics]$g, [int]$sz) {
+function Draw-D4LootBenchIcon([System.Drawing.Graphics]$g, [int]$sz) {
     $script:sc = $sz / 256.0
 
     $g.SmoothingMode      = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
@@ -128,7 +128,7 @@ foreach ($sz in $sizes) {
     $bmp = New-Object System.Drawing.Bitmap($sz, $sz, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g   = [System.Drawing.Graphics]::FromImage($bmp)
     $g.Clear([System.Drawing.Color]::Transparent)
-    Draw-FilterForgeIcon $g $sz
+    Draw-D4LootBenchIcon $g $sz
     $g.Dispose()
     $ms = New-Object System.IO.MemoryStream
     $bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
@@ -138,7 +138,7 @@ foreach ($sz in $sizes) {
 }
 
 # ── Write ICO (PNG-in-ICO, Vista+ format) ────────────────────────────────────
-$assetsDir = Join-Path $PSScriptRoot "..\src\FilterForge.App\Assets"
+$assetsDir = Join-Path $PSScriptRoot "..\src\D4LootBench.App\Assets"
 if (-not (Test-Path $assetsDir)) { New-Item -ItemType Directory $assetsDir | Out-Null }
 
 $out    = New-Object System.IO.MemoryStream
@@ -165,7 +165,7 @@ foreach ($sz in $sizes) {
 foreach ($sz in $sizes) { $writer.Write($pngData[$sz]) }
 
 $writer.Flush()
-$iconPath = Join-Path $assetsDir "filterforge.ico"
+$iconPath = Join-Path $assetsDir "d4lootbench.ico"
 [System.IO.File]::WriteAllBytes($iconPath, $out.ToArray())
 $writer.Dispose(); $out.Dispose()
 

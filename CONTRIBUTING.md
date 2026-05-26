@@ -1,8 +1,8 @@
-# Contributing to FilterForge
+# Contributing to D4LootBench
 
 ## Scope
 
-At this time the only contributions being accepted are corrections and additions to **`src/FilterForge.Core/Data/d4-data.json`** — the game data database that drives the editor's picker lists.
+At this time the only contributions being accepted are corrections and additions to **`src/D4LootBench.Core/Data/d4-data.json`** — the game data database that drives the editor's picker lists.
 
 App code changes (features, bug fixes, UI changes) are not being accepted via pull request right now. If you find a bug or have a feature idea, please open an Issue so it can be tracked.
 

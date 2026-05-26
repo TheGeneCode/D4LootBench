@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: FilterForge.App",
+            "name": "C#: D4LootBench.App",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}\\src\\FilterForge.App\\FilterForge.App.csproj",
-            "launchConfigurationId": "TargetFramework=;FilterForge.App"
+            "projectPath": "${workspaceFolder}\\src\\D4LootBench.App\\D4LootBench.App.csproj",
+            "launchConfigurationId": "TargetFramework=;D4LootBench.App"
         }
     ]
 }

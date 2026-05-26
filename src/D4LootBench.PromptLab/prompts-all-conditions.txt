@@ -1,0 +1,36 @@
+# All Conditions Test — one prompt per rule
+# Covers every condition type in the game.
+# Run with: dotnet run --project src/D4LootBench.PromptLab -- --provider Ollama --batch src/D4LootBench.PromptLab/prompts-all-conditions.txt
+
+# Rule: IP Range 800-900  (ItemPower, Recolor)
+Recolor items with item power between 800 and 900
+
+# Rule: Legendary+ Items  (Rarity)
+Show all legendary and above items
+
+# Rule: Ancestral Items  (ItemProperties mask=4)
+Show all ancestral items
+
+# Rule: 2+ Greater Affixes  (GreaterAffix count)
+Show items with at least 2 greater affixes
+
+# Rule: Codex Upgrades  (Codex)
+Show items that can upgrade a codex of power
+
+# Rule: Charms & Seals  (ItemType)
+Show all charms and horadric seals
+
+# Rule: Required CDR + Armor, CDR must be GA  (AffixCondition with GreaterEntries)
+Show items that have both cooldown reduction and armor, with GA cooldown reduction
+
+# Rule: Optional Dex or Int  (OptionalAffixCondition)
+Show items that have either dexterity or intelligence
+
+# Rule: Specific Uniques — Fists of Fate and Penitent Greaves  (SpecificUnique)
+Show Fists of Fate and Penitent Greaves
+
+# Rule: Sword 800+ Item Power, Rare or better  (ItemPower + ItemType + Rarity)
+Show rare or better swords and two-handed swords with item power 800 or higher
+
+# Rule: Sescheron's Fury talisman set  (TalismanSet + Rarity + ItemType)
+Show charms from the Sescheron's Fury talisman set

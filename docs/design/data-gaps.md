@@ -1,4 +1,4 @@
-# FilterForge Data Gaps
+# D4LootBench Data Gaps
 
 ## Overview
 
@@ -270,7 +270,7 @@ To add new items/affixes/skills:
 1. Extract from d4data StringList files
 2. Lookup hash ID from fnuecke's `names.json` or internal name
 3. Verify against real game data or player filters
-4. Add to `src/FilterForge.Core/Data/d4-data.json`
+4. Add to `src/D4LootBench.Core/Data/d4-data.json`
 5. Run tests to ensure no regressions
 6. Commit with clear attribution
 

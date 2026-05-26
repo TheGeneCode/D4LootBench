@@ -1,14 +1,14 @@
 # d4-data.json Format Reference
 
-This file is the game data database used by FilterForge for affix names, skill names, item types, unique items, and talisman sets. It drives all picker lists in the visual editor and the name resolution used by the AI assistant.
+This file is the game data database used by D4LootBench for affix names, skill names, item types, unique items, and talisman sets. It drives all picker lists in the visual editor and the name resolution used by the AI assistant.
 
 ## Exporting for Editing
 
-FilterForge embeds a copy of `d4-data.json` in the `.exe`. To edit it:
+D4LootBench embeds a copy of `d4-data.json` in the `.exe`. To edit it:
 
-1. Use **File → Export d4-data.json** — writes the embedded file to the same folder as `FilterForge.exe`
+1. Use **File → Export d4-data.json** — writes the embedded file to the same folder as `D4LootBench.exe`
 2. Edit the exported file with any text editor
-3. Restart FilterForge — the local copy takes precedence over the embedded one
+3. Restart D4LootBench — the local copy takes precedence over the embedded one
 
 The override logic checks `<exe directory>/d4-data.json` on startup. If found, it is used; otherwise the embedded copy is used. To revert to the embedded copy, delete the exported file.
 

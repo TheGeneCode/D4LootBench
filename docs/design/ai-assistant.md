@@ -15,12 +15,12 @@ Allow users to describe a filter rule in plain English and have an LLM generate 
 
 ## Architecture
 
-### Project: `FilterForge.Ai`
+### Project: `D4LootBench.Ai`
 
-A standalone class library with no WPF dependency. Referenced by `FilterForge.App`.
+A standalone class library with no WPF dependency. Referenced by `D4LootBench.App`.
 
 ```
-src/FilterForge.Ai/
+src/D4LootBench.Ai/
 ├── ILlmProvider.cs          # Core abstraction
 ├── LlmSettings.cs           # Serializable config model
 ├── RuleAssistant.cs         # Orchestrates prompt + provider + validation
@@ -100,7 +100,7 @@ The UI presents this as actionable feedback, not a raw error.
 
 ---
 
-## UI Integration (FilterForge.App)
+## UI Integration (D4LootBench.App)
 
 - Settings tab: provider dropdown, base URL, model name, API key (masked input)
 - "Test Connection" button — sends a trivial prompt and confirms a response

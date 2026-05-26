@@ -1,0 +1,61 @@
+<UserControl
+    x:Class="D4LootBench.App.Views.Help.FilterRulesTopic"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d">
+
+    <FlowDocumentScrollViewer>
+        <FlowDocument FontFamily="Segoe UI" FontSize="13" PagePadding="20,16">
+
+            <Paragraph FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12">
+                Filter Rules Reference
+            </Paragraph>
+
+            <Paragraph>
+                A filter is a list of up to 25 rules evaluated top-to-bottom. Each rule has a name,
+                a color, a visibility setting (show/minimize/hide), and zero or more conditions. An
+                item matches a rule when it satisfies <Bold>all</Bold> of the rule's conditions.
+            </Paragraph>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,12,0,6">
+                Rule evaluation order
+            </Paragraph>
+
+            <Paragraph>
+                Rules are evaluated from top to bottom in the Visual Editor. The <Bold>first</Bold>
+                matching rule wins — lower rules are not evaluated once a match is found. Drag rules
+                to reorder them.
+            </Paragraph>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,12,0,6">
+                Condition types
+            </Paragraph>
+
+            <List Margin="8,4,0,12">
+                <ListItem><Paragraph><Bold>Item Power</Bold> — minimum/maximum item power range</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Rarity</Bold> — Magic, Rare, Legendary, Unique, etc.</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Item Properties</Bold> — affix IDs present on the item</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Greater Affix</Bold> — requires specific affixes to be greater affixes</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Codex of Power</Bold> — item is a Codex of Power aspect</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Item Type</Bold> — item category (Helm, Sword, Ring, etc.)</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Required Affixes</Bold> — all listed affixes must be present</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Optional Affixes</Bold> — at least N of the listed affixes must be present</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Specific Unique</Bold> — matches a specific unique item by name</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Talisman Set</Bold> — matches a specific talisman set</Paragraph></ListItem>
+            </List>
+
+            <Paragraph>
+                For the full wire format and condition encoding details, see
+                <Hyperlink NavigateUri="https://github.com/ThunderEagle/D4LootBench/blob/main/docs/filter-format.md"
+                           RequestNavigate="OnHyperlinkNavigate">
+                    docs/filter-format.md
+                </Hyperlink>
+                in the repository.
+            </Paragraph>
+
+        </FlowDocument>
+    </FlowDocumentScrollViewer>
+
+</UserControl>

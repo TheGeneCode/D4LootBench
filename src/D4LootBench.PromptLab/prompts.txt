@@ -1,0 +1,24 @@
+# D4LootBench PromptLab — batch test prompts
+# Lines starting with # are comments. Blank lines are ignored.
+# Run with: dotnet run --project src/D4LootBench.PromptLab -- --provider Ollama --batch src/D4LootBench.PromptLab/prompts.txt
+
+# ── Specific Unique ──────────────────────────────────────────────────────────
+I need an Eaglehorn unique
+I need an Eaglehorn with GA crit strike damage
+
+# ── Affixes ──────────────────────────────────────────────────────────────────
+I need a ring with vulnerable damage and physical damage
+I need a ring that has both vulnerable damage and physical damage, and also either dex or life
+Show a ring with crit chance
+
+# ── Greater Affixes ──────────────────────────────────────────────────────────
+Show anything with at least 2 GAs
+Show a helm with GA maximum life
+
+# ── Item Type ────────────────────────────────────────────────────────────────
+Show all swords
+Show legendary two-handed axes with item power over 700
+
+# ── Rarity ───────────────────────────────────────────────────────────────────
+Show all mythic items
+Hide all common and magic items

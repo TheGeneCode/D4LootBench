@@ -1,10 +1,10 @@
-# FilterForge
+# D4LootBench
 
 > A desktop editor for Diablo IV loot filter share codes — import, edit visually, export back to the game.
 
-D4's in-game filter UI is functional but tedious for anything beyond the simplest rules. FilterForge lets you import a share code, edit all its rules with a proper visual editor, and export a new share code to paste back into the game.
+D4's in-game filter UI is functional but tedious for anything beyond the simplest rules. D4LootBench lets you import a share code, edit all its rules with a proper visual editor, and export a new share code to paste back into the game.
 
-![FilterForge visual editor](docs/screenshots/FilterForge.gif)
+![D4LootBench visual editor](docs/screenshots/D4LootBench.gif)
 
 ---
 
@@ -33,7 +33,7 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 ## Usage
 
 1. Open D4's in-game **Loot Filter** menu → select your filter → **Share** → copy the share code
-2. Paste the code into FilterForge
+2. Paste the code into D4LootBench
 3. Edit rules and conditions in the visual editor (or switch to the Raw JSON editor)
 4. Click **Copy Code** → paste back into D4's share code field
 
@@ -41,13 +41,13 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 
 ## AI Rule Assistant
 
-The AI assistant is an opt-in feature — FilterForge works fully without it.
+The AI assistant is an opt-in feature — D4LootBench works fully without it.
 
 **Recommended setup: [Ollama](https://ollama.com) (free, runs locally)**
 
 1. Install Ollama from [ollama.com](https://ollama.com)
 2. Pull a model (see table below): `ollama pull qwen2.5-coder:14b`
-3. Open FilterForge → click the **AI** button in the toolbar to expand the panel
+3. Open D4LootBench → click the **AI** button in the toolbar to expand the panel
 4. Set **Base URL** to `http://localhost:11434` and **Model** to the name you pulled
 
 Then describe what you want in plain English, e.g. *"show all ancestral items with a greater affix"*, and the assistant will generate a filter rule you can review before adding.
@@ -69,13 +69,13 @@ Then describe what you want in plain English, e.g. *"show all ancestral items wi
 
 ## Customizing Game Data
 
-FilterForge embeds a copy of `d4-data.json` — the database of affix names, item types, unique items, skills, and talisman sets used to populate the editor pickers.
+D4LootBench embeds a copy of `d4-data.json` — the database of affix names, item types, unique items, skills, and talisman sets used to populate the editor pickers.
 
 To edit it (e.g. to add a newly released item or correct a name):
 
-1. **File → Export d4-data.json** — writes the embedded file next to `FilterForge.exe`
+1. **File → Export d4-data.json** — writes the embedded file next to `D4LootBench.exe`
 2. Edit the file with any text editor
-3. Restart FilterForge — the local copy takes precedence over the embedded one
+3. Restart D4LootBench — the local copy takes precedence over the embedded one
 
 See [docs/d4-data-format.md](docs/d4-data-format.md) for the full schema reference. Community corrections are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -100,7 +100,7 @@ dotnet build                    # build the full solution
 dotnet test                     # run the test suite (58 tests)
 
 # produce a self-contained single-file exe
-dotnet publish src/FilterForge.App -r win-x64 -p:PublishSingleFile=true --self-contained true
+dotnet publish src/D4LootBench.App -r win-x64 -p:PublishSingleFile=true --self-contained true
 ```
 
 ---
@@ -110,7 +110,7 @@ dotnet publish src/FilterForge.App -r win-x64 -p:PublishSingleFile=true --self-c
 For those interested in the implementation:
 
 - **Custom protobuf codec** (~80 lines, 3 wire types) — reverse-engineered from D4's binary share code format; no Google.Protobuf dependency, handles unknown fields gracefully for patch resilience
-- **Clean three-library solution** — `FilterForge.Core` (zero WPF dependency), `FilterForge.Ai` (zero WPF dependency), `FilterForge.App` (WPF shell)
+- **Clean three-library solution** — `D4LootBench.Core` (zero WPF dependency), `D4LootBench.Ai` (zero WPF dependency), `D4LootBench.App` (WPF shell)
 - **MVVM** with CommunityToolkit.Mvvm source generators and Microsoft.Extensions.DependencyInjection
 - **`ILlmProvider` abstraction** over Ollama with clean extension points for additional providers
 - **Annotated `{id, name}` JSON format** — human-readable and LLM-interpretable while keeping hash IDs (SNO IDs) authoritative
@@ -122,7 +122,7 @@ See [docs/filter-format.md](docs/filter-format.md) for the full protocol buffer 
 
 ## Attribution
 
-FilterForge was built on the shoulders of the following community reverse-engineering work:
+D4LootBench was built on the shoulders of the following community reverse-engineering work:
 
 | Project | License | Contribution |
 |---------|---------|--------------|
@@ -138,4 +138,4 @@ FilterForge was built on the shoulders of the following community reverse-engine
 
 MIT — see [LICENSE](LICENSE).
 
-*FilterForge is an unofficial community tool and is not affiliated with Blizzard Entertainment.*
+*D4LootBench is an unofficial community tool and is not affiliated with Blizzard Entertainment.*

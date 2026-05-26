@@ -1,0 +1,312 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cond="clr-namespace:D4LootBench.App.ViewModels.Conditions"
+    xmlns:views="clr-namespace:D4LootBench.App.Views">
+
+    <!-- Shared style for the outer condition card border -->
+    <Style x:Key="ConditionCardStyle" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="3" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="Padding" Value="10,8" />
+    </Style>
+
+    <!-- Shared style for the condition type header TextBlock -->
+    <Style x:Key="ConditionHeaderStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Width" Value="140" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+    </Style>
+
+    <!-- ── Codex of Power ─────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:CodexConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                        Command="{Binding DataContext.DeleteConditionCommand,
+                                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}" />
+                <TextBlock Text="Codex of Power" Style="{StaticResource ConditionHeaderStyle}"
+                           DockPanel.Dock="Left" />
+                <TextBlock Text="Matches all Codex upgrade drops" VerticalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                           FontStyle="Italic" />
+            </DockPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Item Power ─────────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:ItemPowerConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Min:" DockPanel.Dock="Left" Padding="0,0,4,0" VerticalAlignment="Center" />
+                    <TextBox DockPanel.Dock="Left" Width="70" Margin="0,0,16,0"
+                             Text="{Binding Minimum, UpdateSourceTrigger=PropertyChanged}" />
+                    <Label Content="Max:" DockPanel.Dock="Left" Padding="0,0,4,0" VerticalAlignment="Center" />
+                    <TextBox DockPanel.Dock="Left" Width="70"
+                             Text="{Binding Maximum, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="Set to 0 for no upper bound (game cap 900)" />
+                    <TextBlock Text="(0 = no upper bound)" Margin="8,0,0,0" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                               FontSize="11" />
+                </DockPanel>
+                <TextBlock Text="Clamped to game cap 900"
+                           Margin="0,4,0,0"
+                           FontSize="11"
+                           Foreground="#C88A00">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MaximumWasClamped}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Greater Affix ──────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:GreaterAffixConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Minimum:" DockPanel.Dock="Left" Padding="0,0,4,0" VerticalAlignment="Center" />
+                    <TextBox DockPanel.Dock="Left" Width="70"
+                             Text="{Binding MinimumCount, UpdateSourceTrigger=PropertyChanged}" />
+                </DockPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Item Properties ────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:ItemPropertiesConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <CheckBox Content="Ancestral"
+                          IsChecked="{Binding IsAncestral, Mode=TwoWay}"
+                          Margin="0,0,0,4" />
+                <!-- Show raw mask when it's a non-standard value -->
+                <TextBlock FontSize="11"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAncestral}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    <Run Text="Raw mask value: " />
+                    <Run Text="{Binding PropertyMask, Mode=OneWay}" />
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Rarity ─────────────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:RarityConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <WrapPanel>
+                    <CheckBox Content="Common"    IsChecked="{Binding Common}"    Margin="0,0,10,2" />
+                    <CheckBox Content="Magic"     IsChecked="{Binding Magic}"     Margin="0,0,10,2" />
+                    <CheckBox Content="Rare"      IsChecked="{Binding Rare}"      Margin="0,0,10,2" />
+                    <CheckBox Content="Legendary" IsChecked="{Binding Legendary}" Margin="0,0,10,2" />
+                    <CheckBox Content="Unique"    IsChecked="{Binding Unique}"    Margin="0,0,10,2" />
+                    <CheckBox Content="Mythic"    IsChecked="{Binding Mythic}"    Margin="0,0,10,2" />
+                    <CheckBox Content="Talisman"  IsChecked="{Binding Talisman}"  Margin="0,0,10,2" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Item Type ──────────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:ItemTypeConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <views:ItemPickerControl DataContext="{Binding Picker}" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Required Affixes ───────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:AffixConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Label Content="Required count:" DockPanel.Dock="Left" Padding="0,0,4,0"
+                           VerticalAlignment="Center" />
+                    <TextBox DockPanel.Dock="Left" Width="70"
+                             Text="{Binding MinimumCount, UpdateSourceTrigger=PropertyChanged}" />
+                </DockPanel>
+                <views:ItemPickerControl DataContext="{Binding Picker}" />
+                <TextBlock Text="Greater Affixes" FontSize="11" FontWeight="SemiBold" Margin="0,8,0,2"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                <views:ItemPickerControl DataContext="{Binding GreaterPicker}" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Optional Affixes ───────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:OptionalAffixConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Label Content="Minimum matching:" DockPanel.Dock="Left" Padding="0,0,4,0"
+                           VerticalAlignment="Center" />
+                    <TextBox DockPanel.Dock="Left" Width="70"
+                             Text="{Binding MinimumCount, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="0 = match any" />
+                    <TextBlock Text="(0 = any)" Margin="8,0,0,0" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                               FontSize="11" />
+                </DockPanel>
+                <views:ItemPickerControl DataContext="{Binding Picker}" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Specific Unique ────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:SpecificUniqueConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <views:ItemPickerControl DataContext="{Binding Picker}" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Talisman Set ───────────────────────────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:TalismanSetConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                            Command="{Binding DataContext.DeleteConditionCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <TextBlock Text="{Binding TypeName}" Style="{StaticResource ConditionHeaderStyle}"
+                               DockPanel.Dock="Left" />
+                    <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                </DockPanel>
+                <TextBlock Text="Sets" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,2"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                <views:ItemPickerControl DataContext="{Binding SetPicker}" />
+                <TextBlock Text="Specific Items" FontSize="11" FontWeight="SemiBold" Margin="0,8,0,2"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                <views:ItemPickerControl DataContext="{Binding ItemPicker}" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ── Unknown (read-only passthrough) ───────────────────────────── -->
+    <DataTemplate DataType="{x:Type cond:UnknownConditionViewModel}">
+        <Border Style="{StaticResource ConditionCardStyle}">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="✕" Padding="6,0" ToolTip="Remove condition"
+                        Command="{Binding DataContext.DeleteConditionCommand,
+                                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}" />
+                <TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" VerticalAlignment="Center"
+                           MinWidth="120" Margin="0,0,10,0" DockPanel.Dock="Left" />
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                           FontStyle="Italic">
+                    <Run Text="{Binding Summary, Mode=OneWay}" />
+                    <Run Text="— preserved as-is" />
+                </TextBlock>
+            </DockPanel>
+        </Border>
+    </DataTemplate>
+
+</ResourceDictionary>

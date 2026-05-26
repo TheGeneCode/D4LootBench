@@ -25,7 +25,7 @@ jobs:
 
       - name: Publish
         run: >
-          dotnet publish src/FilterForge.App
+          dotnet publish src/D4LootBench.App
           --configuration Release
           --runtime win-x64
           --self-contained true
@@ -35,5 +35,5 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: publish/FilterForge.exe
+          files: publish/D4LootBench.exe
           generate_release_notes: true
