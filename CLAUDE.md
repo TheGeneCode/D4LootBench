@@ -20,12 +20,23 @@ FilterForge.slnx
 │   ├── Data/                 # IFilterDataService + per-category catalogs, *Database statics, d4-data.json
 │   ├── Validation/           # IFilterValidator, FilterValidator, ValidationResult
 │   └── Serialization/        # FilterJsonOptions, HexUInt32Converter, annotated {id,name} converters, FilterDataContext
+├── src/FilterForge.Ai/            # Pure .NET 10 class library — no WPF dependency
+│   ├── ILlmProvider.cs       # Core abstraction (GetCompletionAsync)
+│   ├── LlmSettings.cs        # Provider enum + config model (BaseUrl, ModelName, ApiKey)
+│   ├── LlmCompletion.cs      # Result wrapper (Content, Error, IsSuccess)
+│   ├── RuleGenerationResult.cs # Success/failure + Rule + Suggestions + Warnings
+│   ├── RuleAssistant.cs      # Orchestrates prompt → provider → parse → resolve → validate
+│   ├── SystemPromptBuilder.cs # Builds/caches system prompt from live catalogs
+│   ├── NameResolver.cs       # Name → hash ID resolution with fuzzy fallback
+│   └── Providers/
+│       ├── OllamaProvider.cs # HTTP to localhost OpenAI-compat endpoint
+│       └── MockLlmProvider.cs # Hardcoded response for UI dev / test mode
 ├── src/FilterForge.App/           # WPF app
-│   ├── ViewModels/           # MainWindowVM, VisualEditorVM, FilterRuleVM, RawEditorVM, ColorPickerVM, Conditions/*
-│   ├── Views/                # VisualEditorView, RawEditorWindow, ColorPickerDialog, IssuesPanel
+│   ├── ViewModels/           # MainWindowVM, VisualEditorVM, FilterRuleVM, RawEditorVM, ColorPickerVM, AiAssistantVM, Conditions/*
+│   ├── Views/                # VisualEditorView, RawEditorWindow, ColorPickerDialog, IssuesPanel, AiAssistantView
 │   ├── Behaviors/            # ScrollNewItemsIntoView attached behavior
 │   ├── Converters/           # BoolToBrushConverter, ValidationSeverityConverter
-│   ├── Services/             # ServiceConfiguration (DI bootstrap)
+│   ├── Services/             # ServiceConfiguration, LlmSettingsService, LlmProviderFactory, SettingsAwareLlmProvider
 │   └── Utilities/            # ColorUtility (HSV/ABGR conversion, contrast helper)
 ├── tests/FilterForge.Core.Tests/
 │   ├── Codec/                # FilterCodecTests — round-trip, real Raxx filter, idempotency
@@ -69,7 +80,7 @@ once at app startup. See `src/FilterForge.Core/Serialization/AnnotatedHashListCo
 - **Phase 2** ✅ — WPF shell: main window, visual editor (rule list + editor panel + color picker), JSON editor (AvalonEdit), import/export/copy/save
 - **Phase 3** ✅ — Item/affix data integration: per-type condition VMs via DataTemplate dispatch, pickers bound to databases, class filtering, selection limits, validation, unique display name resolution
 - **Phase 3.5** ✅ — Pre-Phase-4 lockdown (this session): see [Architecture lockdown](#architecture-lockdown-pre-phase-4) below
-- **Phase 4** ❌ — AI rule assistant: not started (design doc exists at `docs/ai-assistant.md`)
+- **Phase 4A** ✅ — AI rule assistant: `FilterForge.Ai` wired into app; collapsible bottom panel, Ollama + Mock providers, DPAPI-encrypted API key storage, dynamic model lists (Ollama queried live; Anthropic/OpenAI queried via API with static fallbacks), Enter-to-generate keyboard shortcut
 
 ## Architecture Lockdown (Pre-Phase-4)
 Hardened seams and UX so Phase 4's AI assistant can be added without rewriting consumers.
@@ -82,6 +93,14 @@ Hardened seams and UX so Phase 4's AI assistant can be added without rewriting c
 **Services added in `FilterForge.App`:**
 - `IConditionViewModelFactory` centralizes the `Condition` ↔ `ConditionViewModel` dispatch table that previously lived as two large switch expressions in `FilterRuleViewModel`. Adding an 11th condition type now edits one file.
 - `ServiceConfiguration` (DI bootstrap) registers `IFilterDataService`, `IFilterValidator`, `IConditionViewModelFactory`, and `MainWindowViewModel`/`MainWindow`. `App.OnStartup` builds the container, sets `FilterDataContext.Current`, and resolves `MainWindow`.
+
+**Phase 4A additions in `FilterForge.App`:**
+- `LlmSettingsService` — loads/saves `%AppData%\FilterForge\ai-settings.json`; API key encrypted at rest via Windows DPAPI (`ProtectedData`), plain text never written to disk. Case-insensitive deserialization handles legacy PascalCase format.
+- `SettingsAwareLlmProvider : ILlmProvider` — singleton wrapper that reads `LlmSettingsService.Current` on every call so provider/model changes take effect without restart.
+- `LlmProviderFactory` — static `Create(LlmSettings)` → `MockLlmProvider` or `OllamaProvider`.
+- `AiAssistantViewModel` — generates rules via `RuleAssistant`, manages provider settings UI, queries model lists dynamically (Ollama: `/api/tags`; Anthropic: `/v1/models` with `x-api-key`; OpenAI: `/v1/models` filtered to chat models; all with static fallbacks shown immediately on provider switch). Created by `MainWindowViewModel` (not DI) so the add-rule callback can close over `Editor`.
+- `AiAssistantView` — collapsible bottom panel; Enter submits, Ctrl+Enter inserts newline; `PasswordBox.Password` pushed to VM via `PasswordChanged` handler (no binding support in WPF).
+- Panel collapse driven from `MainWindow.xaml.cs` code-behind (row heights set to 0) rather than `Visibility=Collapsed` on fixed-height Grid rows, which don't reclaim space. Last user-dragged height is preserved across open/close cycles.
 
 **Test coverage added:** 19 `FilterValidator` tests (rule-count, name boundary, item-power cap, GA count range, per-condition selection limits, multi-issue index mapping, legacy API delegation). 6 `AnnotatedJson` tests (round-trip, id-wins-on-mismatch, name-only-resolve, legacy string form, unknown-hash empty-name round-trip). 58 total tests.
 
@@ -102,7 +121,10 @@ Hardened seams and UX so Phase 4's AI assistant can be added without rewriting c
 - **Shouldly** over FluentAssertions — FA v8 went commercial; Shouldly stays MIT
 - **UnknownCondition** — preserves raw bytes for future/prototype condition types, ensuring lossless round-trips
 - **Per-type ViewModels** — each condition type gets its own editor ViewModel + DataTemplate
-- **DI via Microsoft.Extensions.DependencyInjection** — standard, well-known, supports Phase 4 cleanly
+- **DI via Microsoft.Extensions.DependencyInjection** — standard, well-known; Phase 4A adds `SettingsAwareLlmProvider`, `SystemPromptBuilder`, `NameResolver`, `RuleAssistant` as singletons
+- **`SettingsAwareLlmProvider` singleton** — lets `RuleAssistant` be a singleton while provider selection changes at runtime; reads `LlmSettingsService.Current` on each call
+- **DPAPI for API key storage** — `ProtectedData.Protect/Unprotect` with `DataProtectionScope.CurrentUser`; in-box on `net10.0-windows`, no extra NuGet package needed
+- **No hardcoded API key** — users bring their own Ollama instance or cloud API credentials; Ollama is the recommended free path
 - **Annotated JSON over wire form** — `{id, name}` makes the format human-editable AND lets an LLM reason about content; old string-hash form still reads for backward compat
 - **Field 5 always 0 in observed exports** — see `docs/filter-format.md`; codec round-trips it but writes 0
 - **Static `FilterDataContext` for JSON converters** — STJ reflectively constructs converters with no ctor args, so the data service is reached via a narrow set-once static rather than a DTO layer
