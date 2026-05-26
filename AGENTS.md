@@ -121,6 +121,7 @@ FilterForge.slnx
 │
 ├── docs/
 │   ├── filter-format.md                # Full protobuf spec with field tables and hash IDs
+│   ├── d4-data-format.md               # d4-data.json schema reference (for community edits)
 │   ├── reference-codes/                # Raw Base64 share codes (Raxx, wudijo, crit-filter, GameRant)
 │   └── design/                         # Archived design docs and phase history
 │       ├── phase-history.md            # Per-phase build narrative (Phases 0–4A)
