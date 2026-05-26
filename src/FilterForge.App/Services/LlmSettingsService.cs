@@ -29,13 +29,16 @@ public sealed class LlmSettingsService
             {
                 var stored = JsonSerializer.Deserialize<StoredSettings>(File.ReadAllText(_path));
                 if (stored is not null)
+                {
+                    var defaults = new LlmSettings();
                     return new LlmSettings
                     {
                         Provider  = stored.Provider,
-                        BaseUrl   = stored.BaseUrl,
-                        ModelName = stored.ModelName,
+                        BaseUrl   = string.IsNullOrEmpty(stored.BaseUrl)   ? defaults.BaseUrl   : stored.BaseUrl,
+                        ModelName = string.IsNullOrEmpty(stored.ModelName) ? defaults.ModelName : stored.ModelName,
                         ApiKey    = DecryptApiKey(stored.ApiKeyProtected),
                     };
+                }
             }
         }
         catch { /* corrupt file — fall through to defaults */ }
