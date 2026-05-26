@@ -149,13 +149,14 @@
 
         <!-- ── Main content area + AI panel ────────────────────────── -->
         <!--
-            Row 0: editor (star — takes all remaining space)
-            Row 1: Auto — holds splitter+panel in a nested Grid; collapses to 0 when Collapsed
+            Row heights are driven from code-behind when IsAiPanelVisible changes
+            so the splitter can genuinely resize between rows 0 and 2.
         -->
-        <Grid>
+        <Grid x:Name="ContentGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="0" />
+                <RowDefinition Height="0" />
             </Grid.RowDefinitions>
 
             <ContentControl Grid.Row="0" Content="{Binding Editor}">
@@ -195,18 +196,11 @@
 
             </ContentControl>
 
-            <!-- Collapses to zero height when hidden because the outer row is Auto -->
-            <Grid Grid.Row="1"
-                  Visibility="{Binding IsAiPanelVisible, Converter={StaticResource BoolToVis}}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="220" MinHeight="140" />
-                </Grid.RowDefinitions>
+            <GridSplitter x:Name="AiSplitter" Grid.Row="1"
+                          HorizontalAlignment="Stretch" ResizeBehavior="PreviousAndNext" />
 
-                <GridSplitter Grid.Row="0" Height="4" HorizontalAlignment="Stretch" ShowsPreview="True" />
-
-                <views:AiAssistantView Grid.Row="1" DataContext="{Binding AiAssistant}" />
-            </Grid>
+            <views:AiAssistantView x:Name="AiPanel" Grid.Row="2"
+                                   DataContext="{Binding AiAssistant}" />
 
         </Grid>
     </DockPanel>
