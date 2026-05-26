@@ -18,7 +18,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <RootNamespace>ThunderEagle.FilterForge.App</RootNamespace>
-    <AssemblyName>ThunderEagle.FilterForge.App</AssemblyName>
+    <AssemblyName>FilterForge</AssemblyName>
     <ApplicationIcon>Assets\filterforge.ico</ApplicationIcon>
   </PropertyGroup>
 
