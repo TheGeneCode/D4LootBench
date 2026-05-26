@@ -45,12 +45,17 @@ FilterForge.slnx
 │   └── TestSetup.cs          # ModuleInitializer that wires FilterDataContext for tests
 ├── docs/
 │   ├── filter-format.md      # Full protobuf spec with field tables and hash IDs
-│   ├── visual-editor.md      # Visual editor UI architecture plan
-│   ├── ai-assistant.md       # AI rule assistant architecture (Phase 4)
-│   ├── share-codes.md        # Share code format overview
-│   └── data-gaps.md          # Data gaps analysis and mitigation plan
+│   ├── reference-codes/      # Raw Base64 share codes (Raxx, wudijo, crit-filter, GameRant)
+│   └── design/               # Archived design docs and phase history
+│       ├── phase-history.md  # Per-phase build narrative (Phases 0–4A)
+│       ├── visual-editor.md  # Phase 2 design decisions
+│       ├── ai-assistant.md   # Phase 4 design decisions
+│       └── data-gaps.md      # Data gap analysis and resolution notes
 └── json-filters/             # Reference fixtures (Raxx filter, All Conditions Test)
 ```
+
+## Current State
+All phases complete (0–4A). **58 tests**, 0 warnings. See `docs/design/phase-history.md` for the full build narrative.
 
 ## Filter Code Format (Critical Background)
 D4 share codes are **Base64-encoded hand-rolled Protocol Buffers binary**. Full spec in `docs/filter-format.md`. Key points:
@@ -66,54 +71,7 @@ D4 share codes are **Base64-encoded hand-rolled Protocol Buffers binary**. Full 
 Sources: Upsilon72/d4-filter-generator, fnuecke/diablo4-loot-filter-viewer, DiabloTools/d4data, d4lfteam/d4lf
 
 ## JSON Output Format (Annotated)
-Filter JSON now emits hash IDs as `{ "id": "0x…", "name": "…" }` objects across affixes,
-item types, uniques, talisman sets, plus name siblings on `GreaterAffixEntry` and
-`TalismanSetEntry`. Hash IDs remain authoritative — names are informational. On read:
-`id` wins when present; `id` missing falls back to name lookup; mismatched `id`+`name`
-prefers `id` (validator surfaces a warning). Legacy string-hash form (`"AffixIds": ["0x…"]`)
-still deserializes. Converters resolve names through `FilterDataContext.Current`, set
-once at app startup. See `src/FilterForge.Core/Serialization/AnnotatedHashListConverter.cs`.
-
-## Phase Status
-- **Phase 0** ✅ — Format reverse-engineered; `docs/filter-format.md` written; all 10 condition types documented
-- **Phase 1** ✅ — Core library: domain models, codec, databases, 33 codec tests, 0 warnings
-- **Phase 2** ✅ — WPF shell: main window, visual editor (rule list + editor panel + color picker), JSON editor (AvalonEdit), import/export/copy/save
-- **Phase 3** ✅ — Item/affix data integration: per-type condition VMs via DataTemplate dispatch, pickers bound to databases, class filtering, selection limits, validation, unique display name resolution
-- **Phase 3.5** ✅ — Pre-Phase-4 lockdown (this session): see [Architecture lockdown](#architecture-lockdown-pre-phase-4) below
-- **Phase 4A** ✅ — AI rule assistant: `FilterForge.Ai` wired into app; collapsible bottom panel, Ollama + Mock providers, DPAPI-encrypted API key storage, dynamic model lists (Ollama queried live; Anthropic/OpenAI queried via API with static fallbacks), Enter-to-generate keyboard shortcut
-
-## Architecture Lockdown (Pre-Phase-4)
-Hardened seams and UX so Phase 4's AI assistant can be added without rewriting consumers.
-
-**Services added in `FilterForge.Core`:**
-- `IFilterDataService` aggregates per-domain catalogs (`IAffixCatalog`, `ISkillCatalog`, `IItemTypeCatalog`, `IUniqueItemCatalog`, `ITalismanSetCatalog`). Default impl wraps the existing static `*Database` singletons; ViewModels and Phase 4 components consume it via constructor.
-- `IFilterValidator` + structured `ValidationResult` (severity, message, optional rule index). Replaces `FilterRuleset.Validate()`'s string list; the legacy API now delegates and is preserved for compat.
-- `FilterDataContext` — narrow static set once at app startup so JSON converters (which STJ constructs reflectively, parameter-less) can resolve names through the data service.
-
-**Services added in `FilterForge.App`:**
-- `IConditionViewModelFactory` centralizes the `Condition` ↔ `ConditionViewModel` dispatch table that previously lived as two large switch expressions in `FilterRuleViewModel`. Adding an 11th condition type now edits one file.
-- `ServiceConfiguration` (DI bootstrap) registers `IFilterDataService`, `IFilterValidator`, `IConditionViewModelFactory`, and `MainWindowViewModel`/`MainWindow`. `App.OnStartup` builds the container, sets `FilterDataContext.Current`, and resolves `MainWindow`.
-
-**Phase 4A additions in `FilterForge.App`:**
-- `LlmSettingsService` — loads/saves `%AppData%\FilterForge\ai-settings.json`; API key encrypted at rest via Windows DPAPI (`ProtectedData`), plain text never written to disk. Case-insensitive deserialization handles legacy PascalCase format.
-- `SettingsAwareLlmProvider : ILlmProvider` — singleton wrapper that reads `LlmSettingsService.Current` on every call so provider/model changes take effect without restart.
-- `LlmProviderFactory` — static `Create(LlmSettings)` → `MockLlmProvider` or `OllamaProvider`.
-- `AiAssistantViewModel` — generates rules via `RuleAssistant`, manages provider settings UI, queries model lists dynamically (Ollama: `/api/tags`; Anthropic: `/v1/models` with `x-api-key`; OpenAI: `/v1/models` filtered to chat models; all with static fallbacks shown immediately on provider switch). Created by `MainWindowViewModel` (not DI) so the add-rule callback can close over `Editor`.
-- `AiAssistantView` — collapsible bottom panel; Enter submits, Ctrl+Enter inserts newline; `PasswordBox.Password` pushed to VM via `PasswordChanged` handler (no binding support in WPF).
-- Panel collapse driven from `MainWindow.xaml.cs` code-behind (row heights set to 0) rather than `Visibility=Collapsed` on fixed-height Grid rows, which don't reclaim space. Last user-dragged height is preserved across open/close cycles.
-
-**Test coverage added:** 19 `FilterValidator` tests (rule-count, name boundary, item-power cap, GA count range, per-condition selection limits, multi-issue index mapping, legacy API delegation). 6 `AnnotatedJson` tests (round-trip, id-wins-on-mismatch, name-only-resolve, legacy string form, unknown-hash empty-name round-trip). 58 total tests.
-
-**UX improvements landed in same session:**
-- Newly added conditions auto-scroll into view (`Behaviors/ScrollNewItemsIntoView`).
-- One-level Undo for condition delete (button next to "+ Add"; cleared after restore or next delete).
-- Item picker lists bumped to `MinHeight=200`, added Clear-all button, double-click tooltips.
-- Rule editor `MaxWidth=580` removed (uses available space); left rule list 260→320 default; GridSplitter has a visible 2px handle.
-- Pre-emptive validation: toolbar `Validate` badge shows issue count, IssuesPanel docks below toolbar when issues exist, Copy Code / Save JSON disabled on blocking errors, Add Rule disabled at the 25-rule cap with explanatory tooltip.
-- ItemPower silent clamp now shows "Clamped to game cap 900" hint when triggered.
-- Condition cards: 4px → 10px gap, header column unified at 140px so summaries align.
-
-**Model cleanup:** `GreaterAffixEntry.Value` renamed to `AffixIdEcho` — every game-exported sample (six configurations including mixed greater/non-greater) writes this field equal to the affix hash itself.
+Filter JSON emits hash IDs as `{ "id": "0x…", "name": "…" }` objects across affixes, item types, uniques, talisman sets, plus name siblings on `GreaterAffixEntry` and `TalismanSetEntry`. Hash IDs remain authoritative — names are informational. On read: `id` wins when present; `id` missing falls back to name lookup; mismatched `id`+`name` prefers `id` (validator surfaces a warning). Legacy string-hash form (`"AffixIds": ["0x…"]`) still deserializes. Converters resolve names through `FilterDataContext.Current`, set once at app startup.
 
 ## Key Decisions
 - **WPF over MAUI** — audience is 100% Windows, simpler deployment
@@ -121,14 +79,14 @@ Hardened seams and UX so Phase 4's AI assistant can be added without rewriting c
 - **Shouldly** over FluentAssertions — FA v8 went commercial; Shouldly stays MIT
 - **UnknownCondition** — preserves raw bytes for future/prototype condition types, ensuring lossless round-trips
 - **Per-type ViewModels** — each condition type gets its own editor ViewModel + DataTemplate
-- **DI via Microsoft.Extensions.DependencyInjection** — standard, well-known; Phase 4A adds `SettingsAwareLlmProvider`, `SystemPromptBuilder`, `NameResolver`, `RuleAssistant` as singletons
+- **DI via Microsoft.Extensions.DependencyInjection** — standard; `SettingsAwareLlmProvider`, `SystemPromptBuilder`, `NameResolver`, `RuleAssistant` registered as singletons
 - **`SettingsAwareLlmProvider` singleton** — lets `RuleAssistant` be a singleton while provider selection changes at runtime; reads `LlmSettingsService.Current` on each call
 - **DPAPI for API key storage** — `ProtectedData.Protect/Unprotect` with `DataProtectionScope.CurrentUser`; in-box on `net10.0-windows`, no extra NuGet package needed
-- **No hardcoded API key** — users bring their own Ollama instance or cloud API credentials; Ollama is the recommended free path
+- **No hardcoded API key** — users bring their own Ollama instance; Ollama is the recommended free path
 - **Annotated JSON over wire form** — `{id, name}` makes the format human-editable AND lets an LLM reason about content; old string-hash form still reads for backward compat
-- **Field 5 always 0 in observed exports** — see `docs/filter-format.md`; codec round-trips it but writes 0
-- **Static `FilterDataContext` for JSON converters** — STJ reflectively constructs converters with no ctor args, so the data service is reached via a narrow set-once static rather than a DTO layer
-- **Phantom `% X` primary stats removed from `d4-data.json`** — hashes `0x001d5ded..0x001d5df5` exist in CoreTOC but D4's filter editor doesn't expose them. See `docs/filter-format.md` for the policy.
+- **Static `FilterDataContext` for JSON converters** — STJ reflectively constructs converters with no ctor args, so the data service is reached via a narrow set-once static
+- **Phantom `% X` primary stats removed from `d4-data.json`** — hashes `0x001d5ded..0x001d5df5` exist in CoreTOC but D4's filter editor doesn't expose them. See `docs/filter-format.md`.
+- **Panel collapse via row heights** — `Visibility=Collapsed` on fixed-height Grid rows doesn't reclaim space; code-behind sets row heights to 0 instead. Last user-dragged height preserved.
 
 ## Running / Testing
 ```powershell
@@ -137,5 +95,17 @@ dotnet test           # 58 tests in FilterForge.Core.Tests
 dotnet publish src/FilterForge.App -r win-x64 -p:PublishSingleFile=true --self-contained true
 ```
 
+## Ad-Hoc Verification
+Use `dotnet run verify.cs` (no extra install — built into .NET 10) for one-off C# scripts that reference the solution. Write a top-level statement file, add project references inline, and run. Do NOT use `dotnet script` — that requires installing a separate global tool. Prefer a temporary xunit test or `dotnet run verify.cs` over standalone scripts.
+
+## Locally Cloned Reference Repos
+- `C:\dev\projects\d4-filter-generator` — Upsilon72/d4-filter-generator
+- `C:\dev\projects\d4-loot-filter-viewer` — fnuecke/diablo4-loot-filter-viewer
+
+These contain `.proto` files, `names.json`, `CoreTOC_flat.json`, and reference implementations for cross-checking protobuf wire format, condition semantics, and ID lookups.
+
 ## Attribution Required (Before Public Release)
 See `docs/filter-format.md` for full wording. Sources: Upsilon72/d4-filter-generator (MIT), fnuecke/diablo4-loot-filter-viewer (Unlicense), DiabloTools/d4data (MIT), d4lfteam/d4lf (MIT), Raxx (real-world filter).
+
+## README Troubleshooting Note
+When writing README.md: include a troubleshooting note that if a share code imported from an external source fails to decode or produces unexpected results, the user should re-export the filter from the in-game UI and use that fresh code. Older tool exports or manually-shared codes may have subtle encoding differences (e.g. the GitHub copy of Raxx's filter has 13 greater entries per condition instead of the game's 14).
