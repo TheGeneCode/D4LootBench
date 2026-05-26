@@ -20,6 +20,7 @@
     <RootNamespace>ThunderEagle.FilterForge.App</RootNamespace>
     <AssemblyName>FilterForge</AssemblyName>
     <ApplicationIcon>Assets\filterforge.ico</ApplicationIcon>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
