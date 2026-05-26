@@ -47,11 +47,21 @@ The AI assistant is an opt-in feature — FilterForge works fully without it.
 **Recommended setup: [Ollama](https://ollama.com) (free, runs locally)**
 
 1. Install Ollama from [ollama.com](https://ollama.com)
-2. Pull a model: `ollama pull llama3.2`
+2. Pull a model (see table below): `ollama pull qwen2.5-coder:7b`
 3. Open FilterForge → click the **AI** button in the toolbar to expand the panel
-4. Set **Base URL** to `http://localhost:11434` and **Model** to `llama3.2`
+4. Set **Base URL** to `http://localhost:11434` and **Model** to the name you pulled
 
 Then describe what you want in plain English, e.g. *"show all ancestral items with a greater affix"*, and the assistant will generate a filter rule you can review before adding.
+
+**Recommended models**
+
+| Model | VRAM | Notes |
+|-------|------|-------|
+| `qwen2.5-coder:7b` | ~4 GB | Best balance of quality and speed; strong structured JSON output — recommended starting point |
+| `qwen2.5-coder:14b` | ~9 GB | Higher quality rule generation; tested and confirmed working |
+| `llama3.2` | ~2 GB | Runs on CPU if you have no GPU; output quality is lower for structured tasks |
+
+> Models not listed here may work but have not been tested. Coder-focused models generally produce better results for this task since the output is structured JSON.
 
 > Cloud providers (Anthropic, OpenAI) are not yet wired into the UI. The provider abstraction is in place and may be added based on community interest.
 
