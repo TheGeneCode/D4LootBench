@@ -10,6 +10,7 @@ public partial class MainWindow
 {
     private readonly MainWindowViewModel _vm;
     private double _savedPanelHeight = 220;
+    private HelpWindow? _helpWindow;
 
     public MainWindow(MainWindowViewModel vm)
     {
@@ -17,7 +18,9 @@ public partial class MainWindow
         _vm = vm;
         DataContext = _vm;
         _vm.ShowRawEditorRequested += OnShowRawEditorRequested;
-        _vm.PropertyChanged += OnVmPropertyChanged;
+        _vm.OpenHelpRequested     += OnOpenHelpRequested;
+        _vm.ShowAboutRequested    += OnShowAboutRequested;
+        _vm.PropertyChanged       += OnVmPropertyChanged;
     }
 
     private void OnVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -61,5 +64,25 @@ public partial class MainWindow
             Owner = this
         };
         window.Show();
+    }
+
+    private void OnOpenHelpRequested(string topic)
+    {
+        if (_helpWindow is null || !_helpWindow.IsLoaded)
+        {
+            _helpWindow = new HelpWindow { Owner = this };
+            _helpWindow.Closed += (_, _) => _helpWindow = null;
+            _helpWindow.Show();
+        }
+        else
+        {
+            _helpWindow.Activate();
+        }
+        _helpWindow.NavigateTo(topic);
+    }
+
+    private void OnShowAboutRequested()
+    {
+        new AboutDialog { Owner = this }.ShowDialog();
     }
 }

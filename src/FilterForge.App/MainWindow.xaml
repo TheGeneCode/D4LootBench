@@ -113,6 +113,41 @@
                     </StackPanel>
                 </ToggleButton>
 
+                <Separator />
+
+                <!-- Help dropdown — sits flush in the toolbar, no extra menu bar row -->
+                <Menu Background="Transparent" VerticalAlignment="Center">
+                    <MenuItem Header="? Help" Padding="8,2">
+                        <MenuItem Header="Getting Started"
+                                  Command="{Binding OpenHelpCommand}"
+                                  CommandParameter="GettingStarted" />
+                        <MenuItem Header="AI Assistant Setup"
+                                  Command="{Binding OpenHelpCommand}"
+                                  CommandParameter="AiSetup" />
+                        <MenuItem Header="Customizing Game Data"
+                                  Command="{Binding OpenHelpCommand}"
+                                  CommandParameter="CustomizingData" />
+                        <MenuItem Header="Troubleshooting"
+                                  Command="{Binding OpenHelpCommand}"
+                                  CommandParameter="Troubleshooting" />
+                        <MenuItem Header="Filter Rules Reference"
+                                  Command="{Binding OpenHelpCommand}"
+                                  CommandParameter="FilterRules" />
+                        <Separator />
+                        <MenuItem Header="Extract Game Data File…"
+                                  Command="{Binding ExtractGameDataCommand}" />
+                        <Separator />
+                        <MenuItem Header="Report an Issue…"
+                                  Command="{Binding ReportIssueCommand}" />
+                        <Separator />
+                        <MenuItem Header="Attribution"
+                                  Command="{Binding OpenHelpCommand}"
+                                  CommandParameter="Attribution" />
+                        <MenuItem Header="About FilterForge…"
+                                  Command="{Binding ShowAboutCommand}" />
+                    </MenuItem>
+                </Menu>
+
             </ToolBar>
         </ToolBarTray>
 

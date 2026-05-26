@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -85,6 +86,26 @@ public partial class MainWindowViewModel : ObservableObject
 
     /// <summary>Raised when the Raw Editor window should be opened. Handler must show the window.</summary>
     public event Action<RawEditorViewModel>? ShowRawEditorRequested;
+
+    /// <summary>Raised when the Help window should be opened to a specific topic key.</summary>
+    public event Action<string>? OpenHelpRequested;
+
+    /// <summary>Raised when the About dialog should be shown.</summary>
+    public event Action? ShowAboutRequested;
+
+    [RelayCommand]
+    private void OpenHelp(string? topic) => OpenHelpRequested?.Invoke(topic ?? "GettingStarted");
+
+    [RelayCommand]
+    private void ShowAbout() => ShowAboutRequested?.Invoke();
+
+    [RelayCommand]
+    private async Task ExtractGameDataAsync() => await GameDataHelper.ExtractAsync();
+
+    [RelayCommand]
+    private void ReportIssue() =>
+        Process.Start(new ProcessStartInfo("https://github.com/ThunderEagle/FilterForge/issues")
+            { UseShellExecute = true });
 
     // ── Filter lifecycle ──────────────────────────────────────────────────
 
