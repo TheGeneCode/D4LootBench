@@ -45,6 +45,7 @@ public sealed partial class AffixConditionViewModel : ConditionViewModel
             Picker.Selected.Add(new PickerEntry(id, _data.Affixes.GetDisplayName(id)));
 
         GreaterPicker = MakeGreaterPicker();
+        GreaterPicker.ReplaceSource(Picker.Selected.Select(p => new PickerEntry(p.Hash, p.DisplayName)));
         foreach (var ge in m.GreaterEntries)
             GreaterPicker.Selected.Add(ToPickerEntry(ge));
 

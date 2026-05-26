@@ -745,6 +745,13 @@
       ]
     },
     {
+      "displayName": "All Skills",
+      "hash": "0x00273c0a",
+      "classes": [
+        "All"
+      ]
+    },
+    {
       "displayName": "Armor",
       "hash": "0x001beab2",
       "classes": [

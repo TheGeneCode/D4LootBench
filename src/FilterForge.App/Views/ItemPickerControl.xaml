@@ -27,28 +27,28 @@
                 <TextBlock Text="Available" FontSize="11"
                            Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                            Margin="0,0,0,2" />
-                <ListBox ItemsSource="{Binding FilteredAvailable}"
-                         SelectedItem="{Binding SelectedAvailable, Mode=TwoWay}"
+                <ListBox x:Name="AvailableList"
+                         ItemsSource="{Binding Available}"
+                         SelectionMode="Extended"
                          DisplayMemberPath="DisplayName"
                          MinHeight="200"
                          MaxHeight="300"
-                         ToolTip="Double-click an item to add it"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                    <ListBox.InputBindings>
-                        <MouseBinding MouseAction="LeftDoubleClick"
-                                      Command="{Binding AddItemCommand}" />
-                    </ListBox.InputBindings>
-                </ListBox>
+                         ToolTip="Double-click or use → to add; Ctrl/Shift for multi-select"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         SelectionChanged="AvailableList_SelectionChanged"
+                         MouseDoubleClick="AvailableList_MouseDoubleClick" />
             </StackPanel>
 
             <!-- Add / Remove buttons -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="6,0">
                 <Button Content="→"
-                        Command="{Binding AddItemCommand}"
+                        IsEnabled="{Binding HasAvailableSelection}"
+                        Click="AddButton_Click"
                         Width="32" Margin="0,0,0,6"
                         ToolTip="Add selected" />
                 <Button Content="←"
-                        Command="{Binding RemoveItemCommand}"
+                        IsEnabled="{Binding HasCurrentSelection}"
+                        Click="RemoveButton_Click"
                         Width="32"
                         ToolTip="Remove selected" />
             </StackPanel>
@@ -70,18 +70,16 @@
                             DockPanel.Dock="Right"
                             ToolTip="Remove every selected item" />
                 </DockPanel>
-                <ListBox ItemsSource="{Binding Selected}"
-                         SelectedItem="{Binding SelectedCurrent, Mode=TwoWay}"
+                <ListBox x:Name="SelectedList"
+                         ItemsSource="{Binding Selected}"
+                         SelectionMode="Extended"
                          DisplayMemberPath="DisplayName"
                          MinHeight="200"
                          MaxHeight="300"
-                         ToolTip="Double-click an item to remove it"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                    <ListBox.InputBindings>
-                        <MouseBinding MouseAction="LeftDoubleClick"
-                                      Command="{Binding RemoveItemCommand}" />
-                    </ListBox.InputBindings>
-                </ListBox>
+                         ToolTip="Double-click or use ← to remove; Ctrl/Shift for multi-select"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         SelectionChanged="SelectedList_SelectionChanged"
+                         MouseDoubleClick="SelectedList_MouseDoubleClick" />
             </StackPanel>
         </Grid>
     </StackPanel>

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,22 +12,19 @@ public sealed partial class PickerViewModel : ObservableObject
     private IReadOnlyList<PickerEntry> _source;
 
     public ObservableCollection<PickerEntry> Selected { get; } = [];
+    public ObservableCollection<PickerEntry> Available { get; } = [];
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(FilteredAvailable))]
     private Func<PickerEntry, bool>? _sourceFilter;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(FilteredAvailable))]
     private string _searchText = "";
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AddItemCommand))]
-    private PickerEntry? _selectedAvailable;
+    private bool _hasAvailableSelection;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(RemoveItemCommand))]
-    private PickerEntry? _selectedCurrent;
+    private bool _hasCurrentSelection;
 
     /// <summary>Optional game-enforced limit on total selected items.</summary>
     public int? MaxSelectionCount { get; init; }
@@ -48,12 +46,46 @@ public sealed partial class PickerViewModel : ObservableObject
         _source = source.OrderBy(e => e.DisplayName).ToList();
         Selected.CollectionChanged += (_, _) =>
         {
-            OnPropertyChanged(nameof(FilteredAvailable));
+            RefreshAvailable();
             OnPropertyChanged(nameof(IsAtMax));
             OnPropertyChanged(nameof(SelectionCountDisplay));
-            AddItemCommand.NotifyCanExecuteChanged();
             ClearAllCommand.NotifyCanExecuteChanged();
         };
+        PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is nameof(SourceFilter) or nameof(SearchText))
+                RefreshAvailable();
+        };
+        RefreshAvailable();
+    }
+
+    /// <summary>Called by view code-behind when the Available ListBox selection changes.</summary>
+    public void SyncAvailableSelection(IList items)
+    {
+        HasAvailableSelection = items.Count > 0 && !IsAtMax;
+    }
+
+    /// <summary>Called by view code-behind when the Selected ListBox selection changes.</summary>
+    public void SyncCurrentSelection(IList items)
+    {
+        HasCurrentSelection = items.Count > 0;
+    }
+
+    /// <summary>Called by view code-behind with a pre-captured snapshot of SelectedItems.</summary>
+    public void AddItems(IReadOnlyList<PickerEntry> items)
+    {
+        foreach (var item in items)
+        {
+            if (IsAtMax) break;
+            Selected.Add(item);
+        }
+    }
+
+    /// <summary>Called by view code-behind with a pre-captured snapshot of SelectedItems.</summary>
+    public void RemoveItems(IReadOnlyList<PickerEntry> items)
+    {
+        foreach (var item in items)
+            Selected.Remove(item);
     }
 
     /// <summary>Replaces the available-item source, removing stale selections.</summary>
@@ -62,59 +94,34 @@ public sealed partial class PickerViewModel : ObservableObject
         var newList = newSource.OrderBy(e => e.DisplayName).ToList();
         var validHashes = newList.Select(e => e.Hash).ToHashSet();
 
-        for (int i = Selected.Count - 1; i >= 0; i--)
+        for (var i = Selected.Count - 1; i >= 0; i--)
         {
             if (!validHashes.Contains(Selected[i].Hash))
                 Selected.RemoveAt(i);
         }
 
         _source = newList;
-        OnPropertyChanged(nameof(FilteredAvailable));
+        RefreshAvailable();
     }
 
-    public IEnumerable<PickerEntry> FilteredAvailable
+    private void RefreshAvailable()
     {
-        get
-        {
-            var selectedHashes = Selected.Select(e => e.Hash).ToHashSet();
-            var q = _source.Where(e => !selectedHashes.Contains(e.Hash));
-            if (SourceFilter is not null)
-                q = q.Where(e => SourceFilter(e));
-            if (!string.IsNullOrWhiteSpace(SearchText))
-                q = q.Where(e => e.DisplayName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-            return q;
-        }
+        var selectedHashes = Selected.Select(e => e.Hash).ToHashSet();
+        var items = _source.Where(e => !selectedHashes.Contains(e.Hash));
+        if (SourceFilter is not null)
+            items = items.Where(e => SourceFilter(e));
+        if (!string.IsNullOrWhiteSpace(SearchText))
+            items = items.Where(e => e.DisplayName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+        Available.Clear();
+        foreach (var item in items)
+            Available.Add(item);
     }
-
-    [RelayCommand(CanExecute = nameof(CanAdd))]
-    private void AddItem()
-    {
-        if (SelectedAvailable is not null)
-        {
-            Selected.Add(SelectedAvailable);
-            SelectedAvailable = null;
-        }
-    }
-
-    private bool CanAdd() => SelectedAvailable is not null && !IsAtMax;
-
-    [RelayCommand(CanExecute = nameof(CanRemove))]
-    private void RemoveItem()
-    {
-        if (SelectedCurrent is not null)
-        {
-            Selected.Remove(SelectedCurrent);
-            SelectedCurrent = null;
-        }
-    }
-
-    private bool CanRemove() => SelectedCurrent is not null;
 
     [RelayCommand(CanExecute = nameof(CanClearAll))]
     private void ClearAll()
     {
         Selected.Clear();
-        SelectedCurrent = null;
     }
 
     private bool CanClearAll() => Selected.Count > 0;

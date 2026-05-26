@@ -5,7 +5,6 @@
 D4's in-game filter UI is functional but tedious for anything beyond the simplest rules. FilterForge lets you import a share code, edit all its rules with a proper visual editor, and export a new share code to paste back into the game.
 
 ![FilterForge visual editor](docs/screenshots/visual-editor.png)
-*(screenshot coming soon)*
 
 ---
 
