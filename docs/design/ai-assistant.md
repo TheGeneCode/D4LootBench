@@ -63,7 +63,7 @@ API keys are encrypted with `System.Security.Cryptography.ProtectedData` (Window
 - API is OpenAI-compatible at `{BaseUrl}/v1/chat/completions`
 - No auth header needed
 - Model list queryable at `{BaseUrl}/api/tags`
-- Recommended models: `llama3.2`, `qwen2.5`, `mistral`
+- Recommended models: `qwen2.5-coder:7b` (best balance), `qwen2.5-coder:14b` (tested/confirmed), `llama3.2` (CPU fallback)
 - JSON mode: pass `"format": "json"` in request body
 
 ### OpenAI
