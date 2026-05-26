@@ -131,7 +131,7 @@ FilterForge was built on the shoulders of the following community reverse-engine
 | [fnuecke/diablo4-loot-filter-viewer](https://github.com/fnuecke/diablo4-loot-filter-viewer) | Unlicense | Complete `.proto` field layout, all 10 condition type semantics, `names.json` ID tables |
 | [DiabloTools/d4data](https://github.com/DiabloTools/d4data) | MIT | `CoreTOC_flat.json` — authoritative datamined SNO IDs for skills, item types, affixes, and unique items |
 | [d4lfteam/d4lf](https://github.com/d4lfteam/d4lf) | MIT | Affix name reference database |
-| Raxx (Raxxanterax) | — | Real-world filter export used to validate and extend the format specification |
+| [Raxx (Raxxanterax)](https://github.com/raxxanterax/GAMING/blob/main/Raxxs%20Diablo%204%20T6%2B%20Endgame%20Filter.txt) | — | Real-world filter export used to validate and extend the format specification |
 
 ---
 
