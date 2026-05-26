@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FilterForge.Core\FilterForge.Core.csproj" />
+    <ProjectReference Include="..\FilterForge.Ai\FilterForge.Ai.csproj" />
   </ItemGroup>
 
   <ItemGroup>

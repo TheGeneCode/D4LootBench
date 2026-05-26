@@ -12,6 +12,10 @@
     Height="700" Width="1100"
     MinHeight="450" MinWidth="700">
 
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+
     <DockPanel>
 
         <!-- ── Toolbar ──────────────────────────────────────────────── -->
@@ -97,6 +101,17 @@
                     </StackPanel>
                 </Button>
 
+                <Separator />
+
+                <ToggleButton IsChecked="{Binding IsAiPanelVisible}"
+                              ToolTip="Toggle AI rule assistant panel"
+                              Padding="8,2">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE70B;" FontFamily="Segoe MDL2 Assets" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0" />
+                        <TextBlock Text="AI Assistant" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ToggleButton>
+
             </ToolBar>
         </ToolBarTray>
 
@@ -132,42 +147,67 @@
             </StatusBarItem>
         </StatusBar>
 
-        <!-- ── Main content area ────────────────────────────────────── -->
-        <ContentControl Content="{Binding Editor}">
+        <!-- ── Main content area + AI panel ────────────────────────── -->
+        <!--
+            Row 0: editor (star — takes all remaining space)
+            Row 1: Auto — holds splitter+panel in a nested Grid; collapses to 0 when Collapsed
+        -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <!-- Placeholder when no filter is loaded -->
-            <ContentControl.Style>
-                <Style TargetType="ContentControl">
-                    <Style.Triggers>
-                        <Trigger Property="Content" Value="{x:Null}">
-                            <Setter Property="ContentTemplate">
-                                <Setter.Value>
-                                    <DataTemplate>
-                                        <StackPanel HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center">
-                                            <TextBlock Text="FilterForge — Filter Editor"
-                                                       FontSize="22" FontWeight="Light"
-                                                       HorizontalAlignment="Center"
-                                                       Margin="0,0,0,12" />
-                                            <TextBlock Text="Paste a D4 filter share code, open a JSON file, or create a new filter."
-                                                       Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
-                                                       HorizontalAlignment="Center" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </ContentControl.Style>
+            <ContentControl Grid.Row="0" Content="{Binding Editor}">
 
-            <!-- Visual editor fills the content area when a filter is loaded -->
-            <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:VisualEditorViewModel}">
-                    <views:VisualEditorView />
-                </DataTemplate>
-            </ContentControl.Resources>
+                <!-- Placeholder when no filter is loaded -->
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Style.Triggers>
+                            <Trigger Property="Content" Value="{x:Null}">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <StackPanel HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center">
+                                                <TextBlock Text="FilterForge — Filter Editor"
+                                                           FontSize="22" FontWeight="Light"
+                                                           HorizontalAlignment="Center"
+                                                           Margin="0,0,0,12" />
+                                                <TextBlock Text="Paste a D4 filter share code, open a JSON file, or create a new filter."
+                                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                                           HorizontalAlignment="Center" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
 
-        </ContentControl>
+                <!-- Visual editor fills the content area when a filter is loaded -->
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:VisualEditorViewModel}">
+                        <views:VisualEditorView />
+                    </DataTemplate>
+                </ContentControl.Resources>
+
+            </ContentControl>
+
+            <!-- Collapses to zero height when hidden because the outer row is Auto -->
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsAiPanelVisible, Converter={StaticResource BoolToVis}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="220" MinHeight="140" />
+                </Grid.RowDefinitions>
+
+                <GridSplitter Grid.Row="0" Height="4" HorizontalAlignment="Stretch" ShowsPreview="True" />
+
+                <views:AiAssistantView Grid.Row="1" DataContext="{Binding AiAssistant}" />
+            </Grid>
+
+        </Grid>
     </DockPanel>
 </Window>

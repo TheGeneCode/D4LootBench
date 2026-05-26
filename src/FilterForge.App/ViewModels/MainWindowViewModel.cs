@@ -4,6 +4,8 @@ using System.Text.Json;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ThunderEagle.FilterForge.Ai;
+using ThunderEagle.FilterForge.App.Services;
 using ThunderEagle.FilterForge.App.ViewModels.Conditions;
 using ThunderEagle.FilterForge.Core.Codec;
 using ThunderEagle.FilterForge.Core.Models;
@@ -18,10 +20,26 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly IConditionViewModelFactory _conditionFactory;
     private readonly IFilterValidator _validator;
 
-    public MainWindowViewModel(IConditionViewModelFactory conditionFactory, IFilterValidator validator)
+    public AiAssistantViewModel AiAssistant { get; }
+
+    [ObservableProperty]
+    private bool _isAiPanelVisible;
+
+    [RelayCommand]
+    private void ToggleAiPanel() => IsAiPanelVisible = !IsAiPanelVisible;
+
+    public MainWindowViewModel(
+        IConditionViewModelFactory conditionFactory,
+        IFilterValidator validator,
+        RuleAssistant ruleAssistant,
+        LlmSettingsService llmSettings)
     {
         _conditionFactory = conditionFactory;
         _validator        = validator;
+
+        AiAssistant = new AiAssistantViewModel(
+            ruleAssistant, llmSettings,
+            rule => Editor?.AddGeneratedRule(rule));
     }
 
     [ObservableProperty]

@@ -1,3 +1,4 @@
+using ThunderEagle.FilterForge.Ai;
 using ThunderEagle.FilterForge.App.ViewModels;
 using ThunderEagle.FilterForge.App.ViewModels.Conditions;
 using ThunderEagle.FilterForge.Core.Data;
@@ -15,6 +16,12 @@ internal static class ServiceConfiguration
         services.AddSingleton<IFilterDataService, FilterDataService>();
         services.AddSingleton<IFilterValidator, FilterValidator>();
         services.AddSingleton<IConditionViewModelFactory, ConditionViewModelFactory>();
+
+        services.AddSingleton<LlmSettingsService>();
+        services.AddSingleton<SystemPromptBuilder>();
+        services.AddSingleton<NameResolver>();
+        services.AddSingleton<ILlmProvider, SettingsAwareLlmProvider>();
+        services.AddSingleton<RuleAssistant>();
 
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<MainWindow>();

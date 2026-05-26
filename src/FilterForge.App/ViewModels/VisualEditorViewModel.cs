@@ -101,6 +101,13 @@ public partial class VisualEditorViewModel : ObservableObject
             rule.ApplyClassFilter(value);
     }
 
+    public void AddGeneratedRule(FilterRule rule)
+    {
+        var vm = MakeRuleVm(rule);
+        Rules.Add(vm);
+        SelectedRule = vm;
+    }
+
     private FilterRuleViewModel MakeRuleVm(FilterRule rule)
     {
         var vm = new FilterRuleViewModel(_conditionFactory, rule,
