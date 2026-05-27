@@ -56,7 +56,9 @@ D4LootBench.slnx
 ```
 
 ## Current State
-All phases complete (0–4A). **58 tests**, 0 warnings. See `docs/design/phase-history.md` for the full build narrative.
+All phases complete (0–4B). **88 tests**, 0 warnings. See `docs/design/phase-history.md` for the full build narrative.
+
+Phase 4B added build guide import: paste a gear section from Mobalytics, Maxroll, or Icy Veins to auto-generate a BiS filter. Parsers live in `D4LootBench.Core/Import/`; `BuildGuideFilterGenerator` in `D4LootBench.Ai/Import/` does deterministic name resolution and rule construction (no LLM). Dialog + ViewModel in `D4LootBench.App`. Output: per-slot rules (ItemType + up to 4 affixes, require 2), Target Uniques rule, All Charms rule, Hide All fallback.
 
 ## Filter Code Format (Critical Background)
 D4 share codes are **Base64-encoded hand-rolled Protocol Buffers binary**. Full spec in `docs/filter-format.md`. Key points:

@@ -21,6 +21,7 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 ## What It Does
 
 - Import any D4 loot filter share code
+- **Generate a BiS filter from a build guide** — paste a gear section from Mobalytics, Maxroll, or Icy Veins and get a working filter in seconds
 - Add, remove, reorder, and edit rules with a full visual editor
 - Edit all condition types: rarity, item power, affixes, greater affixes, codex of power, item types, unique items, talisman sets, and item properties
 - Color-code rules with a full HSV color picker
@@ -32,10 +33,20 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 
 ## Usage
 
+### Edit an existing filter
+
 1. Open D4's in-game **Loot Filter** menu → select your filter → **Share** → copy the share code
 2. Paste the code into D4LootBench
 3. Edit rules and conditions in the visual editor (or switch to the Raw JSON editor)
 4. Click **Copy Code** → paste back into D4's share code field
+
+### Generate a BiS filter from a build guide
+
+1. Open a build guide on **Mobalytics**, **Maxroll**, or **Icy Veins** and navigate to the gear / Best in Slot section
+2. Select and copy the gear table (<kbd>Ctrl+C</kbd>)
+3. Click **Import from Build Guide** in the D4LootBench toolbar
+4. Paste the text, confirm the detected format, and click **Import Filter**
+5. Tune the generated rules in the visual editor — by default each slot rule requires 2 of the 4 top affixes
 
 ---
 
@@ -97,7 +108,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
 ```powershell
 dotnet build                    # build the full solution
-dotnet test                     # run the test suite (58 tests)
+dotnet test                     # run the test suite (88 tests)
 
 # produce a self-contained single-file exe
 dotnet publish src/D4LootBench.App -r win-x64 -p:PublishSingleFile=true --self-contained true
@@ -114,7 +125,7 @@ For those interested in the implementation:
 - **MVVM** with CommunityToolkit.Mvvm source generators and Microsoft.Extensions.DependencyInjection
 - **`ILlmProvider` abstraction** over Ollama with clean extension points for additional providers
 - **Annotated `{id, name}` JSON format** — human-readable and LLM-interpretable while keeping hash IDs (SNO IDs) authoritative
-- **58 unit tests** covering codec round-trips, validation rules, and annotated JSON serialization
+- **88 unit tests** covering codec round-trips, validation rules, annotated JSON serialization, and build guide parser coverage across all three formats
 
 See [docs/filter-format.md](docs/filter-format.md) for the full protocol buffer format specification.
 

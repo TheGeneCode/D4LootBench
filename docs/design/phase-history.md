@@ -88,6 +88,42 @@ Phantom `% Armor` (`0x001d5ded`) and four phantom primary-stat affixes (`0x001d5
 
 ---
 
+## Phase 4B ✅ — Build Guide Import
+
+Design context: `docs/design/build-guide-import.md`
+
+### D4LootBench.Core additions
+
+- `src/D4LootBench.Core/Import/` — new directory for all import models and parsers
+- `ParsedAffix`, `ParsedSlot`, `ParsedBuildGuide`, `BuildGuideFormat`, `IBuildGuideParser` — parsed domain models
+- `MobalyticsParser` — state-machine parser for Mobalytics gear sections; strips temper/socket lines
+- `MaxrollParser` — keyword-delimiter parser; handles `↑` greater affix suffix, `x` prefix stripping, Unique Effect sentinel, talisman slot detection
+- `IcyVeinsParser` — tab/newline parser for Icy Veins gear tables; handles both tab-inline and slot-name-on-own-line paste formats; strips temper column
+- `BuildGuideImporter` — format auto-detection + parser dispatch; `Normalize()` pre-pass strips BOM, zero-width chars, and Unicode space variants before any parser sees the text
+
+### D4LootBench.Ai additions
+
+- `BuildGuideFilterGenerator` — deterministic name resolution and rule construction from `ParsedBuildGuide`; no LLM involvement
+- `BuildGuideImportResult` — result wrapper (ruleset + warnings list)
+- Output rule shape: All Charms rule (if talisman slots present) → Target Uniques rule (if any unique resolved) → per-slot rules (ItemType + up to 4 affixes, require 2) → Hide All fallback
+- Slot label → D4 item type mapping for all three format label variants; ambiguous weapon slots emit affix-only rules
+
+### App-layer additions
+
+- `BuildGuideImportViewModel` — orchestrates importer → generator pipeline; surfaces per-format option, warnings panel, error state
+- `BuildGuideImportDialog.xaml` — paste area, format dropdown, warnings list, Import Filter / Cancel buttons
+- `MainWindowViewModel.ImportFromBuildGuideCommand` — shows dialog, confirms replacement of existing filter, calls `TryLoadRuleset`
+- Toolbar button added next to Paste Code
+- `BuildGuideImporter` and `BuildGuideFilterGenerator` registered as singletons in `ServiceConfiguration`
+
+### Tests
+
+- 28 new tests in `tests/D4LootBench.Core.Tests/Import/BuildGuideParserTests.cs`
+- Coverage: format detection, slot count, affix names/priorities, `IsGreaterAffix` flags, talisman detection, Unique Effect sentinel, `↑` suffix, `x` prefix stripping, temper/socket exclusion, browser multi-line cell paste format, CRLF line endings, slot-name-only-line format
+- Total: **88 tests**, 0 warnings
+
+---
+
 ## Phase 4A ✅ — AI Rule Assistant
 
 Design context: `docs/design/ai-assistant.md`

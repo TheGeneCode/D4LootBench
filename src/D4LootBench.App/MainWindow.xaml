@@ -129,6 +129,9 @@
                         <MenuItem Header="Getting Started"
                                   Command="{Binding OpenHelpCommand}"
                                   CommandParameter="GettingStarted" />
+                        <MenuItem Header="Build Guide Import"
+                                  Command="{Binding OpenHelpCommand}"
+                                  CommandParameter="BuildGuideImport" />
                         <MenuItem Header="AI Assistant Setup"
                                   Command="{Binding OpenHelpCommand}"
                                   CommandParameter="AiSetup" />
