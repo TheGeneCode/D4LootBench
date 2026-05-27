@@ -214,6 +214,42 @@ public sealed class BuildGuideParserTests
             s.Affixes.All(a => !a.RawName.Contains("Category") && !a.RawName.Contains("(Name)")));
     }
 
+    // ── Icy Veins browser multi-line cell paste ──────────────────────────────
+
+    [Fact]
+    public void IcyVeins_BrowserPaste_ParsesCorrectSlotCount()
+    {
+        var guide = new IcyVeinsParser().Parse(IcyVeinsBrowserPasteFixture);
+        guide.Slots.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void IcyVeins_BrowserPaste_ParsesFourAffixesPerSlot()
+    {
+        var guide = new IcyVeinsParser().Parse(IcyVeinsBrowserPasteFixture);
+        guide.Slots[0].Affixes.Count.ShouldBe(4);
+        guide.Slots[1].Affixes.Count.ShouldBe(4);
+    }
+
+    [Fact]
+    public void IcyVeins_BrowserPaste_ParsesAffixNamesCorrectly()
+    {
+        var guide = new IcyVeinsParser().Parse(IcyVeinsBrowserPasteFixture);
+        var affixes = guide.Slots[0].Affixes;
+        affixes[0].RawName.ShouldBe("Critical Strike Chance");
+        affixes[1].RawName.ShouldBe("Attack Speed");
+        affixes[2].RawName.ShouldBe("Dexterity");
+        affixes[3].RawName.ShouldBe("Movement Speed");
+    }
+
+    [Fact]
+    public void IcyVeins_BrowserPaste_IgnoresTemperColumn()
+    {
+        var guide = new IcyVeinsParser().Parse(IcyVeinsBrowserPasteFixture);
+        guide.Slots.ShouldAllBe(s =>
+            s.Affixes.All(a => !a.RawName.Contains("Category") && !a.RawName.Contains("(Name)")));
+    }
+
     // ── Static fixtures ──────────────────────────────────────────────────────
 
     private const string MobalyticsFixture = """
@@ -281,4 +317,19 @@ public sealed class BuildGuideParserTests
         "2. Maximum Life\n" +
         "3. Armor\n" +
         "4. Strength\t+ Category (Name)\n";
+
+    // Browser multi-line cell paste: each affix on its own row with empty first column (leading tab).
+    // Tempering affixes appear as a separate row with two leading tabs.
+    private const string IcyVeinsBrowserPasteFixture =
+        "Slot\tGear Affixes\tTempering Affixes\n" +
+        "Helm\t1. Critical Strike Chance\t\n" +
+        "\t2. Attack Speed\t\n" +
+        "\t3. Dexterity\t\n" +
+        "\t4. Movement Speed\t\n" +
+        "\t\t+ Category (Name)\n" +
+        "Chest\t1. Damage Reduction\t\n" +
+        "\t2. Maximum Life\t\n" +
+        "\t3. Armor\t\n" +
+        "\t4. Strength\t\n" +
+        "\t\t+ Category (Name)\n";
 }

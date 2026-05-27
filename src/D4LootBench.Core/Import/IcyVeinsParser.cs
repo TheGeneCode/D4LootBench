@@ -55,13 +55,20 @@ public sealed class IcyVeinsParser : IBuildGuideParser
                     }
                     if (rawLine.Contains('\t'))
                     {
-                        // Could be the temper column on the last affix line, or the start of a new slot
                         var tabIdx = rawLine.IndexOf('\t');
                         var left = rawLine[..tabIdx].Trim();
                         if (IsNumberedAffix(left))
                         {
                             // Last affix with inline temper column — add affix, temper discarded
                             TryAddNumberedAffix(left, affixes, ref priorityCounter);
+                        }
+                        else if (string.IsNullOrEmpty(left))
+                        {
+                            // Browser multi-line cell paste: empty first column is a continuation row.
+                            // Strip the second tab (temper column) before parsing — TryAddNumberedAffix
+                            // ignores lines that don't start with "N." so temper/+ lines are silently dropped.
+                            var affixPart = StripTemperColumn(rawLine[(tabIdx + 1)..]);
+                            TryAddNumberedAffix(affixPart, affixes, ref priorityCounter);
                         }
                         else
                         {

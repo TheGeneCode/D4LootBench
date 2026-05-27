@@ -21,6 +21,7 @@ public sealed class BuildGuideImporter
 
     public ParsedBuildGuide Import(string text, BuildGuideFormat hint = BuildGuideFormat.Auto)
     {
+        text = Normalize(text);
         var format = hint == BuildGuideFormat.Auto ? Detect(text) : hint;
         return format switch
         {
@@ -29,6 +30,32 @@ public sealed class BuildGuideImporter
             BuildGuideFormat.IcyVeins  => _icyVeins.Parse(text),
             _ => throw new BuildGuideImportException("Format could not be detected. Select the format manually.")
         };
+    }
+
+    /// <summary>
+    /// Normalizes common web copy-paste artifacts before format detection and parsing.
+    /// </summary>
+    private static string Normalize(string text)
+    {
+        // Strip BOM and zero-width characters
+        text = text.Replace("﻿", "")
+                   .Replace("​", "")  // zero-width space
+                   .Replace("‌", "")  // zero-width non-joiner
+                   .Replace("‍", ""); // zero-width joiner
+
+        // Normalize Unicode whitespace variants to regular space (preserve tabs and newlines)
+        var sb = new System.Text.StringBuilder(text.Length);
+        foreach (var ch in text)
+        {
+            sb.Append(ch switch
+            {
+                '\t' or '\n' or '\r' => ch,
+                _ when char.GetUnicodeCategory(ch) == System.Globalization.UnicodeCategory.SpaceSeparator => ' ',
+                _ => ch
+            });
+        }
+
+        return sb.ToString().ReplaceLineEndings("\n");
     }
 
     private static BuildGuideFormat Detect(string text)
