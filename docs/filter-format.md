@@ -13,11 +13,6 @@ credited in any public release of D4LootBench:
 | [d4lfteam/d4lf](https://github.com/d4lfteam/d4lf) | MIT | Affix name reference database |
 | [Raxx (filter author)](https://github.com/raxxanterax/GAMING/blob/main/Raxxs%20Diablo%204%20T6%2B%20Endgame%20Filter.txt) | N/A | Real-world filter export used to validate and extend the format spec |
 
-> **TODO before public release:**
-> - Confirm attribution wording is acceptable with DiabloTools/d4data and d4lfteam/d4lf maintainers
-> - Note: DiabloTools/d4data extracts Blizzard game assets — confirm community norm on crediting datamined data vs. the extraction tooling
-> - Add attribution to the app's About dialog and README
-
 ---
 
 ## Encoding
