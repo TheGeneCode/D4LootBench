@@ -82,12 +82,12 @@ Used for: Required Affixes, Optional Affixes, and Greater Affix conditions.
 
 ## skills
 
-Used for: Codex of Power condition.
+Used for: Codex of Power condition (skill rank upgrades).
 
 ```json
 {
-  "displayName": "All Skills",
-  "hash": "0x00273C0A",
+  "displayName": "Core Skills",
+  "hash": "0x001D6E31",
   "classes": ["All"]
 }
 ```
@@ -97,6 +97,8 @@ Used for: Codex of Power condition.
 | `displayName` | ✅ | Skill name shown in the picker |
 | `hash` | ✅ | SNO ID of the skill as a `"0x"` hex string |
 | `classes` | ✅ | Which classes can use this skill |
+
+> **Note — `All Skills` (0x00273c0a) appears in both `skills` and `affixes`.** The same SNO ID is used as a skill category for Codex conditions *and* as an affix identifier for "+X to All Skills" gear rolls. It was added to `affixes` (commit `1a9a181`) after it showed as "Unknown" in the affix picker. Use "Core Skills" or any individual skill hash as a representative `skills`-only example.
 
 ---
 
