@@ -82,7 +82,7 @@ Used for: Required Affixes, Optional Affixes, and Greater Affix conditions.
 
 ## skills
 
-Used for: Codex of Power condition (skill rank upgrades).
+**Not used by the filter app.** The Codex of Power condition (`CodexCondition`) is a zero-field checkbox — it has no skill-rank payload and does not reference skill hashes. The `skills` array is loaded by `SkillDatabase` and surfaced to the AI assistant as context only (`SystemPromptBuilder`: "for context only — not a filter condition type").
 
 ```json
 {
@@ -94,11 +94,11 @@ Used for: Codex of Power condition (skill rank upgrades).
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `displayName` | ✅ | Skill name shown in the picker |
+| `displayName` | ✅ | Skill name (AI context / future use) |
 | `hash` | ✅ | SNO ID of the skill as a `"0x"` hex string |
 | `classes` | ✅ | Which classes can use this skill |
 
-> **Note — `All Skills` (0x00273c0a) appears in both `skills` and `affixes`.** The same SNO ID is used as a skill category for Codex conditions *and* as an affix identifier for "+X to All Skills" gear rolls. It was added to `affixes` (commit `1a9a181`) after it showed as "Unknown" in the affix picker. Use "Core Skills" or any individual skill hash as a representative `skills`-only example.
+> **Note — `All Skills` (0x00273c0a) appears in both `skills` and `affixes`.** It was added to `affixes` after showing as "Unknown" in the affix picker; the `skills` entry is redundant for filter purposes.
 
 ---
 
