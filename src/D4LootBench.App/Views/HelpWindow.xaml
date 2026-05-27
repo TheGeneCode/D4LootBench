@@ -28,8 +28,9 @@
                      Background="Transparent"
                      SelectionChanged="TopicList_SelectionChanged"
                      Padding="4,6">
-                <ListBoxItem Tag="GettingStarted"  Content="Getting Started"       Padding="8,5" />
-                <ListBoxItem Tag="AiSetup"         Content="AI Assistant Setup"    Padding="8,5" />
+                <ListBoxItem Tag="GettingStarted"    Content="Getting Started"         Padding="8,5" />
+                <ListBoxItem Tag="BuildGuideImport" Content="Build Guide Import"    Padding="8,5" />
+                <ListBoxItem Tag="AiSetup"           Content="AI Assistant Setup"   Padding="8,5" />
                 <ListBoxItem Tag="CustomizingData" Content="Customizing Game Data" Padding="8,5" />
                 <ListBoxItem Tag="Troubleshooting" Content="Troubleshooting"       Padding="8,5" />
                 <ListBoxItem Tag="FilterRules"     Content="Filter Rules Reference" Padding="8,5" />

@@ -1,0 +1,136 @@
+<UserControl
+    x:Class="D4LootBench.App.Views.Help.BuildGuideImportTopic"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d">
+
+    <FlowDocumentScrollViewer>
+        <FlowDocument FontFamily="Segoe UI" FontSize="13" PagePadding="20,16">
+
+            <Paragraph FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12">
+                Build Guide Import
+            </Paragraph>
+
+            <Paragraph>
+                Build Guide Import generates a BiS (Best in Slot) loot filter directly from a gear
+                section copied from a build guide. Paste the gear table, click
+                <Bold>Import Filter</Bold>, and D4LootBench produces a ready-to-use filter with one
+                rule per gear slot — no manual rule building required.
+            </Paragraph>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,12,0,6">
+                Supported sites
+            </Paragraph>
+
+            <List Margin="8,4,0,12">
+                <ListItem><Paragraph><Bold>Mobalytics</Bold> — copy the gear section from a Mobalytics build guide</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Maxroll</Bold> — copy the gear section from a Maxroll build guide</Paragraph></ListItem>
+                <ListItem><Paragraph><Bold>Icy Veins</Bold> — copy the gear table from an Icy Veins build guide</Paragraph></ListItem>
+            </List>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,8,0,6">
+                How to use it
+            </Paragraph>
+
+            <List MarkerStyle="Decimal" Margin="8,4,0,12">
+                <ListItem>
+                    <Paragraph>
+                        Open a build guide on Mobalytics, Maxroll, or Icy Veins and navigate to the
+                        gear / Best in Slot section.
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        Select the gear table or gear list and copy it to the clipboard
+                        (<Bold>Ctrl+C</Bold>).
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        In D4LootBench, click <Bold>Import from Build Guide</Bold> in the toolbar
+                        (the book icon next to Paste Code).
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        Paste the copied text into the text area (<Bold>Ctrl+V</Bold>). The format
+                        is detected automatically — or select it manually from the dropdown if
+                        auto-detect fails.
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        Click <Bold>Import Filter</Bold>. Review any warnings, then confirm to
+                        replace your current filter.
+                    </Paragraph>
+                </ListItem>
+            </List>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,8,0,6">
+                What gets generated
+            </Paragraph>
+
+            <Paragraph>
+                The importer creates one rule per gear slot, plus combined rules for unique items
+                and talisman sets when the guide specifies them:
+            </Paragraph>
+
+            <List Margin="8,4,0,12">
+                <ListItem>
+                    <Paragraph>
+                        <Bold>Slot rules</Bold> — item type condition + up to 4 top-priority affixes,
+                        requiring any 2 of the 4 to match. Adjust the required count in the visual
+                        editor to tune strictness.
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        <Bold>Target Uniques rule</Bold> — all unique items from the guide combined
+                        into a single Specific Unique condition.
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        <Bold>All Charms rule</Bold> — a Talisman Set condition to show all charms,
+                        added when the guide includes talisman/seal slots.
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        <Bold>Hide All fallback</Bold> — a catch-all hide rule at the end of the filter.
+                    </Paragraph>
+                </ListItem>
+            </List>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,8,0,6">
+                Warnings
+            </Paragraph>
+
+            <Paragraph>
+                If an affix or item name cannot be resolved to a known hash ID, it is reported as a
+                warning rather than stopping the import. The rule is still created without the
+                unresolved entry. Review warnings and add any missing conditions manually in the
+                visual editor.
+            </Paragraph>
+
+            <Paragraph FontSize="14" FontWeight="SemiBold" Margin="0,8,0,6">
+                Tuning the generated filter
+            </Paragraph>
+
+            <Paragraph>
+                The generated filter is a starting point. After import, use the visual editor to:
+            </Paragraph>
+
+            <List Margin="8,4,0,12">
+                <ListItem><Paragraph>Adjust the required affix count per slot (default: 2 of 4)</Paragraph></ListItem>
+                <ListItem><Paragraph>Add or remove individual affixes</Paragraph></ListItem>
+                <ListItem><Paragraph>Change rule colors to match your preferred highlight scheme</Paragraph></ListItem>
+                <ListItem><Paragraph>Add item power or rarity conditions to further filter results</Paragraph></ListItem>
+            </List>
+
+        </FlowDocument>
+    </FlowDocumentScrollViewer>
+
+</UserControl>

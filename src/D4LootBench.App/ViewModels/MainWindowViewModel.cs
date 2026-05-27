@@ -6,9 +6,12 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using D4LootBench.Ai;
+using D4LootBench.Ai.Import;
 using D4LootBench.App.Services;
 using D4LootBench.App.ViewModels.Conditions;
+using D4LootBench.App.Views;
 using D4LootBench.Core.Codec;
+using D4LootBench.Core.Import;
 using D4LootBench.Core.Models;
 using D4LootBench.Core.Serialization;
 using D4LootBench.Core.Validation;
@@ -20,6 +23,8 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private readonly IConditionViewModelFactory _conditionFactory;
     private readonly IFilterValidator _validator;
+    private readonly BuildGuideImporter _buildGuideImporter;
+    private readonly BuildGuideFilterGenerator _buildGuideGenerator;
 
     public AiAssistantViewModel AiAssistant { get; }
 
@@ -33,10 +38,14 @@ public partial class MainWindowViewModel : ObservableObject
         IConditionViewModelFactory conditionFactory,
         IFilterValidator validator,
         RuleAssistant ruleAssistant,
-        LlmSettingsService llmSettings)
+        LlmSettingsService llmSettings,
+        BuildGuideImporter buildGuideImporter,
+        BuildGuideFilterGenerator buildGuideGenerator)
     {
-        _conditionFactory = conditionFactory;
-        _validator        = validator;
+        _conditionFactory    = conditionFactory;
+        _validator           = validator;
+        _buildGuideImporter  = buildGuideImporter;
+        _buildGuideGenerator = buildGuideGenerator;
 
         AiAssistant = new AiAssistantViewModel(
             ruleAssistant, llmSettings,
@@ -118,6 +127,36 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     // ── Import ────────────────────────────────────────────────────────────
+
+    [RelayCommand]
+    private void ImportFromBuildGuide()
+    {
+        var dlg = new BuildGuideImportDialog(_buildGuideImporter, _buildGuideGenerator)
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        if (dlg.ShowDialog() != true) return;
+
+        if (Editor is not null)
+        {
+            var confirm = MessageBox.Show(
+                "This will replace your current filter. Continue?",
+                "Import from Build Guide",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+        }
+
+        var ruleset = dlg.Vm.ImportedRuleset!;
+        RefreshIssues(ValidationResult.Empty);
+        Editor = new VisualEditorViewModel(_conditionFactory, ruleset);
+
+        var warningNote = dlg.Vm.Warnings.Count > 0
+            ? $" ({dlg.Vm.Warnings.Count} unresolved name(s))"
+            : "";
+        SetStatus($"Imported \"{ruleset.Name}\" — {ruleset.Rules.Count} rule(s){warningNote}.", error: false);
+    }
 
     [RelayCommand]
     private void PasteCode()

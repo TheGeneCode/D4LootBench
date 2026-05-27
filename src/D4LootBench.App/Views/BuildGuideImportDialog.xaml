@@ -1,0 +1,107 @@
+<Window x:Class="D4LootBench.App.Views.BuildGuideImportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:D4LootBench.App.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:BuildGuideImportViewModel, IsDesignTimeCreatable=False}"
+        Title="Import from Build Guide"
+        Width="620" MinWidth="420"
+        Height="520" MinHeight="380"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="CanResizeWithGrip">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <!-- Red text when HasError, normal dark text otherwise -->
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasError}" Value="True">
+                    <Setter Property="Foreground" Value="#C0392B" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding HasError}" Value="False">
+                    <Setter Property="Foreground"
+                            Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />   <!-- format selector + hint -->
+            <RowDefinition Height="10" />     <!-- gap -->
+            <RowDefinition Height="*" />      <!-- paste area -->
+            <RowDefinition Height="10" />     <!-- gap -->
+            <RowDefinition Height="Auto" />   <!-- status / error -->
+            <RowDefinition Height="Auto" />   <!-- warnings expander -->
+            <RowDefinition Height="12" />     <!-- gap -->
+            <RowDefinition Height="Auto" />   <!-- buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- ── Format selector ──────────────────────────────────────── -->
+        <DockPanel Grid.Row="0">
+            <TextBlock Text="Format:" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <ComboBox ItemsSource="{Binding FormatOptions}"
+                      SelectedItem="{Binding SelectedFormatOption}"
+                      DisplayMemberPath="Label"
+                      MinWidth="140" />
+            <TextBlock Text="Paste your build guide gear section below."
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                       Margin="12,0,0,0" />
+        </DockPanel>
+
+        <!-- ── Paste area ───────────────────────────────────────────── -->
+        <TextBox Grid.Row="2"
+                 Text="{Binding PastedText, UpdateSourceTrigger=PropertyChanged}"
+                 AcceptsReturn="True"
+                 AcceptsTab="False"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Disabled"
+                 FontFamily="Cascadia Code, Consolas, Courier New"
+                 FontSize="12"
+                 SpellCheck.IsEnabled="False"
+                 VerticalContentAlignment="Top"
+                 Padding="6" />
+
+        <!-- ── Status / error ───────────────────────────────────────── -->
+        <TextBlock Grid.Row="4"
+                   Text="{Binding StatusText}"
+                   Style="{StaticResource StatusTextStyle}"
+                   TextWrapping="Wrap"
+                   Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}" />
+
+        <!-- ── Warnings expander ────────────────────────────────────── -->
+        <Expander Grid.Row="5"
+                  Header="{Binding Warnings.Count, StringFormat='⚠ {0} unresolved name(s) — click to expand'}"
+                  Visibility="{Binding HasWarnings, Converter={StaticResource BoolToVis}}"
+                  Margin="0,4,0,0">
+            <ScrollViewer MaxHeight="100" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Warnings}" Padding="4">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap" FontSize="11" Margin="0,1" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Expander>
+
+        <!-- ── Buttons ──────────────────────────────────────────────── -->
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel"
+                    Width="80" Height="28"
+                    Margin="0,0,8,0"
+                    IsCancel="True" />
+            <Button Content="Import Filter"
+                    Width="110" Height="28"
+                    IsDefault="True"
+                    Command="{Binding ImportCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>

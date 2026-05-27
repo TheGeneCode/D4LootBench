@@ -1,7 +1,9 @@
 using D4LootBench.Ai;
+using D4LootBench.Ai.Import;
 using D4LootBench.App.ViewModels;
 using D4LootBench.App.ViewModels.Conditions;
 using D4LootBench.Core.Data;
+using D4LootBench.Core.Import;
 using D4LootBench.Core.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +25,8 @@ internal static class ServiceConfiguration
         services.AddSingleton<NameResolver>();
         services.AddSingleton<ILlmProvider, SettingsAwareLlmProvider>();
         services.AddSingleton<RuleAssistant>();
+        services.AddSingleton<BuildGuideImporter>();
+        services.AddSingleton<BuildGuideFilterGenerator>();
 
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<MainWindow>();

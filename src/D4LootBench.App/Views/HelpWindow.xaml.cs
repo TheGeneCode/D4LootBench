@@ -15,8 +15,9 @@ public partial class HelpWindow : Window
         InitializeComponent();
         _topics = new Dictionary<string, Lazy<UserControl>>
         {
-            ["GettingStarted"]  = new(() => new GettingStartedTopic()),
-            ["AiSetup"]         = new(() => new AiSetupTopic()),
+            ["GettingStarted"]      = new(() => new GettingStartedTopic()),
+            ["BuildGuideImport"]    = new(() => new BuildGuideImportTopic()),
+            ["AiSetup"]             = new(() => new AiSetupTopic()),
             ["CustomizingData"] = new(() => new CustomizingDataTopic(
                                       async () => await GameDataHelper.ExtractAsync())),
             ["Troubleshooting"] = new(() => new TroubleshootingTopic()),
