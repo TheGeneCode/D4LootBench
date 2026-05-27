@@ -727,7 +727,7 @@
       "displayName": "Agility Skills (Rogue)",
       "hash": "0x001d6e41",
       "classes": [
-        "All"
+        "Rogue"
       ]
     },
     {
@@ -797,7 +797,7 @@
       "displayName": "Brawling Skills (Barbarian)",
       "hash": "0x001d6e25",
       "classes": [
-        "All"
+        "Barbarian"
       ]
     },
     {
@@ -818,14 +818,14 @@
       "displayName": "Companion Skills (Druid)",
       "hash": "0x001d6e2d",
       "classes": [
-        "All"
+        "Druid"
       ]
     },
     {
       "displayName": "Conjuration Skills (Sorcerer)",
       "hash": "0x001d6e3d",
       "classes": [
-        "All"
+        "Sorcerer"
       ]
     },
     {
@@ -846,7 +846,7 @@
       "displayName": "Corpse Skills (Necromancer)",
       "hash": "0x001d6e4b",
       "classes": [
-        "All"
+        "Necromancer"
       ]
     },
     {
@@ -881,7 +881,7 @@
       "displayName": "Curse Skills (Necromancer)",
       "hash": "0x001d6e49",
       "classes": [
-        "All"
+        "Necromancer"
       ]
     },
     {
@@ -1022,7 +1022,7 @@
       "displayName": "Imbuements Skills (Rogue)",
       "hash": "0x001d6e45",
       "classes": [
-        "All"
+        "Rogue"
       ]
     },
     {
@@ -1114,7 +1114,7 @@
       "displayName": "Macabre Skills (Necromancer)",
       "hash": "0x001d6e47",
       "classes": [
-        "All"
+        "Necromancer"
       ]
     },
     {
@@ -1135,7 +1135,7 @@
       "displayName": "Mastery Skills (Sorcerer)",
       "hash": "0x001d6e3f",
       "classes": [
-        "All"
+        "Sorcerer"
       ]
     },
     {
@@ -1290,7 +1290,7 @@
       "displayName": "Subterfuge Skills (Rogue)",
       "hash": "0x001d6e43",
       "classes": [
-        "All"
+        "Rogue"
       ]
     },
     {
@@ -1339,7 +1339,7 @@
       "displayName": "WeaponMastery Skills (Barbarian)",
       "hash": "0x001d6e27",
       "classes": [
-        "All"
+        "Barbarian"
       ]
     },
     {
@@ -1368,7 +1368,7 @@
       "displayName": "Wrath Skills (Druid)",
       "hash": "0x001d6e33",
       "classes": [
-        "All"
+        "Druid"
       ]
     }
   ],
