@@ -32,8 +32,26 @@ jobs:
           -p:PublishSingleFile=true
           --output ./publish
 
+      - name: Compute SHA256
+        id: hash
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash publish/D4LootBench.exe -Algorithm SHA256).Hash.ToLower()
+          "sha256=$hash" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Upload to VirusTotal
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $headers = @{ "x-apikey" = "${{ secrets.VIRUSTOTAL_API_KEY }}" }
+          $form = @{ file = Get-Item "publish/D4LootBench.exe" }
+          Invoke-RestMethod -Uri "https://www.virustotal.com/api/v3/files" `
+            -Method Post -Headers $headers -Form $form | Out-Null
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: publish/D4LootBench.exe
           generate_release_notes: true
+          body: |
+            **[VirusTotal scan →](https://www.virustotal.com/gui/file/${{ steps.hash.outputs.sha256 }})**
