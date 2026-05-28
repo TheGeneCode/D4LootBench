@@ -3230,7 +3230,7 @@
       ]
     },
     {
-      "displayName": "Crossbow",
+      "displayName": "Hand Crossbow",
       "hash": "0x0006D168",
       "internalName": "Crossbow",
       "category": "Weapons",
@@ -3239,7 +3239,7 @@
       ]
     },
     {
-      "displayName": "Two-Handed Crossbow",
+      "displayName": "Crossbow",
       "hash": "0x0006D169",
       "internalName": "Crossbow2H",
       "category": "Weapons",
