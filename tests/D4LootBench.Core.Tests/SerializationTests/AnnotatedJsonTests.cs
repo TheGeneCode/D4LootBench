@@ -11,8 +11,8 @@ public class AnnotatedJsonTests
     [Fact]
     public void Serialize_AffixCondition_EmitsAnnotatedShape()
     {
-        var cdr = AffixDatabase.ByName["% Cooldown Reduction"].Hash;
-        var armor = AffixDatabase.All.First(a => a.Name == "Armor").Hash;
+        var cdr = AffixDatabase.ByName["%Cooldown Reduction"].Hash;
+        var armor = AffixDatabase.ByName["+Armor"].Hash;
         var cond  = new AffixCondition([cdr, armor], 2)
         {
             GreaterEntries = [new GreaterAffixEntry(cdr, cdr)],
@@ -20,10 +20,10 @@ public class AnnotatedJsonTests
         var json = JsonSerializer.Serialize<Condition>(cond, FilterJsonOptions.Default);
 
         json.ShouldContain("\"id\": \"0x001beab8\"");
-        json.ShouldContain("\"name\": \"% Cooldown Reduction\"");
-        json.ShouldContain("\"name\": \"Armor\"");
+        json.ShouldContain("\"name\": \"%Cooldown Reduction\"");
+        json.ShouldContain("\"name\": \"+Armor\"");
         json.ShouldContain("\"affixId\": \"0x001beab8\"");
-        json.ShouldContain("\"affixName\": \"% Cooldown Reduction\"");
+        json.ShouldContain("\"affixName\": \"%Cooldown Reduction\"");
         json.ShouldContain("\"affixIdEcho\": \"0x001beab8\"");
     }
 
@@ -44,8 +44,8 @@ public class AnnotatedJsonTests
         {
           "$type":"affix",
           "AffixIds":[
-            {"id":"0x001beab8","name":"% Cooldown Reduction"},
-            {"id":"0x001beab2","name":"Armor"}
+            {"id":"0x001beab8","name":"%Cooldown Reduction"},
+            {"id":"0x001beab2","name":"+Armor"}
           ],
           "MinimumCount":2
         }
@@ -62,8 +62,8 @@ public class AnnotatedJsonTests
         {
           "$type":"affix",
           "AffixIds":[
-            {"name":"% Cooldown Reduction"},
-            {"name":"Armor"}
+            {"name":"%Cooldown Reduction"},
+            {"name":"+Armor"}
           ],
           "MinimumCount":2
         }

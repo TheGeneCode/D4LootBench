@@ -10,6 +10,7 @@ credited in any public release of D4LootBench:
 | [Upsilon72/d4-filter-generator](https://github.com/Upsilon72/d4-filter-generator) | MIT | Original protobuf wire format reverse engineering; affix hash IDs; condition type encoding (Season 13) |
 | [fnuecke/diablo4-loot-filter-viewer](https://github.com/fnuecke/diablo4-loot-filter-viewer) | Unlicense (public domain) | Complete `.proto` field layout; condition type semantics for all 10 types; `names.json` ID lookup table |
 | [DiabloTools/d4data](https://github.com/DiabloTools/d4data) | MIT | `CoreTOC_flat.json` — authoritative datamined ID tables for all skills, item types, and affixes; `json/enUS_Text/meta/StringList/Item_*.stl.json` — player-friendly unique item display names (build 3.0.2.71886, May 2026) |
+| [ThunderEagle/LootBenchDataExtract](https://github.com/ThunderEagle/LootBenchDataExtract) | Private | CASC extraction pipeline that generates `d4-data.json`; gates unique items on release-state flag; adds `isMythic` from `Item.Meta+0x20` |
 | [d4lfteam/d4lf](https://github.com/d4lfteam/d4lf) | MIT | Affix name reference database |
 | [Raxx (filter author)](https://github.com/raxxanterax/GAMING/blob/main/Raxxs%20Diablo%204%20T6%2B%20Endgame%20Filter.txt) | N/A | Real-world filter export used to validate and extend the format spec |
 

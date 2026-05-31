@@ -27,7 +27,7 @@ Hash IDs are authoritative — display names are informational only and do not a
 ```json
 {
   "formatVersion": 1,
-  "source": "DiabloTools/d4data CoreTOC_flat.json (build 3.0.2.71886)",
+  "source": "LootBenchDataExtract build 3.0.3.72031",
   "affixes": [ ... ],
   "skills": [ ... ],
   "itemTypes": [ ... ],
@@ -187,10 +187,24 @@ Used for: Talisman Set condition.
 
 ---
 
+## Provenance — How d4-data.json is Generated
+
+`d4-data.json` is produced by **[LootBenchDataExtract](https://github.com/ThunderEagle/LootBenchDataExtract)**, a dedicated CASC extraction tool. The `source` field in the file records the game build it was extracted from (e.g. `"LootBenchDataExtract build 3.0.3.72031"`).
+
+Key extraction decisions encoded in the pipeline:
+- **Affixes** — display names are taken from game string tables; names prefixed with `+` or `%` are preserved verbatim.
+- **Unique items** — gated on the CASC binary release-state flag (`{2, 4}`), so placeholder (`[PH]`) and dev-only items are excluded at extraction time, not in app code.
+- **Mythic flag** — `Item.Meta+0x20` byte: `0x02` = regular unique, `0x04` = Mythic unique; written as `"isMythic": true/false`.
+
+To regenerate `d4-data.json` after a game patch, run LootBenchDataExtract against the updated game files and replace `src/D4LootBench.Core/Data/d4-data.json`.
+
+---
+
 ## Finding SNO IDs for New Entries
 
 SNO IDs come from D4's game data files. Community sources:
 
+- **[LootBenchDataExtract](https://github.com/ThunderEagle/LootBenchDataExtract)** — primary extraction tool; generates `d4-data.json` directly
 - **[DiabloTools/d4data](https://github.com/DiabloTools/d4data)** — `CoreTOC_flat.json` contains SNO IDs for all game assets
 - **[Upsilon72/d4-filter-generator](https://github.com/Upsilon72/d4-filter-generator)** — affix hash tables from Season 13
 - **[fnuecke/diablo4-loot-filter-viewer](https://github.com/fnuecke/diablo4-loot-filter-viewer)** — `names.json` ID lookup tables

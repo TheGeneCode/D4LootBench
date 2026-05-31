@@ -4,12 +4,15 @@ namespace D4LootBench.Core.Data;
 /// <param name="SnoId">SNO ID used in the filter wire format.</param>
 /// <param name="InternalName">CoreTOC internal asset name.</param>
 /// <param name="IsReleased">
-/// False for items whose display name is a placeholder (prefix "[PH]") or whose
-/// name could not be resolved (equals the internal name). These are cut or
-/// unreleased items in the game files and should be excluded from UI pickers.
+/// True for all items present in d4-data.json (extraction pipeline gates on the
+/// CASC release-state flag). False only when the safety-net detects a "[PH]"
+/// placeholder prefix that slipped through, which is logged as a warning.
+/// </param>
+/// <param name="IsMythic">
+/// True for Mythic-quality unique items (Item.Meta+0x20 == 0x04 in CASC binary).
 /// </param>
 public sealed record UniqueItemEntry(string Name, uint SnoId, string InternalName, bool IsReleased,
-    IReadOnlyList<string> Classes);
+    bool IsMythic, IReadOnlyList<string> Classes);
 
 public static class UniqueItemDatabase
 {
@@ -100,6 +103,11 @@ public static class UniqueItemDatabase
         ["2HFlail"]         = ["Paladin"],
     };
 
+    // Matches "x1", "X1", "X2", "QST", and any "S" followed by digits (S05, S13, S99, …)
+    private static bool IsSeasonOrExpansionPrefix(string prefix) =>
+        prefix is "x1" or "X1" or "X2" or "QST"
+        || (prefix.Length >= 2 && prefix[0] == 'S' && prefix[1..].All(char.IsAsciiDigit));
+
     private static IReadOnlyList<string>? TryGetClassName(string segment) =>
         ClassNameSegment.TryGetValue(segment, out var name) ? [name] : null;
 
@@ -122,7 +130,7 @@ public static class UniqueItemDatabase
             return LookupItemTypeClasses(typeKey) ?? ["All"];
 
         // For items with season/expansion/quest prefixes, scan for a known type segment
-        if (prefix is "x1" or "X1" or "X2" or "QST" or "S05" or "S07" or "S10" or "S12")
+        if (IsSeasonOrExpansionPrefix(prefix))
         {
             foreach (var seg in segments)
             {
@@ -166,12 +174,20 @@ public static class UniqueItemDatabase
             var snoIdHex     = el.GetProperty("snoId").GetString()!;
             var snoId        = Convert.ToUInt32(snoIdHex[2..], 16);
             var internalName = el.GetProperty("internalName").GetString()!;
+            var isMythic     = el.GetProperty("isMythic").GetBoolean();
 
-            var isReleased = !name.StartsWith("[PH]", StringComparison.Ordinal)
-                          && !string.Equals(name, internalName, StringComparison.Ordinal);
+            // Extraction pipeline gates on CASC release-state; anything in the JSON is released.
+            // [PH] prefix is a safety-net: log and exclude if one slips through.
+            var isReleased = true;
+            if (name.StartsWith("[PH]", StringComparison.Ordinal))
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    $"[UniqueItemDatabase] Placeholder item in d4-data.json: {internalName} (\"{name}\")");
+                isReleased = false;
+            }
 
             var classes = DeriveClasses(internalName);
-            var entry = new UniqueItemEntry(name, snoId, internalName, isReleased, classes);
+            var entry = new UniqueItemEntry(name, snoId, internalName, isReleased, isMythic, classes);
             all.Add(entry);
 
             foreach (var cls in classes)
