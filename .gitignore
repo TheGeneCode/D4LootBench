@@ -490,3 +490,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+json-filters/Barb-BiS.json
+json-filters/ColdTrapDOK.json
+json-filters/test.json
