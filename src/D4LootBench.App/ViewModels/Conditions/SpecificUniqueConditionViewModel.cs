@@ -10,15 +10,13 @@ public sealed partial class SpecificUniqueConditionViewModel : ConditionViewMode
 
     public PickerViewModel Picker { get; }
 
-    private readonly ILookup<string, uint> _displayNameToSnoIds;
-
     public SpecificUniqueConditionViewModel(IFilterDataService data)
     {
         _data = data;
-        _displayNameToSnoIds = _data.Uniques.Released
+        var displayNameToSnoIds = _data.Uniques.Released
             .ToLookup(e => e.Name, e => e.SnoId);
 
-        var source = _displayNameToSnoIds
+        var source = displayNameToSnoIds
             .Select(g => new PickerEntry(g.First(), g.Key))
             .OrderBy(e => e.DisplayName)
             .ToList();
@@ -61,7 +59,6 @@ public sealed partial class SpecificUniqueConditionViewModel : ConditionViewMode
     public override Condition BuildModel() =>
         new SpecificUniqueCondition(
             Picker.Selected
-                .SelectMany(e => _displayNameToSnoIds[e.DisplayName])
-                .Distinct()
+                .Select(e => e.Hash)
                 .ToList());
 }
