@@ -1,3 +1,4 @@
+using D4LootBench.Core.Data;
 using D4LootBench.Core.Import;
 using D4LootBench.Core.Models;
 
@@ -10,15 +11,15 @@ namespace D4LootBench.Ai.Import;
 /// </summary>
 public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
 {
-    private static readonly uint ColorSlot    = FilterRule.PackColor(255, 180,  0);  // gold
-    private static readonly uint ColorUnique  = FilterRule.PackColor(160,  32, 240); // purple
-    private static readonly uint ColorCharms  = FilterRule.PackColor( 50, 200,  50); // green
-    private static readonly uint ColorHideAll = FilterRule.PackColor(  0,   0,   0); // black
+    private static readonly uint ColorSlot = FilterRule.PackColor(255, 180, 0);  // gold
+    private static readonly uint ColorUnique = FilterRule.PackColor(160, 32, 240); // purple
+    private static readonly uint ColorCharms = FilterRule.PackColor(50, 200, 50); // green
+    private static readonly uint ColorHideAll = FilterRule.PackColor(0, 0, 0); // black
 
     public BuildGuideImportResult Generate(ParsedBuildGuide guide)
     {
         var slotRules = new List<FilterRule>();
-        var warnings  = new List<string>();
+        var warnings = new List<string>();
         var uniqueIds = new List<uint>();
         var hasTalisman = false;
 
@@ -58,7 +59,7 @@ public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
 
         return new BuildGuideImportResult
         {
-            Ruleset  = new FilterRuleset("Build Guide Import", outputRules),
+            Ruleset = new FilterRuleset("Build Guide Import", outputRules),
             Warnings = warnings
         };
     }
@@ -82,7 +83,7 @@ public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
             .Take(4)
             .ToList();
 
-        var affixIds       = new List<uint>();
+        var affixIds = new List<uint>();
         var greaterEntries = new List<GreaterAffixEntry>();
 
         foreach (var affix in targetAffixes)
@@ -146,14 +147,14 @@ public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
     private static string? MapSlotToItemType(string slotLabel) =>
         slotLabel.Trim().ToLowerInvariant() switch
         {
-            "helm"                                              => "Helm",
-            "chest armor" or "chest"                           => "Chest Armor",
-            "gloves"                                           => "Gloves",
-            "pants"                                            => "Pants",
-            "boots"                                            => "Boots",
-            "amulet"                                           => "Amulet",
+            "helm" => "Helm",
+            "chest armor" or "chest" => "Chest Armor",
+            "gloves" => "Gloves",
+            "pants" => "Pants",
+            "boots" => "Boots",
+            "amulet" => "Amulet",
             "ring 1" or "ring 2" or "rings"
-                or "left ring" or "right ring"                 => "Ring",
-            _                                                  => null  // ambiguous weapon / offhand slots
+                or "left ring" or "right ring" => "Ring",
+            _ => null  // ambiguous weapon / offhand slots
         };
 }

@@ -235,28 +235,28 @@ public static class FilterCodec
                     break;
                 case 2: ids.Add(reader.ReadFixed32()); break;
                 case 3:
-                {
-                    var entryBytes = reader.ReadLenBytes();
-                    if (entryBytes.Length >= 10)
                     {
-                        var er = new ProtoReader(entryBytes);
-                        uint? setField = null;
-                        var itemFields = new List<uint>();
-                        while (er.HasData)
+                        var entryBytes = reader.ReadLenBytes();
+                        if (entryBytes.Length >= 10)
                         {
-                            var (ef, ew) = er.ReadTag();
-                            if (ef == 1 && ew == 5) setField = er.ReadFixed32();
-                            else if (ef == 2 && ew == 5) itemFields.Add(er.ReadFixed32());
-                            else er.Skip(ew);
+                            var er = new ProtoReader(entryBytes);
+                            uint? setField = null;
+                            var itemFields = new List<uint>();
+                            while (er.HasData)
+                            {
+                                var (ef, ew) = er.ReadTag();
+                                if (ef == 1 && ew == 5) setField = er.ReadFixed32();
+                                else if (ef == 2 && ew == 5) itemFields.Add(er.ReadFixed32());
+                                else er.Skip(ew);
+                            }
+                            if (setField.HasValue)
+                            {
+                                foreach (var item in itemFields)
+                                    greaterEntries.Add(new GreaterAffixEntry(setField.Value, item));
+                            }
                         }
-                        if (setField.HasValue)
-                        {
-                            foreach (var item in itemFields)
-                                greaterEntries.Add(new GreaterAffixEntry(setField.Value, item));
-                        }
+                        break;
                     }
-                    break;
-                }
                 case 4: field4 = reader.ReadVarint(); break;
                 case 5: field5 = reader.ReadVarint(); break;
                 case 6: field6 = reader.ReadVarint(); break;

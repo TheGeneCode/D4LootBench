@@ -1,0 +1,5 @@
+Ancestral Legendary Ring
+800 Item Power
++30 Dexterity
++15% Critical Strike Damage
+Requires Level 55

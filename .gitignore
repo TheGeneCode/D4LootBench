@@ -8,10 +8,15 @@
 
 # Private planning docs — not for public repo
 docs/launch-plan.md
+plans/
 
 # Dev tool configs — machine-specific, not for public repo
 opencode.json
 AGENTS.md
+
+# graphify knowledge graph — regenerable, local-only (rebuild: /graphify --update)
+# A graphify-out/.gitignore also self-ignores; this catches sub-graphs built from subdirs.
+graphify-out/
 
 # dotenv files
 .env

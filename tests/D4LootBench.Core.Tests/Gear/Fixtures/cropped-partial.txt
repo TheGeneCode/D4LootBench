@@ -1,0 +1,2 @@
++120 Maximum Life
++40% Vulnerable Damage

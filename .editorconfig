@@ -1,0 +1,93 @@
+root = true
+
+# ── All files ────────────────────────────────────────────────────────────────
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.{json,yml,yaml,csproj,props,targets,slnx}]
+indent_size = 2
+
+[*.xaml]
+indent_size = 4
+
+# ── C# ───────────────────────────────────────────────────────────────────────
+[*.cs]
+indent_size = 4
+
+# Language conventions (match the existing codebase)
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_using_directive_placement = outside_namespace:silent
+dotnet_sort_system_directives_first = true
+csharp_prefer_braces = when_multiline:silent
+csharp_style_var_for_built_in_types = true:silent
+csharp_style_var_when_type_is_apparent = true:silent
+csharp_style_expression_bodied_members = true:silent
+
+# Naming: private fields are _camelCase (CommunityToolkit.Mvvm)
+dotnet_naming_rule.private_fields_underscore.severity = suggestion
+dotnet_naming_rule.private_fields_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_underscore.style = underscore_camel
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.underscore_camel.capitalization = camel_case
+dotnet_naming_style.underscore_camel.required_prefix = _
+
+# ── StyleCop.Analyzers — silence rules that conflict with this repo's style ──
+# Documentation not required
+dotnet_diagnostic.SA1600.severity = none   # elements must be documented
+dotnet_diagnostic.SA1601.severity = none   # partial elements documented
+dotnet_diagnostic.SA1602.severity = none   # enum items documented
+dotnet_diagnostic.SA1633.severity = none   # file header
+# Modern C# conventions StyleCop's defaults disagree with
+dotnet_diagnostic.SA1200.severity = none   # usings inside namespace
+dotnet_diagnostic.SA1101.severity = none   # prefix local calls with this
+dotnet_diagnostic.SA1309.severity = none   # field must not begin with underscore
+dotnet_diagnostic.SA1413.severity = none   # trailing comma in multiline initializers
+dotnet_diagnostic.SA1516.severity = none   # blank line between elements
+dotnet_diagnostic.SA1201.severity = none   # element ordering
+dotnet_diagnostic.SA1202.severity = none   # access-level ordering
+dotnet_diagnostic.SA1204.severity = none   # static-before-instance ordering
+dotnet_diagnostic.SA1503.severity = none   # braces required (repo omits on one-liners)
+dotnet_diagnostic.SA1116.severity = none   # split parameters onto own line
+dotnet_diagnostic.SA1117.severity = none   # parameters on same/separate line
+
+# Cosmetic/whitespace/ordering rules this repo intentionally does not follow.
+# Disabled to keep the build at 0 warnings; StyleCop stays active for everything
+# else. Re-enable individually (or run `dotnet format`) to adopt any of these.
+dotnet_diagnostic.SA0001.severity = none   # XML comment analysis disabled
+dotnet_diagnostic.SA1001.severity = none   # comma spacing
+dotnet_diagnostic.SA1005.severity = none   # single-line comment format
+dotnet_diagnostic.SA1008.severity = none   # opening paren spacing
+dotnet_diagnostic.SA1009.severity = none   # closing paren spacing
+dotnet_diagnostic.SA1025.severity = none   # multiple whitespace in a row
+dotnet_diagnostic.SA1107.severity = none   # multiple statements on one line
+dotnet_diagnostic.SA1111.severity = none   # closing paren placement
+dotnet_diagnostic.SA1122.severity = none   # use string.Empty
+dotnet_diagnostic.SA1128.severity = none   # ctor initializer on own line
+dotnet_diagnostic.SA1134.severity = none   # attributes on separate lines
+dotnet_diagnostic.SA1137.severity = none   # elements same indentation
+dotnet_diagnostic.SA1208.severity = none   # System usings first
+dotnet_diagnostic.SA1210.severity = none   # usings alphabetical order
+dotnet_diagnostic.SA1214.severity = none   # readonly fields ordering
+dotnet_diagnostic.SA1313.severity = none   # parameter camelCase (record positional)
+dotnet_diagnostic.SA1402.severity = none   # one type per file
+dotnet_diagnostic.SA1407.severity = none   # arithmetic precedence parens
+dotnet_diagnostic.SA1501.severity = none   # statement on single line
+dotnet_diagnostic.SA1502.severity = none   # element on single line
+dotnet_diagnostic.SA1508.severity = none   # blank line before closing brace
+dotnet_diagnostic.SA1512.severity = none   # single-line comment not followed by blank
+dotnet_diagnostic.SA1513.severity = none   # closing brace followed by blank line
+dotnet_diagnostic.SA1515.severity = none   # single-line comment preceded by blank
+dotnet_diagnostic.SA1520.severity = none   # braces consistency
+dotnet_diagnostic.SA1518.severity = none   # file ends with single newline
+dotnet_diagnostic.SA1028.severity = none   # trailing whitespace
+dotnet_diagnostic.SA1312.severity = none   # variable camelCase (discard _)
+dotnet_diagnostic.SA1649.severity = none   # file name matches type
+dotnet_diagnostic.SA1136.severity = none   # enum values on separate lines
+dotnet_diagnostic.SA1500.severity = none   # braces for multiline not on same line
+dotnet_diagnostic.SA1519.severity = none   # braces for multiline statement
+dotnet_diagnostic.SA1316.severity = none   # tuple element name casing

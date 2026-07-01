@@ -1,0 +1,5 @@
+Ancestral Unique Two-Handed Scythe
+900 Item Power
++50% Damage
++180 Maximum Life
+Requires Level 60

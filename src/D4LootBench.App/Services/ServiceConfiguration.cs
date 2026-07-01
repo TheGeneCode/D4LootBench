@@ -3,8 +3,10 @@ using D4LootBench.Ai.Import;
 using D4LootBench.App.ViewModels;
 using D4LootBench.App.ViewModels.Conditions;
 using D4LootBench.Core.Data;
+using D4LootBench.Core.Gear;
 using D4LootBench.Core.Import;
 using D4LootBench.Core.Validation;
+using D4LootBench.Vision;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace D4LootBench.App.Services;
@@ -27,6 +29,9 @@ internal static class ServiceConfiguration
         services.AddSingleton<RuleAssistant>();
         services.AddSingleton<BuildGuideImporter>();
         services.AddSingleton<BuildGuideFilterGenerator>();
+
+        services.AddSingleton<IGearReader, WindowsOcrGearReader>();
+        services.AddSingleton<GearTooltipParser>();
 
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<MainWindow>();

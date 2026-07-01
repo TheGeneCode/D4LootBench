@@ -1,0 +1,6 @@
+Ancestral Legendary Helm
+925 Item Power
++45.0% Critical Strike Chance
++112 Maximum Life
++8.5% Cooldown Reduction
+Requires Level 60

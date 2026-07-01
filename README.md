@@ -78,6 +78,20 @@ Then describe what you want in plain English, e.g. *"show all ancestral items wi
 
 ---
 
+## Screenshot-OCR gear reader (Phase 1)
+
+An experimental read pipeline that turns a screenshot of an equipped item's tooltip into a structured `GearItem` (slot, item power, rarity, ancestral flag, affixes). This is the first slice of the progression-filter roadmap; the read/parse/review logic ships now, while the review dialog and menu wiring land in a later slice.
+
+**Requirements & constraints:**
+- **English game client only**, with D4's **"Advanced Tooltip Information" set to ON**.
+- The app **never touches the game process** — it only reads pixels from an image you provide (Win+Shift+S or a saved file). This is deliberate, to avoid any anti-cheat/ban risk.
+- **Greater-affix markers are icons** that OCR cannot read, so they are **never parsed** — they are toggled by hand in the review step.
+- OCR runs via in-box `Windows.Media.Ocr`; an English OCR language pack must be installed (Windows Settings → Language). No cloud calls.
+
+**How it works:** `IGearReader` (in `D4LootBench.Vision`) isolates the WinRT OCR call — image → ordered text lines. `GearTooltipParser` (in `D4LootBench.Core`) then heuristically parses those lines into a `GearItem`, fuzzy-matching affix phrases against the catalog. Because Windows OCR exposes no per-word confidence, "low confidence" is a structural heuristic (missing power/slot/affixes or too few lines). A `GearReviewSession` lets a human confirm/correct fields and toggle greater-affix flags before the gear is used.
+
+---
+
 ## Customizing Game Data
 
 D4LootBench embeds a copy of `d4-data.json` — the database of affix names, item types, unique items, skills, and talisman sets used to populate the editor pickers.
@@ -108,7 +122,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
 ```powershell
 dotnet build                    # build the full solution
-dotnet test                     # run the test suite (88 tests)
+dotnet test                     # run the test suite (102 tests)
 
 # produce a self-contained single-file exe
 dotnet publish src/D4LootBench.App -r win-x64 -p:PublishSingleFile=true --self-contained true
@@ -121,11 +135,11 @@ dotnet publish src/D4LootBench.App -r win-x64 -p:PublishSingleFile=true --self-c
 For those interested in the implementation:
 
 - **Custom protobuf codec** (~80 lines, 3 wire types) — reverse-engineered from D4's binary share code format; no Google.Protobuf dependency, handles unknown fields gracefully for patch resilience
-- **Clean three-library solution** — `D4LootBench.Core` (zero WPF dependency), `D4LootBench.Ai` (zero WPF dependency), `D4LootBench.App` (WPF shell)
+- **Clean multi-library solution** — `D4LootBench.Core` and `D4LootBench.Ai` (both zero WPF dependency), `D4LootBench.Vision` (isolated WinRT OCR reader), `D4LootBench.App` (WPF shell)
 - **MVVM** with CommunityToolkit.Mvvm source generators and Microsoft.Extensions.DependencyInjection
 - **`ILlmProvider` abstraction** over Ollama with clean extension points for additional providers
 - **Annotated `{id, name}` JSON format** — human-readable and LLM-interpretable while keeping hash IDs (SNO IDs) authoritative
-- **88 unit tests** covering codec round-trips, validation rules, annotated JSON serialization, and build guide parser coverage across all three formats
+- **102 unit tests** covering codec round-trips, validation rules, annotated JSON serialization, build guide parser coverage across all three formats, and the screenshot-OCR gear parser / review session
 
 See [docs/filter-format.md](docs/filter-format.md) for the full protocol buffer format specification.
 

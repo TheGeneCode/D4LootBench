@@ -1,0 +1,120 @@
+using D4LootBench.Core.Data;
+using D4LootBench.Core.Gear;
+using Shouldly;
+
+namespace D4LootBench.Core.Tests.Gear;
+
+public sealed class GearTooltipParserTests
+{
+    private static GearTooltipParser NewParser() => new(new FilterDataService());
+
+    private static IReadOnlyList<string> LoadFixture(string name)
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "Gear", "Fixtures", name);
+        return File.ReadAllLines(path);
+    }
+
+    [Fact]
+    public void Parse_LegendaryHelm_ExtractsAllFields()
+    {
+        var result = NewParser().Parse(LoadFixture("legendary-helm.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Helm);
+        result.Item.Rarity.ShouldBe(ItemRarity.Legendary);
+        result.Item.IsAncestral.ShouldBeTrue();
+        result.Item.ItemPower.ShouldBe(925);
+        result.Item.Affixes.Count(a => a.IsResolved).ShouldBeGreaterThanOrEqualTo(2);
+        result.Confidence.ShouldBe(GearParseConfidence.High);
+    }
+
+    [Fact]
+    public void Parse_TwoAffixRing_ResolvesAffixes()
+    {
+        var result = NewParser().Parse(LoadFixture("ring-two-affix.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Ring);
+        result.Item.Affixes.ShouldAllBe(a => a.IsResolved);
+        result.Item.Affixes.ShouldAllBe(a => !a.IsGreaterAffix);
+        result.Item.Affixes.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void Parse_MissingAffixes_StillReturnsItem()
+    {
+        var result = NewParser().Parse(LoadFixture("missing-affixes.txt"));
+
+        result.Item.Affixes.ShouldBeEmpty();
+        result.Warnings.ShouldContain(w => w.Contains("affix", StringComparison.OrdinalIgnoreCase));
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+    }
+
+    [Fact]
+    public void Parse_Garbage_LowConfidence()
+    {
+        var result = NewParser().Parse(LoadFixture("garbage.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Unknown);
+        result.Item.ItemPower.ShouldBeNull();
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+        result.Warnings.ShouldNotBeEmpty();
+    }
+
+    [Fact]
+    public void Parse_CroppedPartial_LowConfidence()
+    {
+        var result = NewParser().Parse(LoadFixture("cropped-partial.txt"));
+
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+        result.Warnings.ShouldContain("Low-confidence parse — review carefully.");
+        result.Item.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void Parse_UnusualWeapon_MapsToWeaponSlot()
+    {
+        var result = NewParser().Parse(LoadFixture("unusual-weapon.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Weapon);
+        result.Item.ItemTypeName.ShouldNotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void Parse_ImperfectAffixText_FuzzyResolves()
+    {
+        // "Maximum Lif" is a mangled OCR of "Maximum Life" — resolves via the NameResolver fuzzy path.
+        var lines = new[]
+        {
+            "Ancestral Legendary Gloves",
+            "850 Item Power",
+            "+118 Maximum Lif",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Item.Affixes.ShouldContain(a => a.IsResolved);
+    }
+
+    [Fact]
+    public void Parse_Empty_ReturnsNoTextWarning()
+    {
+        var result = NewParser().Parse([]);
+
+        result.Item.Slot.ShouldBe(GearSlot.Unknown);
+        result.Item.ItemPower.ShouldBeNull();
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+        result.Warnings.ShouldContain("No readable text found in image.");
+    }
+
+    [Fact]
+    public async Task FakeGearReader_ReturnsFixtureLines()
+    {
+        var reader = new FakeGearReader(LoadFixture("legendary-helm.txt"));
+        using var stream = new MemoryStream();
+
+        var lines = await reader.ReadLinesAsync(stream);
+        var result = NewParser().Parse(lines);
+
+        result.Item.Slot.ShouldBe(GearSlot.Helm);
+        result.Item.ItemPower.ShouldBe(925);
+    }
+}

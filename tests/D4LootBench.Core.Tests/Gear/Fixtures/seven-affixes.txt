@@ -1,0 +1,10 @@
+Ancestral Legendary Amulet
+900 Item Power
++45.0% Critical Strike Chance
++112 Maximum Life
++8.5% Cooldown Reduction
++30 Dexterity
++15% Critical Strike Damage
++50% Damage
++10% Lucky Hit Chance
+Requires Level 60

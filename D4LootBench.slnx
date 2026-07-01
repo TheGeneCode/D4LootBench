@@ -4,6 +4,7 @@
     <Project Path="src/D4LootBench.App/D4LootBench.App.csproj" />
     <Project Path="src/D4LootBench.Core/D4LootBench.Core.csproj" />
     <Project Path="src/D4LootBench.PromptLab/D4LootBench.PromptLab.csproj" />
+    <Project Path="src/D4LootBench.Vision/D4LootBench.Vision.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/D4LootBench.Core.Tests/D4LootBench.Core.Tests.csproj" />

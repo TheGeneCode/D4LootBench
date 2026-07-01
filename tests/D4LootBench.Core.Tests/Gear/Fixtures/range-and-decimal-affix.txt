@@ -1,0 +1,5 @@
+Ancestral Legendary Gloves
+850 Item Power
++[45 - 60]% Critical Strike Chance
++9.75% Cooldown Reduction
+Requires Level 60

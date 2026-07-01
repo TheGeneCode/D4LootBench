@@ -1,6 +1,4 @@
-using D4LootBench.Core.Data;
-
-namespace D4LootBench.Ai;
+namespace D4LootBench.Core.Data;
 
 /// <summary>
 /// Resolves human-readable names (as output by the LLM) to hash IDs using the live catalogs.
