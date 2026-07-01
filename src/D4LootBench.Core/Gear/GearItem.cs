@@ -18,6 +18,10 @@ public sealed record GearItem
     /// <summary>Gets a value indicating whether the tooltip carries the "Ancestral" marker.</summary>
     public bool IsAncestral { get; init; }
 
+    /// <summary>Gets the resolved unique-item hash when this item is a specific unique; otherwise <c>null</c>.
+    /// Set by unique resolution / review — the OCR parser leaves it <c>null</c> today.</summary>
+    public uint? UniqueHash { get; init; }
+
     /// <summary>Gets parsed affix lines in reading order.</summary>
     public IReadOnlyList<GearAffix> Affixes { get; init; } = [];
 }

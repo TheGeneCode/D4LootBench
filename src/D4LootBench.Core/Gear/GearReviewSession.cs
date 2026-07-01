@@ -48,6 +48,7 @@ public sealed class GearReviewSession
             ItemPower = draft.ItemPower,
             Rarity = draft.Rarity,
             IsAncestral = draft.IsAncestral,
+            UniqueHash = draft.UniqueHash,
             Affixes = draft.Affixes.Select(a => new GearAffix
             {
                 RawText = a.RawText,
@@ -68,6 +69,7 @@ public sealed class GearReviewSession
             ItemPower = item.ItemPower,
             Rarity = item.Rarity,
             IsAncestral = item.IsAncestral,
+            UniqueHash = item.UniqueHash,
             NeedsReview = result.Confidence == GearParseConfidence.Low,
             Warnings = result.Warnings,
             Affixes = item.Affixes.Select(a => new AffixDraft
@@ -118,6 +120,9 @@ public sealed class GearReviewSession
 
         /// <summary>Gets or sets a value indicating whether the item is ancestral.</summary>
         public bool IsAncestral { get; set; }
+
+        /// <summary>Gets or sets the resolved unique-item hash (settable so review can correct it).</summary>
+        public uint? UniqueHash { get; set; }
 
         /// <summary>Gets editable affix drafts.</summary>
         public List<AffixDraft> Affixes { get; init; } = [];
