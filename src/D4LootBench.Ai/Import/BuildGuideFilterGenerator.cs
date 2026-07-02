@@ -66,13 +66,13 @@ public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
 
     private FilterRule? BuildSlotRule(ParsedSlot slot, List<string> warnings)
     {
-        var conditions = new List<Condition>();
+        uint? itemTypeHash = null;
 
         var itemTypeName = MapSlotToItemType(slot.SlotLabel);
         if (itemTypeName is not null)
         {
             if (nameResolver.TryResolveItemType(itemTypeName, out var typeHash, out _))
-                conditions.Add(new ItemTypeCondition([typeHash]));
+                itemTypeHash = typeHash;
             else
                 warnings.Add($"Could not resolve item type: \"{itemTypeName}\"");
         }
@@ -84,7 +84,7 @@ public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
             .ToList();
 
         var affixIds = new List<uint>();
-        var greaterEntries = new List<GreaterAffixEntry>();
+        var greaterAffixIds = new List<uint>();
 
         foreach (var affix in targetAffixes)
         {
@@ -92,7 +92,7 @@ public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
             {
                 affixIds.Add(affixHash);
                 if (affix.IsGreaterAffix)
-                    greaterEntries.Add(new GreaterAffixEntry(affixHash, affixHash));
+                    greaterAffixIds.Add(affixHash);
             }
             else
             {
@@ -100,17 +100,14 @@ public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
             }
         }
 
-        if (affixIds.Count > 0)
-        {
-            conditions.Add(new AffixCondition(affixIds, Math.Min(2, affixIds.Count))
-            {
-                GreaterEntries = greaterEntries
-            });
-        }
-
-        if (conditions.Count == 0) return null;
-
-        return new FilterRule(slot.SlotLabel, Visibility.Show, ColorSlot, conditions);
+        return SlotRuleBuilder.Build(
+            slot.SlotLabel,
+            Visibility.Show,
+            ColorSlot,
+            itemTypeHash,
+            affixIds,
+            greaterAffixIds,
+            Math.Min(2, affixIds.Count));
     }
 
     private bool TryResolveUnique(ParsedSlot slot, List<string> warnings, out uint? uniqueHash)

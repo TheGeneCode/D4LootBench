@@ -1,0 +1,194 @@
+﻿{
+  Name: Progression Filter,
+  Rules: [
+    {
+      Name: Target Uniques,
+      Color: 4288684272,
+      Conditions: [
+        {
+          UniqueIds: [
+            65261
+          ]
+        }
+      ],
+      IsEnabled: true,
+      ColorChannels: {
+        Item1: 160,
+        Item2: 32,
+        Item3: 240,
+        Item4: 255
+      }
+    },
+    {
+      Name: Helm,
+      Visibility: Recolor,
+      Color: 4294947840,
+      Conditions: [
+        {
+          TypeIds: [
+            446830
+          ]
+        },
+        {
+          AffixIds: [
+            17,
+            34,
+            51,
+            68
+          ],
+          MinimumCount: 2
+        }
+      ],
+      IsEnabled: true,
+      ColorChannels: {
+        Item1: 255,
+        Item2: 180,
+        Item4: 255
+      }
+    },
+    {
+      Name: Helm (Greater),
+      Color: 4294924800,
+      Conditions: [
+        {
+          TypeIds: [
+            446830
+          ]
+        },
+        {
+          AffixIds: [
+            17,
+            34,
+            51,
+            68
+          ],
+          MinimumCount: 3
+        },
+        {
+          MinimumCount: 1
+        }
+      ],
+      IsEnabled: true,
+      ColorChannels: {
+        Item1: 255,
+        Item2: 90,
+        Item4: 255
+      }
+    },
+    {
+      Name: Gloves,
+      Visibility: Recolor,
+      Color: 4294947840,
+      Conditions: [
+        {
+          TypeIds: [
+            446833
+          ]
+        },
+        {
+          AffixIds: [
+            85,
+            102,
+            119
+          ],
+          MinimumCount: 2
+        }
+      ],
+      IsEnabled: true,
+      ColorChannels: {
+        Item1: 255,
+        Item2: 180,
+        Item4: 255
+      }
+    },
+    {
+      Name: Gloves (Greater),
+      Color: 4294924800,
+      Conditions: [
+        {
+          TypeIds: [
+            446833
+          ]
+        },
+        {
+          AffixIds: [
+            85,
+            102,
+            119
+          ],
+          MinimumCount: 3
+        },
+        {
+          MinimumCount: 1
+        }
+      ],
+      IsEnabled: true,
+      ColorChannels: {
+        Item1: 255,
+        Item2: 90,
+        Item4: 255
+      }
+    },
+    {
+      Name: Boots,
+      Visibility: Recolor,
+      Color: 4294947840,
+      Conditions: [
+        {
+          TypeIds: [
+            446832
+          ]
+        },
+        {
+          AffixIds: [
+            136,
+            153
+          ],
+          MinimumCount: 2
+        }
+      ],
+      IsEnabled: true,
+      ColorChannels: {
+        Item1: 255,
+        Item2: 180,
+        Item4: 255
+      }
+    },
+    {
+      Name: Boots (Greater),
+      Color: 4294924800,
+      Conditions: [
+        {
+          TypeIds: [
+            446832
+          ]
+        },
+        {
+          AffixIds: [
+            136,
+            153
+          ],
+          MinimumCount: 2
+        },
+        {
+          MinimumCount: 1
+        }
+      ],
+      IsEnabled: true,
+      ColorChannels: {
+        Item1: 255,
+        Item2: 90,
+        Item4: 255
+      }
+    },
+    {
+      Name: Hide All,
+      Visibility: HideAll,
+      Color: 4278190080,
+      IsEnabled: true,
+      ColorChannels: {
+        Item4: 255
+      }
+    }
+  ]
+}
