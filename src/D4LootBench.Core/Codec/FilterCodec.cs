@@ -1,5 +1,7 @@
 using D4LootBench.Core.Models;
 
+// Wire format adapted from Upsilon72/d4-filter-generator (MIT) and the .proto layout in
+// fnuecke/diablo4-loot-filter-viewer (Unlicense). See THIRD-PARTY-NOTICES.md.
 namespace D4LootBench.Core.Codec;
 
 public static class FilterCodec

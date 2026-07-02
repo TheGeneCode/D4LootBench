@@ -1,6 +1,9 @@
 using System.Reflection;
 using System.Text.Json;
 
+// Loads d4-data.json: SNO IDs derived from DiabloTools/d4data (MIT); affix names from
+// d4lfteam/d4lf (MIT); condition/ID tables cross-checked against fnuecke/diablo4-loot-filter-viewer
+// (Unlicense). See THIRD-PARTY-NOTICES.md.
 namespace D4LootBench.Core.Data;
 
 internal static class FilterDataStore

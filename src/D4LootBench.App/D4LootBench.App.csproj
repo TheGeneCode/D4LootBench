@@ -22,6 +22,12 @@
     <AssemblyName>D4LootBench</AssemblyName>
     <ApplicationIcon>Assets\d4lootbench.ico</ApplicationIcon>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <Version>1.0.0</Version>
+    <Product>D4LootBench</Product>
+    <Company>D4LootBench contributors</Company>
+    <Authors>D4LootBench contributors</Authors>
+    <Copyright>Copyright © 2026 D4LootBench contributors. MIT License.</Copyright>
+    <Description>Editor for Diablo IV loot filter share codes with progression-filter generation.</Description>
   </PropertyGroup>
 
   <ItemGroup>

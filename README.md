@@ -59,6 +59,8 @@ Highlights only gear that moves you toward a goal build — completed slots are 
 4. **Goal** — paste the gear section of a build guide, choose the format and how strictly an item must match to count as complete, then **Generate**
 5. **Result** — **Copy Code** to paste into D4, or **Open in Editor** to fine-tune
 
+> Full walkthrough, required settings, and the static-snapshot caveat: **[User Guide](docs/user-guide.md)**.
+
 ---
 
 ## AI Rule Assistant
@@ -139,6 +141,8 @@ dotnet test                     # run the test suite (102 tests)
 dotnet publish src/D4LootBench.App -r win-x64 -p:PublishSingleFile=true --self-contained true
 ```
 
+> Before tagging a release, walk the [release checklist](docs/release-checklist.md).
+
 ---
 
 ## Architecture
@@ -172,6 +176,8 @@ D4LootBench was built on the shoulders of the following community reverse-engine
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Third-party notices: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+The original D4LootBench editor is © Scott Williams; the progression-filter fork and its additions are maintained by the fork contributors.
 
 *D4LootBench is an unofficial community tool and is not affiliated with Blizzard Entertainment.*

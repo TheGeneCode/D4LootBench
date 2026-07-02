@@ -332,6 +332,52 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
         result.Warnings.ShouldBeEmpty();
     }
 
+    // ---- Empty loadout through the real diff engine (every goal slot needs a rule) ----
+    // The all-slots-complete corner is covered by Generate_AllSlotsMeetGoalViaRealEngine_OnlyHideAll
+    // above; the >25-overflow corner by the NeedyOneOverCapacity_* tests — not duplicated here.
+
+    [Fact]
+    public void Generate_EmptyLoadoutWithGoals_AllSlotsNeedRules_NoneDropped()
+    {
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
+        {
+            [new SlotKey(GearSlot.Helm)] = new() { TargetAffixIds = [1u, 2u] },
+            [new SlotKey(GearSlot.Gloves)] = new() { TargetAffixIds = [1u, 2u] },
+        });
+        var diff = new SlotDiffEngine().Diff(EquippedLoadout.FromItems([]), goal);
+
+        // With no gear, both goal slots are unmet and every slot's diff says so.
+        diff.Slots.Count.ShouldBe(2);
+        diff.Slots.ShouldAllBe(s => s.Status == SlotDiffStatus.NeedsRule);
+        diff.Slots.ShouldAllBe(s => s.Notes.Contains("no gear equipped"));
+
+        var result = NewGenerator().Generate(diff);
+
+        result.BudgetExceeded.ShouldBeFalse();
+        result.Warnings.ShouldNotContain(w => w.Contains("dropped"));
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Helm");
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Gloves");
+
+        // Abundant slack (only 2 needy slots) → each slot also gets a strict "(Greater)" rule:
+        // 2 base + 2 strict + Hide All = 5.
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Helm (Greater)");
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Gloves (Greater)");
+        result.TotalRuleCount.ShouldBe((2 * 2) + 1);
+    }
+
+    [Fact]
+    public void Generate_EmptyLoadoutNoGoals_OnlyHideAll()
+    {
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>());
+        var diff = new SlotDiffEngine().Diff(EquippedLoadout.FromItems([]), goal);
+
+        var result = NewGenerator().Generate(diff);
+
+        result.Ruleset.Rules.ShouldHaveSingleItem();
+        result.Ruleset.Rules[0].Visibility.ShouldBe(Visibility.HideAll);
+        result.Warnings.ShouldBeEmpty();
+    }
+
     // ---- State isolation: repeated and concurrent calls on one generator instance ----
 
     [Fact]

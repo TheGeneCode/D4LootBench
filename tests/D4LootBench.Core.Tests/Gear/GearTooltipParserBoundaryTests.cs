@@ -443,4 +443,134 @@ public sealed class GearTooltipParserBoundaryTests
         result.Item.Affixes.Count.ShouldBe(6);
         result.Warnings.ShouldNotContain(w => w.Contains("More than", StringComparison.Ordinal));
     }
+
+    // --- Match-rate capture-quality signal (MatchRateThreshold = 0.5, floor = 3 candidates) ---
+
+    [Fact]
+    public void Parse_MajorityAffixesUnresolved_WarnsPoorCaptureAndIsLow()
+    {
+        // 1 of 3 affixes resolve → match rate 0.33 < 0.5 with ≥3 candidates: aggregate poor-capture signal.
+        var lines = new[]
+        {
+            "Ancestral Legendary Helm",
+            "925 Item Power",
+            "+112 Maximum Life",
+            "+30 Zzznonexistentaffix",
+            "+40 Qqqbogusaffix",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+        result.Warnings.ShouldContain(w => w.Contains("of 3 affixes were recognized", StringComparison.Ordinal));
+        result.Warnings.ShouldContain(w => w.Contains("cropped", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Parse_MajorityAffixesResolved_NoPoorCaptureWarning()
+    {
+        // 2 of 3 affixes resolve → match rate 0.67 ≥ 0.5: no aggregate warning, stays High.
+        var lines = new[]
+        {
+            "Ancestral Legendary Helm",
+            "925 Item Power",
+            "+112 Maximum Life",
+            "+30 Dexterity",
+            "+40 Qqqbogusaffix",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Warnings.ShouldNotContain(w => w.Contains("affixes were recognized", StringComparison.Ordinal));
+        result.Confidence.ShouldBe(GearParseConfidence.High);
+    }
+
+    [Fact]
+    public void Parse_TwoAffixesBelowSampleFloor_NoPoorCaptureWarning()
+    {
+        // Only 2 affix candidates (below MatchRateFloorSampleSize = 3): the rate is not meaningful, so
+        // no aggregate warning — but zero resolved still forces Low via the resolvedCount == 0 trigger.
+        var lines = new[]
+        {
+            "Ancestral Legendary Helm",
+            "925 Item Power",
+            "+30 Qqq",
+            "+40 Zzz",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Warnings.ShouldNotContain(w => w.Contains("affixes were recognized", StringComparison.Ordinal));
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+    }
+
+    [Fact]
+    public void Parse_AllAffixesUnresolvedAtSampleFloor_WarnsPoorCapture()
+    {
+        // 0 of 3 resolve → rate 0.0 with exactly the sample floor: poor-capture warning present and Low.
+        var lines = new[]
+        {
+            "Ancestral Legendary Helm",
+            "925 Item Power",
+            "+30 Qqq",
+            "+40 Zzz",
+            "+50 Www",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Warnings.ShouldContain(w => w.Contains("of 3 affixes were recognized", StringComparison.Ordinal));
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+    }
+
+    [Fact]
+    public void Parse_ExactlyHalfAffixesResolved_AtThresholdBoundary_DoesNotWarn()
+    {
+        // 2 of 4 resolve → rate is EXACTLY 0.5. MatchRateThreshold comparison is strict '<', so 0.5
+        // must NOT trip the poor-capture warning (only rates strictly below 0.5 do).
+        var lines = new[]
+        {
+            "Ancestral Legendary Helm",
+            "925 Item Power",
+            "+112 Maximum Life",
+            "+30 Dexterity",
+            "+40 Qqqbogusaffix",
+            "+50 Wwwbogusaffix",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Item.Affixes.Count.ShouldBe(4);
+        result.Warnings.ShouldNotContain(w => w.Contains("affixes were recognized", StringComparison.Ordinal));
+        result.Confidence.ShouldBe(GearParseConfidence.High);
+    }
+
+    [Fact]
+    public void Parse_MatchRateDenominatorUsesPostCapCount_NotRawCandidateCount()
+    {
+        // 7 contiguous affix candidates overflow MaxAffixes (6): the 7th is dropped BEFORE the match-rate
+        // calculation runs, so the denominator is 6 (post-cap), not 7 (raw). Only 1 of the kept 6 resolves,
+        // so the rate is 1/6 (~0.17), not 1/7 — both the overflow warning and the poor-capture warning
+        // must fire together, and the message must read "1 of 6", never "1 of 7".
+        var lines = new[]
+        {
+            "Ancestral Legendary Helm",
+            "925 Item Power",
+            "+112 Maximum Life",
+            "+30 Qqqbogusaffix",
+            "+40 Wwwbogusaffix",
+            "+50 Zzznonexistentaffix",
+            "+60 Eeebogusaffix",
+            "+70 Rrrbogusaffix",
+            "+80 Tttbogusaffix",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Item.Affixes.Count.ShouldBe(6);
+        result.Warnings.ShouldContain(w => w.Contains("More than 6 affix lines detected", StringComparison.Ordinal));
+        result.Warnings.ShouldContain(w => w.Contains("Only 1 of 6 affixes were recognized", StringComparison.Ordinal));
+        result.Warnings.ShouldNotContain(w => w.Contains("of 7 affixes", StringComparison.Ordinal));
+        result.Confidence.ShouldBe(GearParseConfidence.Low);
+    }
 }

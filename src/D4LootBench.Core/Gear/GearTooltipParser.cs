@@ -13,6 +13,8 @@ namespace D4LootBench.Core.Gear;
 public sealed partial class GearTooltipParser(IFilterDataService data)
 {
     private const int MaxAffixes = 6;
+    private const double MatchRateThreshold = 0.5;   // < half recognized ⇒ likely a bad capture
+    private const int MatchRateFloorSampleSize = 3;  // need ≥3 affix candidates for the rate to mean anything
 
     private static readonly string[] NoiseMarkers =
     [
@@ -290,10 +292,27 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
     private static GearParseConfidence DetermineConfidence(
         IReadOnlyList<string> usable, GearItem item, List<string> warnings)
     {
+        var affixCount = item.Affixes.Count;
+        var resolvedCount = item.Affixes.Count(a => a.IsResolved);
+
+        // Aggregate capture-quality signal: on a real tooltip most affixes resolve. A block with
+        // several candidates but few recognized means the pixels themselves are poor (HDR washout,
+        // tiny font, cropped tooltip) — distinct from one genuinely-unknown affix.
+        var poorMatchRate = affixCount >= MatchRateFloorSampleSize
+            && (double)resolvedCount / affixCount < MatchRateThreshold;
+        if (poorMatchRate)
+        {
+            warnings.Add(
+                $"Only {resolvedCount} of {affixCount} affixes were recognized — the capture is likely "
+                + "poor (HDR washout, small font, or a cropped tooltip). Re-screenshot at higher resolution "
+                + "with Advanced Tooltip Information ON.");
+        }
+
         var low = usable.Count < 3
             || item.Slot == GearSlot.Unknown
             || item.ItemPower is null
-            || !item.Affixes.Any(a => a.IsResolved);
+            || resolvedCount == 0
+            || poorMatchRate;
 
         if (low)
         {
