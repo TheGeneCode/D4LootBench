@@ -1,3 +1,5 @@
+using D4LootBench.Core.Data;
+
 namespace D4LootBench.Core.Import;
 
 public sealed class BuildGuideImportException(string message) : Exception(message);
@@ -6,7 +8,9 @@ public sealed class BuildGuideImportException(string message) : Exception(messag
 /// Detects the format of a pasted build guide text and delegates to the appropriate parser.
 /// Accepts an optional <paramref name="hint"/> to override auto-detection.
 /// </summary>
-public sealed class BuildGuideImporter
+/// <param name="affixResolver">Passed to the Maxroll parser so it can tell a first-line item name from a
+/// first-line affix. Optional so tests can construct the importer without the data service.</param>
+public sealed class BuildGuideImporter(NameResolver? affixResolver = null)
 {
     // Known Maxroll slot keywords — used for auto-detection (first non-blank line check)
     private static readonly HashSet<string> MaxrollFirstLineKeywords = new(StringComparer.OrdinalIgnoreCase)
@@ -16,7 +20,7 @@ public sealed class BuildGuideImporter
     };
 
     private readonly MobalyticsParser _mobalytics = new();
-    private readonly MaxrollParser _maxroll = new();
+    private readonly MaxrollParser _maxroll = new(affixResolver);
     private readonly IcyVeinsParser _icyVeins = new();
 
     public ParsedBuildGuide Import(string text, BuildGuideFormat hint = BuildGuideFormat.Auto)
@@ -26,8 +30,8 @@ public sealed class BuildGuideImporter
         return format switch
         {
             BuildGuideFormat.Mobalytics => _mobalytics.Parse(text),
-            BuildGuideFormat.Maxroll    => _maxroll.Parse(text),
-            BuildGuideFormat.IcyVeins  => _icyVeins.Parse(text),
+            BuildGuideFormat.Maxroll => _maxroll.Parse(text),
+            BuildGuideFormat.IcyVeins => _icyVeins.Parse(text),
             _ => throw new BuildGuideImportException("Format could not be detected. Select the format manually.")
         };
     }

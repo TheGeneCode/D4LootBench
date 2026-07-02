@@ -22,6 +22,7 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 
 - Import any D4 loot filter share code
 - **Generate a BiS filter from a build guide** — paste a gear section from Mobalytics, Maxroll, or Icy Veins and get a working filter in seconds
+- **Build a progression filter** — read your equipped gear from screenshots, diff it against a goal build, and generate a native filter that highlights only upgrades
 - Add, remove, reorder, and edit rules with a full visual editor
 - Edit all condition types: rarity, item power, affixes, greater affixes, codex of power, item types, unique items, talisman sets, and item properties
 - Color-code rules with a full HSV color picker
@@ -47,6 +48,16 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 3. Click **Import from Build Guide** in the D4LootBench toolbar
 4. Paste the text, confirm the detected format, and click **Import Filter**
 5. Tune the generated rules in the visual editor — by default each slot rule requires 2 of the 4 top affixes
+
+### Build a progression filter
+
+Highlights only gear that moves you toward a goal build — completed slots are dropped, and the freed rule budget is spent on stricter rules for the slots you still need.
+
+1. Click **Progression…** in the toolbar
+2. **Read gear** — screenshot each equipped item's tooltip in-game (<kbd>Win+Shift+S</kbd>, "Advanced Tooltip Information" ON) and click **Paste Screenshot**, or **Open Image…** for a saved file
+3. **Review** — correct any misread slot / item power / rarity / affix, and tick greater affixes by hand (OCR can't detect them)
+4. **Goal** — paste the gear section of a build guide, choose the format and how strictly an item must match to count as complete, then **Generate**
+5. **Result** — **Copy Code** to paste into D4, or **Open in Editor** to fine-tune
 
 ---
 
@@ -80,7 +91,7 @@ Then describe what you want in plain English, e.g. *"show all ancestral items wi
 
 ## Screenshot-OCR gear reader (Phase 1)
 
-An experimental read pipeline that turns a screenshot of an equipped item's tooltip into a structured `GearItem` (slot, item power, rarity, ancestral flag, affixes). This is the first slice of the progression-filter roadmap; the read/parse/review logic ships now, while the review dialog and menu wiring land in a later slice.
+An experimental read pipeline that turns a screenshot of an equipped item's tooltip into a structured `GearItem` (slot, item power, rarity, ancestral flag, affixes). This is the first slice of the progression-filter roadmap; the full read → review → goal → generate flow is now wired into the **Progression…** toolbar button (see [Build a progression filter](#build-a-progression-filter) above).
 
 **Requirements & constraints:**
 - **English game client only**, with D4's **"Advanced Tooltip Information" set to ON**.

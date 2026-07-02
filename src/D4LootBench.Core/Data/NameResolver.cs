@@ -12,6 +12,18 @@ public sealed class NameResolver(IFilterDataService data)
         {
             hash = entry.Hash; suggestions = []; return true;
         }
+
+        // Prefix-insensitive exact tier: guide/OCR phrases carry no leading sign, but catalog display
+        // names may ("+Movement Speed", "%Cooldown Reduction"). Match on the sign-stripped key so
+        // "Movement Speed" resolves cleanly instead of being derailed by a longer affix that merely
+        // contains the phrase (e.g. "Evade Grants Movement Speed"), which makes the fuzzy pass ambiguous.
+        var key = NormalizeAffixKey(name);
+        var keyed = data.Affixes.All.Where(a => NormalizeAffixKey(a.Name) == key).ToList();
+        if (keyed.Count == 1)
+        {
+            hash = keyed[0].Hash; suggestions = []; return true;
+        }
+
         var candidates = data.Affixes.All.Select(a => a.Name).ToList();
         if (TryFuzzyResolve(name, candidates, out var resolved))
         {
@@ -19,6 +31,45 @@ public sealed class NameResolver(IFilterDataService data)
             hash = fuzzy.Hash; suggestions = []; return true;
         }
         hash = 0; suggestions = FindSuggestions(name, candidates); return false;
+    }
+
+    /// <summary>True when <paramref name="name"/> names a catalog affix (ignoring any sign prefix), or is
+    /// a leading portion of one (e.g. the guide phrase "Vulnerable Damage" for catalog "Vulnerable Damage
+    /// Multiplier"). Used to distinguish an affix stat phrase from an item/aspect name. The match is
+    /// one-directional on purpose — a CATALOG name may contain the query, but the query containing a
+    /// shorter affix word does NOT qualify, so an item name like "Girdle of Boundless Strength" (which
+    /// merely contains the affix "Strength") is correctly rejected.</summary>
+    /// <param name="name">The candidate phrase.</param>
+    /// <returns><c>true</c> when the phrase names an affix; otherwise <c>false</c>.</returns>
+    public bool IsKnownAffixPhrase(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        if (data.Affixes.TryGetByName(name, out _))
+        {
+            return true;
+        }
+
+        var key = NormalizeAffixKey(name);
+        return key.Length > 0
+            && data.Affixes.All.Any(a => NormalizeAffixKey(a.Name).Contains(key, StringComparison.Ordinal));
+    }
+
+    // Strips a leading +/% sign and surrounding whitespace so display names compare regardless of the
+    // sign prefix D4 uses on some affixes.
+    private static string NormalizeAffixKey(string name)
+    {
+        var s = name.Trim();
+        var i = 0;
+        while (i < s.Length && (s[i] == '+' || s[i] == '%'))
+        {
+            i++;
+        }
+
+        return s[i..].Trim().ToLowerInvariant();
     }
 
     public bool TryResolveItemType(string name, out uint hash, out IReadOnlyList<string> suggestions)
@@ -72,17 +123,17 @@ public sealed class NameResolver(IFilterDataService data)
         out IReadOnlyList<string> suggestions)
     {
         var allItems = data.TalismanSets.All.SelectMany(s => s.Items);
-        var match    = allItems.FirstOrDefault(
+        var match = allItems.FirstOrDefault(
             i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
         if (match is not null)
         {
-            itemHash    = match.Hash;
-            setHash     = data.TalismanSets.GetSetHashForItem(match.Hash);
+            itemHash = match.Hash;
+            setHash = data.TalismanSets.GetSetHashForItem(match.Hash);
             suggestions = [];
             return true;
         }
-        itemHash    = 0;
-        setHash     = 0;
+        itemHash = 0;
+        setHash = 0;
         suggestions = FindSuggestions(name, allItems.Select(i => i.Name));
         return false;
     }

@@ -18,9 +18,9 @@ public static class AffixDatabase
         var arr = FilterDataStore.Root.GetProperty("affixes");
         foreach (var el in arr.EnumerateArray())
         {
-            var name    = el.GetProperty("displayName").GetString()!;
+            var name = el.GetProperty("displayName").GetString()!;
             var hashHex = el.GetProperty("hash").GetString()!;
-            var hash    = Convert.ToUInt32(hashHex[2..], 16);
+            var hash = Convert.ToUInt32(hashHex[2..], 16);
             var classes = el.GetProperty("classes")
                             .EnumerateArray()
                             .Select(c => c.GetString()!)
@@ -41,12 +41,13 @@ public static class AffixDatabase
             }
         }
 
-        // Last-write-wins for duplicate names/hashes (e.g. +Blood Lance has two distinct hashes)
+        // Last-write-wins for duplicate display names (e.g. "All Damage Multiplier" carries several
+        // distinct per-source hashes under one name)
         var byName = new Dictionary<string, AffixEntry>();
         var byHash = new Dictionary<uint, AffixEntry>();
         foreach (var e in all) { byName[e.Name] = e; byHash[e.Hash] = e; }
 
-        All    = all.AsReadOnly();
+        All = all.AsReadOnly();
         ByHash = byHash;
         ByName = byName;
     }

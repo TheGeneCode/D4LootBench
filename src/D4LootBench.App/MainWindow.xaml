@@ -57,6 +57,14 @@
                         <TextBlock Text="From Guide…" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
+                <Button Command="{Binding BuildProgressionFilterCommand}"
+                        ToolTip="Build a progression filter: read your gear from screenshots, diff against a goal build, and generate a native filter"
+                        Padding="8,2">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="14" VerticalAlignment="Center" Margin="0,0,5,0" />
+                        <TextBlock Text="Progression…" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
 
                 <Separator />
 

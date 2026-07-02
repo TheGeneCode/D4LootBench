@@ -325,4 +325,122 @@ public sealed class GearTooltipParserBoundaryTests
 
         result.Item.IsAncestral.ShouldBeTrue();
     }
+
+    // --- ExtractBasicAffixBlock structural boundaries ---
+
+    [Fact]
+    public void Parse_RareItemWithNoLegendaryPower_OverIncludesTemperedAndGemLines()
+    {
+        // Documents a known, accepted limitation: a RARE item has no legendary/unique power sentence
+        // to terminate the basic-affix run, so tempered affixes and gem/socket "+"-led lines that
+        // follow are contiguous with the real basic affixes and get swept in together (up to the
+        // MaxAffixes cap). OCR cannot read the bullet icon that would distinguish them in-game.
+        var result = NewParser().Parse(LoadFixture("rare-no-legendary-power.txt"));
+
+        result.Item.Rarity.ShouldBe(ItemRarity.Rare);
+        result.Item.Affixes.Select(a => a.RawText).ShouldBe(
+        [
+            "+50 Strength [40 - 50]",
+            "+80 Dexterity [70 - 80]",
+            "+40 Strength",
+            "+40 Strength",
+        ]);
+    }
+
+    [Fact]
+    public void Parse_PlusLedGarbageBeforeItemPowerLine_ExcludedFromAffixBlock()
+    {
+        // "+20% Ring of Fire Resistance Bonus" sits BEFORE the "Item Power" line in this fixture.
+        // The anchor starts the search after Item Power, so this garbage line must never be
+        // considered part of the affix block, even though it is itself "+"-led.
+        var result = NewParser().Parse(LoadFixture("itemtype-collision.txt"));
+
+        result.Item.Affixes.ShouldHaveSingleItem();
+        result.Item.Affixes[0].RawText.ShouldBe("+30 Dexterity");
+    }
+
+    [Fact]
+    public void Parse_NoItemPowerLineAtAll_FallsBackToTopOfTooltipScan()
+    {
+        // Cropped tooltip with no "Item Power" line anywhere: the anchor search must start at index 0
+        // instead of never finding a start, so both leading "+"-led lines are still captured.
+        var result = NewParser().Parse(LoadFixture("cropped-partial.txt"));
+
+        result.Item.ItemPower.ShouldBeNull();
+        result.Item.Affixes.Select(a => a.RawText).ShouldBe(
+        [
+            "+120 Maximum Life",
+            "+40% Vulnerable Damage",
+        ]);
+    }
+
+    [Fact]
+    public void Parse_IconMisreadAsLetterBeforePlus_LineIsSkippedEntirely_NotJustExcluded()
+    {
+        // If OCR renders a bullet icon as a stray LETTER immediately before the '+', IsAffixLine sees
+        // an alphanumeric character before '+' and returns false for the WHOLE line — the affix isn't
+        // just mis-anchored, it disappears entirely; the run instead starts at the next real "+" line.
+        var lines = new[]
+        {
+            "Ancestral Legendary Ring",
+            "800 Item Power",
+            "e+99 Strength",
+            "+30 Dexterity",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Item.Affixes.ShouldHaveSingleItem();
+        result.Item.Affixes[0].RawText.ShouldBe("+30 Dexterity");
+    }
+
+    [Fact]
+    public void Parse_UniquePowerLineStartingWithPlus_MergesIntoAffixRun()
+    {
+        // Documents a known, accepted limitation: some unique-power sentences themselves start with
+        // "+" (e.g. "+2 to All Skills"). Because the run only stops at the first NON-"+"-led line,
+        // such a power line is indistinguishable from a real affix and merges into the run along with
+        // whatever follows it.
+        var lines = new[]
+        {
+            "Ancestral Unique Ring",
+            "800 Item Power",
+            "+30 Dexterity",
+            "+2 to All Skills",
+            "+40 Maximum Life",
+            "Requires Level 60",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Item.Affixes.Select(a => a.RawText).ShouldBe(
+        [
+            "+30 Dexterity",
+            "+2 to All Skills",
+            "+40 Maximum Life",
+        ]);
+    }
+
+    [Fact]
+    public void Parse_ExactlySixContiguousAffixLines_AllKeptNoOverflowWarning()
+    {
+        // Complement to the seven-line overflow test: exactly MaxAffixes (6) contiguous "+"-led
+        // lines must all be kept with no truncation warning.
+        var lines = new[]
+        {
+            "Ancestral Legendary Amulet",
+            "900 Item Power",
+            "+45.0% Critical Strike Chance",
+            "+112 Maximum Life",
+            "+8.5% Cooldown Reduction",
+            "+30 Dexterity",
+            "+15% Critical Strike Damage",
+            "+50% Damage",
+        };
+
+        var result = NewParser().Parse(lines);
+
+        result.Item.Affixes.Count.ShouldBe(6);
+        result.Warnings.ShouldNotContain(w => w.Contains("More than", StringComparison.Ordinal));
+    }
 }

@@ -202,6 +202,44 @@ If value-based affix filtering is added in the future, this becomes critical.
 
 ---
 
+## Gap 8: Typed / Conditional Damage Multipliers (Medium Priority — affects progression/guide import)
+
+### Status
+- **Issue:** Build guides and in-game tooltips name damage multipliers by their condition/type — e.g.
+  "Physical Damage", "Damage to Close Enemies", "Damage to Distant Enemies", "Damage over Time" — but
+  `d4-data.json` carries most of these as a single generic **"All Damage Multiplier"** display name
+  (7 distinct hashes differentiated only by class set), plus a few named ones (`Vulnerable Damage
+  Multiplier`, `Critical Strike Damage Multiplier`, `Damage Over Time Multiplier`).
+
+### What We Have
+- `Vulnerable Damage Multiplier`, `Critical Strike Damage Multiplier`, `Damage Over Time Multiplier`,
+  `All Damage Multiplier` (×7, class-scoped hashes, identical display name).
+
+### What's Missing
+- Condition/type-specific display names: "Physical/Fire/Cold/Lightning/Poison/Shadow Damage",
+  "Damage to Close/Distant/Injured/Crowd-Controlled Enemies", etc. These do not resolve by name, so a
+  guide/OCR phrase like "Physical Damage Multiplier" or "Damage to Close Enemies" falls through
+  resolution and (in guide import) is treated as an item name instead of an affix.
+
+### Impact on Filters
+**Medium for the progression/guide-import + OCR flows** — these are high-priority DPS affixes in most
+builds, so their absence means those targets silently drop out of a generated progression filter.
+No impact on manual editing or codec round-trips.
+
+### How to Resolve
+1. Determine whether D4's loot filter exposes these as distinct filterable affixes (distinct hashes) or
+   only as the generic "All Damage Multiplier". The 7 same-named hashes strongly suggest the former with
+   a lost/collapsed display name during extraction.
+2. Re-extract proper display names from the upstream source (d4data / d4lf) for the type-104 damage
+   multiplier entries and disambiguate the 7 "All Damage Multiplier" hashes.
+3. Until then, guide/OCR phrases for these affixes will not resolve (documented by
+   `BuildGuideParserTests.Maxroll_WithResolver_CatalogAbsentAffix_FallsBackToItemName`).
+
+### Priority
+**MEDIUM** — Worth resolving for the progression-filter feature; blocked on upstream data disambiguation.
+
+---
+
 ## Summary Table
 
 | Gap | Category | Items | Coverage | Impact | Priority |
@@ -213,6 +251,7 @@ If value-based affix filtering is added in the future, this becomes critical.
 | 5 | Affix Value Ranges | 0 / TBD | 0% | Low | MEDIUM |
 | 6 | Undocumented Items | 7 / 901 | 99.2% | None | VERY LOW |
 | 7 | Talisman Item Maps | 239 / 239 | 100% | None | ✅ RESOLVED |
+| 8 | Typed/Conditional Damage Multipliers | — | partial | Medium (progression/OCR) | MEDIUM |
 
 ---
 

@@ -115,15 +115,30 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
     }
 
     [Fact]
-    public void Generate_MoreThanFourTargetAffixes_TruncatesToFourPerRule()
+    public void Generate_ManyTargetAffixes_KeepsAllUpToGameLimit()
     {
+        // All ranked guide affixes are kept (D4 allows up to AffixCondition.MaxSelectionCount per
+        // Required Affixes condition); the top-ranked affix is never dropped.
         var diff = Diff(NeedsRule(GearSlot.Helm, 0, 1u, 2u, 3u, 4u, 5u, 6u));
 
         var result = NewGenerator().Generate(diff);
 
         var baseRule = result.Ruleset.Rules.Single(r => r.Name == "Helm");
         baseRule.Conditions.OfType<AffixCondition>().Single().AffixIds
-            .ShouldBe(new uint[] { 1u, 2u, 3u, 4u });
+            .ShouldBe(new uint[] { 1u, 2u, 3u, 4u, 5u, 6u });
+    }
+
+    [Fact]
+    public void Generate_TargetAffixesOverGameLimit_ClampsToMaxSelectionCount()
+    {
+        var affixes = Enumerable.Range(1, AffixCondition.MaxSelectionCount + 3).Select(i => (uint)i).ToArray();
+        var diff = Diff(NeedsRule(GearSlot.Helm, 0, affixes));
+
+        var result = NewGenerator().Generate(diff);
+
+        var baseRule = result.Ruleset.Rules.Single(r => r.Name == "Helm");
+        baseRule.Conditions.OfType<AffixCondition>().Single().AffixIds
+            .Count.ShouldBe(AffixCondition.MaxSelectionCount);
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using D4LootBench.Core.Data;
 
 namespace D4LootBench.Core.Import;
 
@@ -7,7 +8,10 @@ namespace D4LootBench.Core.Import;
 /// Blocks are delimited by known slot-name keywords. Affixes are listed in priority order (implicit).
 /// Supports ↑ (Greater Affix), x prefix (multiplicative), "Unique Effect" sentinel, Seal/Charm talisman slots.
 /// </summary>
-public sealed partial class MaxrollParser : IBuildGuideParser
+/// <param name="affixResolver">Resolver used to tell a first-line item/aspect name from a first-line
+/// affix (low-level guides omit the item name). When <c>null</c>, the first line after a slot header is
+/// always taken as the item name (legacy behavior).</param>
+public sealed partial class MaxrollParser(NameResolver? affixResolver = null) : IBuildGuideParser
 {
     private static readonly HashSet<string> SlotKeywords = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -55,7 +59,17 @@ public sealed partial class MaxrollParser : IBuildGuideParser
                     break;
 
                 case State.AfterSlotName:
-                    itemName = line;
+                    // Usually the first line after a slot header is the item/aspect name, but low-level
+                    // guides omit it and go straight to ranked affixes. Only treat the line as a name when
+                    // it does NOT resolve as an affix; otherwise it is affix #1 and must not be swallowed.
+                    if (LooksLikeAffix(line))
+                    {
+                        AddAffix(line);
+                    }
+                    else
+                    {
+                        itemName = line;
+                    }
                     state = State.AffixList;
                     break;
 
@@ -72,8 +86,7 @@ public sealed partial class MaxrollParser : IBuildGuideParser
                     }
                     else
                     {
-                        var (name, isGa) = StripAffixModifiers(line);
-                        affixes.Add(new ParsedAffix { RawName = name, IsGreaterAffix = isGa, Priority = 0 });
+                        AddAffix(line);
                     }
                     break;
 
@@ -114,6 +127,12 @@ public sealed partial class MaxrollParser : IBuildGuideParser
 
         return new ParsedBuildGuide { DetectedFormat = BuildGuideFormat.Maxroll, Slots = slots };
 
+        void AddAffix(string line)
+        {
+            var (name, isGa) = StripAffixModifiers(line);
+            affixes.Add(new ParsedAffix { RawName = name, IsGreaterAffix = isGa, Priority = 0 });
+        }
+
         void BeginSlot(string label)
         {
             if (IsTalismanKeyword(label))
@@ -148,18 +167,38 @@ public sealed partial class MaxrollParser : IBuildGuideParser
         }
     }
 
+    // A first line is affix #1 (rather than an item/aspect name) when it resolves against the affix
+    // catalog. Uses the same resolver as downstream goal-building, so a line is kept as an affix exactly
+    // when it would resolve there. With no resolver, defer to the legacy "first line is the item name".
+    private bool LooksLikeAffix(string line)
+    {
+        if (affixResolver is null)
+        {
+            return false;
+        }
+
+        var (name, _) = StripAffixModifiers(line);
+        return affixResolver.IsKnownAffixPhrase(name);
+    }
+
     private static bool IsSlotKeyword(string line)
         => SlotKeywords.Contains(line) || CharmPattern.IsMatch(line);
 
     private static bool IsTalismanKeyword(string line)
         => TalismanKeywords.Contains(line) || CharmPattern.IsMatch(line);
 
-    /// <summary>Strips x prefix (multiplicative) and ↑ suffix (Greater Affix marker).</summary>
+    /// <summary>Strips x prefix (multiplicative), a leading rolled value (e.g. "24% " in
+    /// "x24% Physical Damage Multiplier"), and ↑ suffix (Greater Affix marker), leaving the affix name.</summary>
     private static (string Name, bool IsGa) StripAffixModifiers(string raw)
     {
         var name = raw.TrimStart();
         if (name.StartsWith('x') || name.StartsWith('X'))
             name = name[1..].TrimStart();
+
+        // Maxroll prefixes multiplicative affixes with their rolled value ("24% Physical Damage
+        // Multiplier"); strip that leading number/percent so the affix NAME remains for resolution.
+        name = LeadingValueRegex().Replace(name, string.Empty);
+
         var isGa = name.EndsWith('↑');
         if (isGa)
             name = name[..^1].TrimEnd();
@@ -168,4 +207,7 @@ public sealed partial class MaxrollParser : IBuildGuideParser
 
     [GeneratedRegex(@"^Charm\s*\d+$", RegexOptions.IgnoreCase)]
     private static partial Regex CharmRegex();
+
+    [GeneratedRegex(@"^\d+(?:\.\d+)?%?\s*")]
+    private static partial Regex LeadingValueRegex();
 }

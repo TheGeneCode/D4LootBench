@@ -28,6 +28,24 @@ public sealed class GearTooltipParserTests
     }
 
     [Fact]
+    public void Parse_FullTooltip_ExtractsOnlyBasicAffixes()
+    {
+        // Realistic tooltip with base stats, roll-range brackets, a legendary power sentence, a tempered
+        // affix, and gem/socket bonuses. Only the four "+"-led basic affixes above the legendary power
+        // must be captured — base stats, the legendary line, the tempered affix, and gems are excluded.
+        var result = NewParser().Parse(LoadFixture("legendary-pants-full.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Pants);
+        result.Item.Affixes.Select(a => a.RawText).ShouldBe(
+        [
+            "+99 Strength [83 - 99]",
+            "+1,225 Maximum Life [1,016 - 1,225]",
+            "+4 Fury Regeneration [3 - 4]",
+            "+1,962 Armor [1,561 - 1,962]",
+        ]);
+    }
+
+    [Fact]
     public void Parse_TwoAffixRing_ResolvesAffixes()
     {
         var result = NewParser().Parse(LoadFixture("ring-two-affix.txt"));

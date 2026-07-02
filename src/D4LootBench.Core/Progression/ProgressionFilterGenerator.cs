@@ -12,7 +12,11 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
     private const int BaseRequired = 2;
     private const int StrictRequired = 3;
     private const int StrictGreaterAffixCount = 1;
-    private const int MaxAffixesPerRule = 4;
+
+    // Include every ranked guide affix the game will accept in one Required Affixes condition (D4's
+    // hard limit). A progression rule matches "N of these targets", so more targets is more inclusive
+    // — capping lower silently dropped the lowest-ranked guide affixes. SlotRuleBuilder re-clamps.
+    private const int MaxAffixesPerRule = AffixCondition.MaxSelectionCount;
 
     private static readonly uint ColorBase = FilterRule.PackColor(255, 180, 0);   // gold — candidate
     private static readonly uint ColorStrict = FilterRule.PackColor(255, 90, 0);  // orange — upgrade / stricter

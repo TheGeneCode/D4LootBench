@@ -9,6 +9,7 @@ using D4LootBench.Ai;
 using D4LootBench.Ai.Import;
 using D4LootBench.App.Services;
 using D4LootBench.App.ViewModels.Conditions;
+using D4LootBench.App.ViewModels.Progression;
 using D4LootBench.App.Views;
 using D4LootBench.Core.Codec;
 using D4LootBench.Core.Import;
@@ -25,6 +26,7 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly IFilterValidator _validator;
     private readonly BuildGuideImporter _buildGuideImporter;
     private readonly BuildGuideFilterGenerator _buildGuideGenerator;
+    private readonly Func<ProgressionWizardViewModel> _progressionWizardFactory;
 
     public AiAssistantViewModel AiAssistant { get; }
 
@@ -40,12 +42,14 @@ public partial class MainWindowViewModel : ObservableObject
         RuleAssistant ruleAssistant,
         LlmSettingsService llmSettings,
         BuildGuideImporter buildGuideImporter,
-        BuildGuideFilterGenerator buildGuideGenerator)
+        BuildGuideFilterGenerator buildGuideGenerator,
+        Func<ProgressionWizardViewModel> progressionWizardFactory)
     {
-        _conditionFactory    = conditionFactory;
-        _validator           = validator;
-        _buildGuideImporter  = buildGuideImporter;
+        _conditionFactory = conditionFactory;
+        _validator = validator;
+        _buildGuideImporter = buildGuideImporter;
         _buildGuideGenerator = buildGuideGenerator;
+        _progressionWizardFactory = progressionWizardFactory;
 
         AiAssistant = new AiAssistantViewModel(
             ruleAssistant, llmSettings,
@@ -59,7 +63,7 @@ public partial class MainWindowViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ValidateCommand))]
     private VisualEditorViewModel? _editor;
 
-    /// <summary>Findings from the last validate / export attempt. Empty when no issues.</summary>
+    /// <summary>Gets findings from the last validate / export attempt. Empty when no issues.</summary>
     public ObservableCollection<ValidationIssue> Issues { get; } = [];
 
     public bool HasIssues => Issues.Count > 0;
@@ -114,7 +118,7 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void ReportIssue() =>
         Process.Start(new ProcessStartInfo("https://github.com/ThunderEagle/D4LootBench/issues")
-            { UseShellExecute = true });
+        { UseShellExecute = true });
 
     // ── Filter lifecycle ──────────────────────────────────────────────────
 
@@ -122,7 +126,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void NewFilter()
     {
         RefreshIssues(ValidationResult.Empty);
-        Editor = new VisualEditorViewModel(_conditionFactory,new FilterRuleset("New Filter", []));
+        Editor = new VisualEditorViewModel(_conditionFactory, new FilterRuleset("New Filter", []));
         SetStatus("New filter created.", error: false);
     }
 
@@ -159,6 +163,27 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void BuildProgressionFilter()
+    {
+        var vm = _progressionWizardFactory();
+        var dlg = new ProgressionWizardWindow(vm) { Owner = Application.Current.MainWindow };
+        if (dlg.ShowDialog() != true || dlg.RulesetForEditor is null) return;
+
+        if (Editor is not null)
+        {
+            var confirm = MessageBox.Show(
+                "This will replace your current filter. Continue?",
+                "Progression Filter", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+        }
+
+        var ruleset = dlg.RulesetForEditor;
+        RefreshIssues(ValidationResult.Empty);
+        Editor = new VisualEditorViewModel(_conditionFactory, ruleset);
+        SetStatus($"Loaded progression filter — {ruleset.Rules.Count} rule(s).", error: false);
+    }
+
+    [RelayCommand]
     private void PasteCode()
     {
         var text = Clipboard.GetText()?.Trim();
@@ -171,19 +196,19 @@ public partial class MainWindowViewModel : ObservableObject
     {
         var dlg = new OpenFileDialog
         {
-            Title      = "Open Filter JSON",
-            Filter     = "Filter JSON|*.json|All Files|*.*",
+            Title = "Open Filter JSON",
+            Filter = "Filter JSON|*.json|All Files|*.*",
             DefaultExt = ".json",
         };
         if (dlg.ShowDialog() != true) return;
 
         try
         {
-            var json    = File.ReadAllText(dlg.FileName);
+            var json = File.ReadAllText(dlg.FileName);
             var ruleset = JsonSerializer.Deserialize<FilterRuleset>(json, FilterJsonOptions.Default)
                           ?? throw new InvalidOperationException("File deserialised to null.");
             RefreshIssues(ValidationResult.Empty);
-        Editor = new VisualEditorViewModel(_conditionFactory,ruleset);
+            Editor = new VisualEditorViewModel(_conditionFactory, ruleset);
             SetStatus($"Opened \"{Path.GetFileName(dlg.FileName)}\".", error: false);
         }
         catch (Exception ex)
@@ -223,10 +248,10 @@ public partial class MainWindowViewModel : ObservableObject
     {
         var dlg = new SaveFileDialog
         {
-            Title      = "Save Filter JSON",
-            Filter     = "Filter JSON|*.json|All Files|*.*",
+            Title = "Save Filter JSON",
+            Filter = "Filter JSON|*.json|All Files|*.*",
             DefaultExt = ".json",
-            FileName   = Editor!.FilterName,
+            FileName = Editor!.FilterName,
         };
         if (dlg.ShowDialog() != true) return;
 
@@ -269,7 +294,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void ApplyFromRawEditor(FilterRuleset ruleset)
     {
         RefreshIssues(ValidationResult.Empty);
-        Editor = new VisualEditorViewModel(_conditionFactory,ruleset);
+        Editor = new VisualEditorViewModel(_conditionFactory, ruleset);
         SetStatus("Filter updated from Raw Editor.", error: false);
     }
 
@@ -281,7 +306,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             var ruleset = FilterCodec.Decode(code);
             RefreshIssues(ValidationResult.Empty);
-        Editor = new VisualEditorViewModel(_conditionFactory,ruleset);
+            Editor = new VisualEditorViewModel(_conditionFactory, ruleset);
             SetStatus($"Loaded \"{ruleset.Name}\" — {ruleset.Rules.Count} rule(s).", error: false);
         }
         catch (Exception ex)
@@ -293,7 +318,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void SetStatus(string message, bool error)
     {
         StatusMessage = message;
-        HasError      = error;
+        HasError = error;
     }
 
     private bool HasEditor() => Editor is not null;

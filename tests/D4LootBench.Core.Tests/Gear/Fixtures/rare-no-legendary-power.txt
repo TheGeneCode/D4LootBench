@@ -1,0 +1,9 @@
+Girdle of Might
+Rare Pants
+800 Item Power
+1,200 Armor
++50 Strength [40 - 50]
++80 Dexterity [70 - 80]
++40 Strength
++40 Strength
+Requires Level 60

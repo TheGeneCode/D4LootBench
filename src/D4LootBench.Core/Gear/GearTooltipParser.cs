@@ -172,15 +172,15 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
 
     private List<GearAffix> ParseAffixes(IReadOnlyList<string> lines, List<string> warnings)
     {
-        var candidates = lines.Where(IsAffixCandidate).ToList();
-        if (candidates.Count == 0)
+        var block = ExtractBasicAffixBlock(lines);
+        if (block.Count == 0)
         {
             warnings.Add("No affix lines found.");
             return [];
         }
 
         var affixes = new List<GearAffix>();
-        foreach (var line in candidates)
+        foreach (var line in block)
         {
             if (affixes.Count >= MaxAffixes)
             {
@@ -208,14 +208,74 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
         return affixes;
     }
 
-    private static bool IsAffixCandidate(string line)
+    // The basic-affix block is the first contiguous run of "+"-led lines at or after the Item Power
+    // line. This deliberately excludes the item header and base stats (Armor / DPS / Item Power — never
+    // "+"-led), the legendary/unique power (a sentence that is not "+"-led, which ends the run), and
+    // everything after it: tempered affixes and gem/socket bonuses. OCR cannot read the diamond / star /
+    // anvil bullet icons that separate these in-game, so structural position is the only signal we have.
+    private static List<string> ExtractBasicAffixBlock(IReadOnlyList<string> lines)
+    {
+        // Anchor the search after the Item Power line when present; base stats sit between it and the
+        // affixes. With no Item Power line (a cropped tooltip) fall back to scanning from the top.
+        var start = 0;
+        for (var i = 0; i < lines.Count; i++)
+        {
+            if (lines[i].Contains("Item Power", StringComparison.OrdinalIgnoreCase))
+            {
+                start = i + 1;
+                break;
+            }
+        }
+
+        var first = -1;
+        for (var i = start; i < lines.Count; i++)
+        {
+            if (IsAffixLine(lines[i]))
+            {
+                first = i;
+                break;
+            }
+        }
+
+        if (first < 0)
+        {
+            return [];
+        }
+
+        var block = new List<string>();
+        for (var i = first; i < lines.Count && IsAffixLine(lines[i]); i++)
+        {
+            block.Add(lines[i]);
+        }
+
+        return block;
+    }
+
+    // A "+"-led line: after any leading icon/punctuation junk, the first meaningful glyph is '+'. D4
+    // renders every gear affix as "+X …" (basic, greater, tempered, and gem lines all qualify); base
+    // stats and power sentences never lead with '+'. Noise markers are excluded so a stray line such as
+    // "+Sockets" cannot anchor or extend the affix block.
+    private static bool IsAffixLine(string line)
     {
         if (NoiseMarkers.Any(m => line.Contains(m, StringComparison.OrdinalIgnoreCase)))
         {
             return false;
         }
 
-        return line.StartsWith('+') || line.Contains('%') || line.Any(char.IsDigit);
+        foreach (var c in line)
+        {
+            if (c == '+')
+            {
+                return true;
+            }
+
+            if (char.IsLetterOrDigit(c))
+            {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     // Strip roll ranges, numbers, %, +/- and collapse whitespace to leave the affix phrase.

@@ -2,9 +2,11 @@ using D4LootBench.Ai;
 using D4LootBench.Ai.Import;
 using D4LootBench.App.ViewModels;
 using D4LootBench.App.ViewModels.Conditions;
+using D4LootBench.App.ViewModels.Progression;
 using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Import;
+using D4LootBench.Core.Progression;
 using D4LootBench.Core.Validation;
 using D4LootBench.Vision;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +34,13 @@ internal static class ServiceConfiguration
 
         services.AddSingleton<IGearReader, WindowsOcrGearReader>();
         services.AddSingleton<GearTooltipParser>();
+
+        services.AddSingleton<GoalBuildFactory>();
+        services.AddSingleton<SlotDiffEngine>();          // per-slot threshold comes from SlotGoal
+        services.AddSingleton<ProgressionFilterGenerator>();
+        services.AddTransient<ProgressionWizardViewModel>();
+        services.AddSingleton<Func<ProgressionWizardViewModel>>(
+            sp => sp.GetRequiredService<ProgressionWizardViewModel>);
 
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<MainWindow>();

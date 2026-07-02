@@ -1,3 +1,4 @@
+using D4LootBench.Core.Data;
 using D4LootBench.Core.Import;
 using Shouldly;
 
@@ -5,6 +6,8 @@ namespace D4LootBench.Core.Tests.Import;
 
 public sealed class BuildGuideParserTests
 {
+    private static NameResolver NewResolver() => new(new FilterDataService());
+
     // ── Format detection ─────────────────────────────────────────────────────
 
     [Fact]
@@ -159,6 +162,141 @@ public sealed class BuildGuideParserTests
         var guide = new MaxrollParser().Parse(MaxrollFixture);
         var seal = guide.Slots.First(s => s.IsTalismanSlot);
         seal.SlotLabel.ShouldBe("Seal");
+    }
+
+    // ── Maxroll: no-item-name (low-level) slots ──────────────────────────────
+
+    [Fact]
+    public void Maxroll_WithResolver_NoItemNameSlot_KeepsFirstAffix()
+    {
+        // Low-level guide: the slot header is followed directly by ranked affixes (no item/aspect name).
+        // The top-ranked affix must NOT be swallowed as an item name.
+        var guide = new MaxrollParser(NewResolver()).Parse(NoItemNameFixture);
+
+        var boots = guide.Slots.First(s => s.SlotLabel == "Boots");
+        boots.ItemName.ShouldBeNull();
+        boots.Affixes[0].RawName.ShouldBe("Movement Speed");
+        boots.Affixes.Count.ShouldBe(7);
+    }
+
+    [Fact]
+    public void Maxroll_WithResolver_NamedItemSlot_StillDetectsItemName()
+    {
+        // A real item/aspect name does not resolve as an affix, so it is still captured as the item name.
+        var guide = new MaxrollParser(NewResolver()).Parse(MaxrollFixture);
+
+        var helm = guide.Slots.First(s => s.SlotLabel == "Helm");
+        helm.ItemName.ShouldBe("Harlequin Crest");
+        helm.Affixes.ShouldContain(a => a.RawName == "Lucky Hit Chance");
+    }
+
+    [Fact]
+    public void Maxroll_WithoutResolver_PreservesLegacyFirstLineIsItemName()
+    {
+        // No resolver → legacy behavior: first line after the slot header is always the item name.
+        var guide = new MaxrollParser().Parse(NoItemNameFixture);
+
+        var boots = guide.Slots.First(s => s.SlotLabel == "Boots");
+        boots.ItemName.ShouldBe("Movement Speed");
+    }
+
+    [Fact]
+    public void Maxroll_WithResolver_MultiplierValuePrefix_StrippedAndKeptAsAffix()
+    {
+        // A multiplicative first-line affix "x24% Vulnerable Damage" must have BOTH the 'x' and the
+        // rolled value stripped, leaving the affix name — which resolves (catalog "Vulnerable Damage
+        // Multiplier"), so it is kept as affix #1 rather than swallowed as the item name.
+        const string paste = """
+            Boots
+            x24% Vulnerable Damage
+            Strength
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var boots = guide.Slots.Single(s => s.SlotLabel == "Boots");
+        boots.ItemName.ShouldBeNull();
+        boots.Affixes[0].RawName.ShouldBe("Vulnerable Damage");
+        NewResolver().IsKnownAffixPhrase("Vulnerable Damage").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Maxroll_WithResolver_CatalogAbsentAffix_FallsBackToItemName()
+    {
+        // DATA GAP (not a parser bug): typed/conditional damage multipliers like "Physical Damage
+        // Multiplier" are absent from d4-data.json (the catalog carries only a generic "All Damage
+        // Multiplier"). Even after the value prefix is stripped the name resolves to nothing, so the
+        // first line is treated as the item name. Tracked in docs/design/data-gaps.md.
+        var guide = new MaxrollParser(NewResolver()).Parse(NoItemNameFixture);
+
+        var amulet = guide.Slots.First(s => s.SlotLabel == "Amulet");
+        amulet.ItemName.ShouldBe("x24% Physical Damage Multiplier");
+        amulet.Affixes.ShouldNotContain(a => a.RawName.Contains("Multiplier"));
+    }
+
+    [Fact]
+    public void Maxroll_WithResolver_ItemNameContainingAffixSubstring_KeptAsItemName()
+    {
+        // An item/aspect name that merely contains a catalog affix word ("Strength" inside
+        // "Girdle of Boundless Strength") must NOT be misclassified as affix #1. LooksLikeAffix uses
+        // NameResolver.IsKnownAffixPhrase's whole-phrase identity check, so the name is kept and the
+        // real first affix follows it. See NameResolverTests.IsKnownAffixPhrase_ItemNameContainingAffixSubstring_ReturnsFalse.
+        const string paste = """
+            Helm
+            Girdle of Boundless Strength
+            Critical Strike Chance
+            Maximum Life
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var helm = guide.Slots.Single(s => s.SlotLabel == "Helm");
+        helm.ItemName.ShouldBe("Girdle of Boundless Strength");
+        helm.Affixes[0].RawName.ShouldBe("Critical Strike Chance");
+    }
+
+    [Fact]
+    public void Maxroll_WithResolver_FirstLineHasXPrefixAndGreaterAffixSuffix_ClassifiesAsAffixWithModifiersStripped()
+    {
+        // The first line after a slot header can itself carry BOTH modifiers at once. LooksLikeAffix
+        // must strip them before resolving (StripAffixModifiers runs first), and AddAffix must strip
+        // them again independently (it receives the original raw line, not the already-stripped one)
+        // so the emitted affix carries the clean name and the correct greater-affix flag.
+        const string paste = """
+            Boots
+            xMovement Speed↑
+            Strength
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var boots = guide.Slots.Single(s => s.SlotLabel == "Boots");
+        boots.ItemName.ShouldBeNull();
+        boots.Affixes[0].RawName.ShouldBe("Movement Speed");
+        boots.Affixes[0].IsGreaterAffix.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Maxroll_WithResolver_BlankLineAfterSlotHeader_SkippedNotTreatedAsContent()
+    {
+        // Blank lines are elided by the line-reading loop before the state machine ever sees them, so
+        // a blank line directly after a slot header must not itself become the "first line" — the
+        // next real content line does, and normal item-name-vs-affix classification still applies.
+        const string paste = "Boots\n\nMovement Speed\nStrength";
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var boots = guide.Slots.Single(s => s.SlotLabel == "Boots");
+        boots.ItemName.ShouldBeNull();
+        boots.Affixes[0].RawName.ShouldBe("Movement Speed");
+    }
+
+    [Fact]
+    public void Maxroll_WithResolver_ItemNameAndUniqueSentinel_BothStillResolve()
+    {
+        // A slot with a real (non-affix-colliding) item/aspect name followed by the "Unique Effect"
+        // sentinel must keep both: the resolver must not interfere with unique detection.
+        var guide = new MaxrollParser(NewResolver()).Parse(MaxrollFixture);
+
+        var helm = guide.Slots.First(s => s.SlotLabel == "Helm");
+        helm.ItemName.ShouldBe("Harlequin Crest");
+        helm.HasUniqueSentinel.ShouldBeTrue();
     }
 
     // ── Icy Veins parser ─────────────────────────────────────────────────────
@@ -321,6 +459,24 @@ public sealed class BuildGuideParserTests
         Seal
         Sacred Charm
         some stat here
+        """;
+
+    // Low-level Maxroll paste: slot headers followed directly by ranked affixes, no item/aspect names.
+    private const string NoItemNameFixture = """
+        Boots
+        Movement Speed
+        Strength
+        Maximum Life
+        Fury Regeneration
+        Armor
+        Resistance to All Elements
+        Movement Speed
+        Amulet
+        x24% Physical Damage Multiplier
+        Strength
+        Maximum Life
+        Critical Strike Chance
+        Damage to Close Enemies
         """;
 
     private const string IcyVeinsFixture =

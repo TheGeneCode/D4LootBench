@@ -1,0 +1,13 @@
+Runic Leggings of Might
+Legendary Pants
+850 Item Power
+1,594 Armor
++99 Strength [83 - 99]
++1,225 Maximum Life [1,016 - 1,225]
++4 Fury Regeneration [3 - 4]
++1,962 Armor [1,561 - 1,962]
+Basic Skills grant 30% [20 - 30]% Damage Reduction for 4 seconds.
++1,500 Maximum Life [1,000 - 1,500]
++40 Strength
++40 Strength
+Requires Level 60

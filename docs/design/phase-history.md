@@ -149,3 +149,33 @@ New pure class library with no WPF dependency, added alongside `D4LootBench.Core
 - `AiAssistantView` — collapsible bottom panel; Enter submits, Ctrl+Enter inserts newline; `PasswordBox.Password` pushed to VM via `PasswordChanged` handler (WPF limitation — no binding support).
 - Panel collapse driven from `MainWindow.xaml.cs` code-behind (row heights set to 0) rather than `Visibility=Collapsed` on fixed-height Grid rows, which don't reclaim space. Last user-dragged height preserved across open/close cycles.
 - Simplified to Ollama-only public provider (cloud providers removed from Phase 4A scope).
+
+---
+
+## Progression Phase 4 ✅ — WPF User Flow (read → review → goal → generate)
+
+The complete progression wizard, closing the roadmap's Phase 4. Delivered in two slices; **no new
+business logic** — all Core progression pieces (OCR read, slot-diff, `ProgressionFilterGenerator`)
+already existed. 270 Core + 14 App tests passing, 0 warnings.
+
+### WPF user-flow Phase 1 (`progression-wpf-user-flow-phase-01.md`)
+
+- `GoalBuildFactory` (Core) — turns an imported build guide + `MeetsGoalThreshold` into a `GoalBuild`.
+- `ProgressionWizardViewModel` + `GearItemDraftViewModel`/`GearAffixDraftViewModel` (App, namespace
+  `ViewModels.Progression`) — step lifecycle via `CurrentStep`; `IGearReader` injected for headless
+  testability; draft VMs write straight through to `GearReviewSession` drafts. Registered transient
+  with a `Func<ProgressionWizardViewModel>` DI factory. Fully unit-tested in `D4LootBench.App.Tests`.
+
+### WPF user-flow Phase 2 (`progression-wpf-user-flow-phase-02.md`)
+
+- `EnumEqualsVisibilityConverter` (App) — shows exactly one step panel whose `ProgressionStep`
+  `ToString()` matches the `ConverterParameter` (also reused for the `NeedsReview` bool highlight).
+- `ProgressionWizardWindow` (`.xaml`/`.xaml.cs`) — one window, four sibling `DockPanel`s toggled by
+  the converter. Code-behind owns only two WPF concerns: encoding a clipboard `BitmapSource` / picked
+  image file into a PNG `MemoryStream` (`PngBitmapEncoder`) fed to `AddGearFromImageAsync`, and
+  forwarding `OpenInEditorRequested` → `DialogResult`. `async void` handlers are the sanctioned WPF
+  event-handler exception; the VM guards the awaited read.
+- `MainWindowViewModel.BuildProgressionFilterCommand` + **Progression…** toolbar button — mirrors
+  `ImportFromBuildGuide`'s "replace current filter?" flow. Loading into the editor happens only if the
+  user clicks **Open in Editor**; copy-and-close leaves the main window untouched (`DialogResult` not
+  true).
