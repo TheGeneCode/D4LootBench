@@ -59,6 +59,17 @@ public sealed class GearReviewSessionTests
     }
 
     [Fact]
+    public void Build_UsesEditedItemTypeName()
+    {
+        var item = new GearItem { Slot = GearSlot.Weapon, ItemTypeName = "Sword" };
+        var session = new GearReviewSession([Result(item)]);
+
+        session.Items[0].ItemTypeName = "Polearm";
+
+        session.Build()[0].ItemTypeName.ShouldBe("Polearm");
+    }
+
+    [Fact]
     public void Review_NeedsReview_SeededFromLowConfidence()
     {
         var session = new GearReviewSession(

@@ -16,10 +16,11 @@ internal static class ProgressionTestFactory
 
     public static GearAffix UnresolvedAffix() => new() { RawText = "unresolved", AffixHash = null };
 
-    public static GearItem Item(GearSlot slot, IEnumerable<GearAffix> affixes, uint? uniqueHash = null) => new()
+    public static GearItem Item(GearSlot slot, IEnumerable<GearAffix> affixes, uint? uniqueHash = null, string? itemTypeName = null) => new()
     {
         Slot = slot,
         UniqueHash = uniqueHash,
+        ItemTypeName = itemTypeName,
         Affixes = affixes.ToList(),
     };
 
@@ -27,6 +28,14 @@ internal static class ProgressionTestFactory
     public static SlotDiff NeedsRule(GearSlot slot, int ordinal, params uint[] targets) => new()
     {
         Slot = new SlotKey(slot, ordinal),
+        Status = SlotDiffStatus.NeedsRule,
+        TargetAffixIds = targets,
+    };
+
+    // NeedsRule diff keyed by a concrete weapon/offhand item type (item-type-gated rules).
+    public static SlotDiff NeedsRule(GearSlot slot, string itemType, params uint[] targets) => new()
+    {
+        Slot = new SlotKey(slot, 0, itemType),
         Status = SlotDiffStatus.NeedsRule,
         TargetAffixIds = targets,
     };

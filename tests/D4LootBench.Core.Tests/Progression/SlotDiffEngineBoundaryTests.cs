@@ -414,4 +414,66 @@ public class SlotDiffEngineBoundaryTests
         key.Ordinal.ShouldBe(-1);
         key.ToString().ShouldBe("Ring#0");
     }
+
+    // --- SlotKey.ItemType equality / formatting (weapon-slot-item-type-matching feature) -----
+
+    [Fact]
+    public void SlotKey_DifferentItemType_NotEqual()
+    {
+        new SlotKey(GearSlot.Weapon, 0, "Sword").ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, "Polearm"));
+    }
+
+    [Fact]
+    public void SlotKey_ItemTypeEquality_IsCaseSensitive()
+    {
+        // Record-struct equality uses default string equality (ordinal, case-sensitive) — an OCR read
+        // that differs only in case from the catalog name is a DIFFERENT dictionary key, not the same one.
+        new SlotKey(GearSlot.Weapon, 0, "Sword").ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, "sword"));
+    }
+
+    [Fact]
+    public void SlotKey_NullItemType_NotEqualToEmptyStringItemType()
+    {
+        new SlotKey(GearSlot.Weapon, 0, null).ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, string.Empty));
+    }
+
+    [Fact]
+    public void SlotKey_SameSlotOrdinalItemType_AreEqual()
+    {
+        new SlotKey(GearSlot.Weapon, 0, "Sword").ShouldBe(new SlotKey(GearSlot.Weapon, 0, "Sword"));
+    }
+
+    [Fact]
+    public void SlotKey_ToString_WithItemType_FormatsAsSlotParenType()
+    {
+        new SlotKey(GearSlot.Weapon, 0, "Two-Handed Sword").ToString().ShouldBe("Weapon (Two-Handed Sword)");
+    }
+
+    [Fact]
+    public void SlotKey_ToString_EmptyStringItemType_FormatsWithEmptyParens()
+    {
+        // ItemType="" is "not null", so the ItemType-suffix branch is taken even though it's blank.
+        new SlotKey(GearSlot.Weapon, 0, string.Empty).ToString().ShouldBe("Weapon ()");
+    }
+
+    // --- SlotDiffEngine.Diff ordering with mixed null/typed weapon keys ----------------------
+
+    [Fact]
+    public void Diff_MixedNullAndTypedWeaponKeys_OrderedNullFirstThenOrdinalByItemType()
+    {
+        // Regression for the SlotDiffEngine.Diff .ThenBy(ItemType, StringComparer.Ordinal) tiebreak:
+        // a null ItemType must sort before any non-null one, and non-null types sort ordinally.
+        var loadout = new EquippedLoadout(new Dictionary<SlotKey, GearItem>
+        {
+            [new SlotKey(GearSlot.Weapon, 0, "Sword")] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)], itemTypeName: "Sword"),
+            [new SlotKey(GearSlot.Weapon, 0)] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)]),
+            [new SlotKey(GearSlot.Weapon, 0, "Axe")] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)], itemTypeName: "Axe"),
+        });
+        var build = new GoalBuild(new Dictionary<SlotKey, SlotGoal>());
+
+        var result = new SlotDiffEngine().Diff(loadout, build);
+
+        result.Slots.Select(s => s.Slot.ItemType).ShouldBe([null, "Axe", "Sword"]);
+        result.Slots.ShouldAllBe(s => s.Status == SlotDiffStatus.NoGoal);
+    }
 }

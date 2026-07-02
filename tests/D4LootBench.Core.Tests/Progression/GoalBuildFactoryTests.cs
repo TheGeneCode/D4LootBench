@@ -143,6 +143,78 @@ public sealed class GoalBuildFactoryTests
     }
 
     [Fact]
+    public void GoalBuildFactory_maps_generic_weapon_to_family_key()
+    {
+        var guide = Guide(Slot("Weapon", ["Strength", "Critical Strike Damage"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(2));
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon));
+        result.Warnings.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void GoalBuildFactory_maps_concrete_weapon_header_to_family_key()
+    {
+        var guide = Guide(Slot("Two-Handed Sword", ["Strength"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon));
+        result.Warnings.ShouldNotContain(w => w.Contains("Unrecognized slot"));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_maps_offhand_type_to_offhand_family()
+    {
+        var guide = Guide(Slot("Focus", ["Intelligence"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Offhand));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_maps_totem_offhand_type_to_offhand_family()
+    {
+        // Symmetric coverage to Focus above — Totem is the other name-substring exception in MapSlot.
+        var guide = Guide(Slot("Totem", ["Intelligence"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Offhand));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_bare_shield_header_is_unrecognized_due_to_armor_category()
+    {
+        // Known gap called out in the handoff: "Shield" resolves via NameResolver but its catalog
+        // category is "Armor", not "Weapons", so MapSlot's category gate rejects it and the slot is
+        // silently dropped with a warning rather than mapped to Offhand.
+        var guide = Guide(Slot("Shield", ["Maximum Life"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
+
+        result.GoalBuild.Goals.ShouldBeEmpty();
+        result.Warnings.ShouldContain(w => w.Contains("Unrecognized slot") && w.Contains("Shield"));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_lowercase_concrete_weapon_header_fails_to_resolve()
+    {
+        // A web-scraped build guide may render the header in lowercase. NameResolver's exact lookup is
+        // case-sensitive (StringComparison.Ordinal) and its fuzzy fallback is ambiguous here — "sword"
+        // substring-matches BOTH "Sword" and "Two-Handed Sword", so TryFuzzyResolve refuses (2 matches)
+        // and the header is left unrecognized even though "Two-Handed Sword" is a valid catalog type.
+        var guide = Guide(Slot("two-handed sword", ["Strength"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
+
+        result.GoalBuild.Goals.ShouldBeEmpty();
+        result.Warnings.ShouldContain(w => w.Contains("Unrecognized slot") && w.Contains("two-handed sword"));
+    }
+
+    [Fact]
     public void GoalBuildFactory_warns_and_skips_unrecognized_slot_label()
     {
         var guide = Guide(Slot("Bracers", ["Maximum Life"]));

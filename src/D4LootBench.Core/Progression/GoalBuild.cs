@@ -16,8 +16,9 @@ public sealed record SlotGoal
 }
 
 /// <summary>A target build: per-slot goals keyed by <see cref="SlotKey"/>. Lookup falls back from an
-/// exact <c>(Slot,Ordinal)</c> to the slot-type default <c>(Slot,0)</c>, so a goal authored once for a
-/// slot applies to all its instances unless a specific ordinal overrides it.</summary>
+/// exact key, to the weapon-family default (item-type discriminator stripped), to the slot-type default
+/// <c>(Slot,0)</c> (ordinal stripped) — so a goal authored once for a slot applies to all its instances
+/// (including every concrete weapon type) unless a more specific key overrides it.</summary>
 public sealed class GoalBuild
 {
     private readonly IReadOnlyDictionary<SlotKey, SlotGoal> _goals;
@@ -37,7 +38,8 @@ public sealed class GoalBuild
     /// <summary>Gets all authored goals.</summary>
     public IReadOnlyDictionary<SlotKey, SlotGoal> Goals => _goals;
 
-    /// <summary>Resolves the goal for a slot: exact key first, then the <c>(Slot,0)</c> slot-type default.</summary>
+    /// <summary>Resolves the goal for a slot: exact key first, then the weapon-family default (item-type
+    /// discriminator stripped), then the <c>(Slot,0)</c> slot-type default (ordinal stripped).</summary>
     /// <param name="key">The slot key to resolve.</param>
     /// <returns>The resolved goal, or <c>null</c> when none applies.</returns>
     public SlotGoal? Lookup(SlotKey key)
@@ -47,8 +49,16 @@ public sealed class GoalBuild
             return exact;
         }
 
-        return key.Ordinal != 0 && _goals.TryGetValue(new SlotKey(key.Slot), out var fallback)
-            ? fallback
+        // Strip the item-type discriminator — weapon-family default (Slot, Ordinal, null).
+        if (key.ItemType is not null &&
+            _goals.TryGetValue(new SlotKey(key.Slot, key.Ordinal), out var familyGoal))
+        {
+            return familyGoal;
+        }
+
+        // Strip the ordinal — slot-type default (Slot, 0). Covers Ring#2 and ordinal>0 weapons.
+        return key.Ordinal != 0 && _goals.TryGetValue(new SlotKey(key.Slot), out var slotDefault)
+            ? slotDefault
             : null;
     }
 }

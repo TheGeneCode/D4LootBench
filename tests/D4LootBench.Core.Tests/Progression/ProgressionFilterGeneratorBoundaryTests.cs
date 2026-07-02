@@ -213,6 +213,60 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
         result.Warnings.ShouldContain(w => w.Contains("Offhand") && w.Contains("Ambiguous"));
     }
 
+    // ---- Weapon/Offhand item-type gating: case sensitivity, blank strings, Offhand symmetry ----
+
+    [Fact]
+    public void Generate_CaseMismatchedWeaponType_AmbiguousFuzzyMatch_TreatedAsAmbiguous()
+    {
+        // "sword" (lowercase) fails exact (case-sensitive) AND fuzzy (ambiguous: matches both "Sword"
+        // and "Two-Handed Sword") resolution in NameResolver — so a case-differing OCR read is treated
+        // exactly like a genuinely unknown item type, even though the canonical type exists.
+        var result = NewGenerator().Generate(Diff(NeedsRule(GearSlot.Weapon, "sword", 1u, 2u, 3u)));
+
+        var rule = result.Ruleset.Rules.Single(r => r.Name == "Weapon (sword)");
+        rule.Conditions.OfType<ItemTypeCondition>().ShouldBeEmpty();
+        rule.Conditions.OfType<AffixCondition>().ShouldHaveSingleItem();
+        result.Warnings.ShouldContain(w => w.Contains("Ambiguous item type"));
+    }
+
+    [Fact]
+    public void Generate_EmptyStringItemType_TreatedAsAmbiguousNotNull()
+    {
+        // "" is not null, so ResolveItemTypeHash attempts resolution (and fails) rather than falling
+        // through to the "no OCR type" path — same warning/shape as a genuinely unresolved type.
+        var result = NewGenerator().Generate(Diff(NeedsRule(GearSlot.Weapon, "", 1u, 2u)));
+
+        var rule = result.Ruleset.Rules.Single(r => r.Name == "Weapon ()");
+        rule.Conditions.OfType<ItemTypeCondition>().ShouldBeEmpty();
+        result.Warnings.ShouldContain(w => w.Contains("Ambiguous item type"));
+    }
+
+    [Fact]
+    public void Generate_WhitespaceOnlyItemType_TreatedAsAmbiguous()
+    {
+        var result = NewGenerator().Generate(Diff(NeedsRule(GearSlot.Weapon, "   ", 1u)));
+
+        var rule = result.Ruleset.Rules.Single(r => r.Name == "Weapon (   )");
+        rule.Conditions.OfType<ItemTypeCondition>().ShouldBeEmpty();
+        result.Warnings.ShouldContain(w => w.Contains("Ambiguous item type"));
+    }
+
+    [Fact]
+    public void ProgressionFilter_gates_offhand_rule_on_concrete_type()
+    {
+        // Symmetric to the Weapon coverage in ProgressionFilterGeneratorTests — Offhand goes through
+        // the exact same ResolveItemTypeHash branch and deserves its own direct assertion.
+        var resolver = new NameResolver(new FilterDataService());
+        resolver.TryResolveItemType("Focus", out var expectedHash, out _).ShouldBeTrue();
+
+        var result = new ProgressionFilterGenerator(resolver)
+            .Generate(Diff(NeedsRule(GearSlot.Offhand, "Focus", 1u, 2u)));
+
+        var rule = result.Ruleset.Rules.Single(r => r.Name == "Offhand (Focus)");
+        rule.Conditions.OfType<ItemTypeCondition>().Single().TypeIds.ShouldContain(expectedHash);
+        result.Warnings.ShouldNotContain(w => w.Contains("Ambiguous item type"));
+    }
+
     // ---- Uniques: cap boundary + de-dup ----
 
     [Fact]

@@ -22,8 +22,11 @@ public sealed class EquippedLoadout
     /// <returns>The equipped item, or <c>null</c> when the slot is empty.</returns>
     public GearItem? this[SlotKey key] => _items.TryGetValue(key, out var v) ? v : null;
 
-    /// <summary>Builds a loadout from a flat item list, assigning ordinals per <see cref="GearSlot"/> in
-    /// enumeration order. Items with <see cref="GearSlot.Unknown"/> are skipped (undiffable).</summary>
+    /// <summary>Builds a loadout from a flat item list. Weapon/Offhand items with a known
+    /// <see cref="GearItem.ItemTypeName"/> are keyed by that concrete item type (so distinct weapon types are
+    /// distinct slots; two same-type dual-wield weapons collapse to one key, last wins); all other items are
+    /// keyed by an ordinal assigned per <see cref="GearSlot"/> in enumeration order. Items with
+    /// <see cref="GearSlot.Unknown"/> are skipped (undiffable).</summary>
     /// <param name="items">The flat item list.</param>
     /// <returns>A loadout keyed by <see cref="SlotKey"/>.</returns>
     public static EquippedLoadout FromItems(IEnumerable<GearItem> items)
@@ -34,6 +37,12 @@ public sealed class EquippedLoadout
         {
             if (item.Slot == GearSlot.Unknown)
             {
+                continue;
+            }
+
+            if (item.Slot is GearSlot.Weapon or GearSlot.Offhand && item.ItemTypeName is not null)
+            {
+                map[new SlotKey(item.Slot, 0, item.ItemTypeName)] = item;
                 continue;
             }
 

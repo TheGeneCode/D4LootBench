@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 
 namespace D4LootBench.App.ViewModels.Progression;
@@ -15,8 +16,25 @@ public sealed partial class GearItemDraftViewModel(GearReviewSession.ItemDraft d
     /// <summary>Gets the selectable rarities for combo binding.</summary>
     public static IReadOnlyList<ItemRarity> AvailableRarities { get; } = Enum.GetValues<ItemRarity>();
 
-    /// <summary>Gets the resolved item-type display name, or <c>null</c> when unmatched.</summary>
-    public string? ItemTypeName => draft.Source.ItemTypeName;
+    /// <summary>Gets the selectable item-type names for combo binding.</summary>
+    public static IReadOnlyList<string> AvailableItemTypes { get; } = ItemTypeDatabase.All.Select(t => t.Name).ToList();
+
+    /// <summary>Gets or sets the corrected item-type display name, or <c>null</c> when unmatched. Weapon
+    /// slot identity depends on it, so review can correct an OCR misread.</summary>
+    public string? ItemTypeName
+    {
+        get => draft.ItemTypeName;
+        set
+        {
+            if (draft.ItemTypeName == value)
+            {
+                return;
+            }
+
+            draft.ItemTypeName = value;
+            OnPropertyChanged();
+        }
+    }
 
     /// <summary>Gets a value indicating whether the item needs review (low parse confidence).</summary>
     public bool NeedsReview => draft.NeedsReview;

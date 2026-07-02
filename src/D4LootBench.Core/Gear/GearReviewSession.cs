@@ -44,7 +44,7 @@ public sealed class GearReviewSession
         return _items.Select(draft => new GearItem
         {
             Slot = draft.Slot,
-            ItemTypeName = draft.Source.ItemTypeName,
+            ItemTypeName = draft.ItemTypeName,
             ItemPower = draft.ItemPower,
             Rarity = draft.Rarity,
             IsAncestral = draft.IsAncestral,
@@ -66,6 +66,7 @@ public sealed class GearReviewSession
         {
             Source = item,
             Slot = item.Slot,
+            ItemTypeName = item.ItemTypeName,
             ItemPower = item.ItemPower,
             Rarity = item.Rarity,
             IsAncestral = item.IsAncestral,
@@ -111,6 +112,10 @@ public sealed class GearReviewSession
 
         /// <summary>Gets or sets corrected slot.</summary>
         public GearSlot Slot { get; set; }
+
+        /// <summary>Gets or sets the corrected item-type name (settable so review can correct an OCR
+        /// item-type misread — weapon slot identity depends on it).</summary>
+        public string? ItemTypeName { get; set; }
 
         /// <summary>Gets or sets corrected item power.</summary>
         public int? ItemPower { get; set; }

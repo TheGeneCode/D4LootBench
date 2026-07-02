@@ -20,7 +20,7 @@ public sealed class SlotDiffEngine
     public SlotDiffResult Diff(EquippedLoadout loadout, GoalBuild goal)
     {
         var keys = loadout.Slots.Concat(goal.Goals.Keys).Distinct()
-            .OrderBy(k => k.Slot).ThenBy(k => k.Ordinal);
+            .OrderBy(k => k.Slot).ThenBy(k => k.Ordinal).ThenBy(k => k.ItemType, StringComparer.Ordinal);
 
         var diffs = new List<SlotDiff>();
         foreach (var key in keys)

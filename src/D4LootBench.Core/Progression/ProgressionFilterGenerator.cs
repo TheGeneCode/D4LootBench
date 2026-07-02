@@ -85,7 +85,7 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
         for (var i = 0; i < activeSlots.Count; i++)
         {
             var slot = activeSlots[i];
-            var itemTypeHash = ResolveItemTypeHash(slot.Slot.Slot);
+            var itemTypeHash = ResolveItemTypeHash(slot.Slot);
             if (itemTypeHash is null && slot.Slot.Slot is GearSlot.Weapon or GearSlot.Offhand or GearSlot.Unknown)
             {
                 warnings.Add($"Ambiguous item type for {slot.Slot} — emitting affix-only rule");
@@ -142,9 +142,16 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
         };
     }
 
-    private uint? ResolveItemTypeHash(GearSlot slot)
+    private uint? ResolveItemTypeHash(SlotKey key)
     {
-        var name = slot switch
+        // Weapon/Offhand carry their concrete OCR item type on the key — gate on that.
+        if (key.ItemType is not null &&
+            nameResolver.TryResolveItemType(key.ItemType, out var typeHash, out _))
+        {
+            return typeHash;
+        }
+
+        var name = key.Slot switch
         {
             GearSlot.Helm => "Helm",
             GearSlot.ChestArmor => "Chest Armor",
@@ -153,7 +160,7 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
             GearSlot.Boots => "Boots",
             GearSlot.Amulet => "Amulet",
             GearSlot.Ring => "Ring",
-            _ => null, // Weapon/Offhand/Unknown are ambiguous — no single item type
+            _ => null, // Weapon/Offhand with no OCR type, or Unknown — no gate
         };
 
         return name is not null && nameResolver.TryResolveItemType(name, out var hash, out _)

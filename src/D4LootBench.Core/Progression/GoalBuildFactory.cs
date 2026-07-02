@@ -84,21 +84,37 @@ public sealed class GoalBuildFactory(NameResolver nameResolver)
     }
 
     // "ring 1"/"left ring" => Ring#0, "ring 2"/"right ring" => Ring#1, "rings"/"ring" => Ring#0.
-    private static SlotKey? MapSlot(string label) =>
-        label.Trim().ToLowerInvariant() switch
+    // Generic and concrete weapon/offhand headers both map to the family-default key (ItemType=null); a
+    // concrete weapon type (e.g. "Two-Handed Sword") contributes its affixes to the single weapon-family
+    // goal (multiple concrete headers collapse last-wins, like duplicate labels).
+    private SlotKey? MapSlot(string label)
+    {
+        switch (label.Trim().ToLowerInvariant())
         {
-            "helm" => new SlotKey(GearSlot.Helm),
-            "chest armor" or "chest" => new SlotKey(GearSlot.ChestArmor),
-            "gloves" => new SlotKey(GearSlot.Gloves),
-            "pants" => new SlotKey(GearSlot.Pants),
-            "boots" => new SlotKey(GearSlot.Boots),
-            "amulet" => new SlotKey(GearSlot.Amulet),
-            "ring 1" or "left ring" or "rings" or "ring" => new SlotKey(GearSlot.Ring, 0),
-            "ring 2" or "right ring" => new SlotKey(GearSlot.Ring, 1),
-            "weapon" or "mainhand" or "main hand" => new SlotKey(GearSlot.Weapon),
-            "offhand" or "off-hand" or "off hand" => new SlotKey(GearSlot.Offhand),
-            _ => null,
-        };
+            case "helm": return new SlotKey(GearSlot.Helm);
+            case "chest armor" or "chest": return new SlotKey(GearSlot.ChestArmor);
+            case "gloves": return new SlotKey(GearSlot.Gloves);
+            case "pants": return new SlotKey(GearSlot.Pants);
+            case "boots": return new SlotKey(GearSlot.Boots);
+            case "amulet": return new SlotKey(GearSlot.Amulet);
+            case "ring 1" or "left ring" or "rings" or "ring": return new SlotKey(GearSlot.Ring, 0);
+            case "ring 2" or "right ring": return new SlotKey(GearSlot.Ring, 1);
+            case "weapon" or "mainhand" or "main hand": return new SlotKey(GearSlot.Weapon);
+            case "offhand" or "off-hand" or "off hand": return new SlotKey(GearSlot.Offhand);
+        }
+
+        // Concrete weapon/offhand header (e.g. "Two-Handed Sword", "Focus"): map to the family-default key.
+        if (nameResolver.TryResolveItemType(label.Trim(), out var typeHash, out _) &&
+            ItemTypeDatabase.ByHash.TryGetValue(typeHash, out var entry) &&
+            entry.Category == "Weapons")
+        {
+            return entry.Name.Contains("Focus") || entry.Name.Contains("Totem") || entry.Name.Contains("Shield")
+                ? new SlotKey(GearSlot.Offhand)
+                : new SlotKey(GearSlot.Weapon);
+        }
+
+        return null;
+    }
 
     // Deliberately permissive: mirror the build-guide generator attempting a unique lookup on any item
     // name. Resolution failure is silent unless the guide asserted a unique via HasUniqueSentinel.

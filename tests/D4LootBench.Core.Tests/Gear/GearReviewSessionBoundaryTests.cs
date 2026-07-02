@@ -170,15 +170,46 @@ public sealed class GearReviewSessionBoundaryTests
     }
 
     [Fact]
-    public void Session_Build_PreservesItemTypeNameFromOriginalSource_NotEditable()
+    public void Session_Build_UnchangedItemTypeName_ReflectsSeededSourceValue()
     {
+        // ItemDraft.ItemTypeName is settable (weapon-slot identity depends on it, so review can
+        // correct an OCR misread) — this documents the seeded pass-through when left unedited,
+        // not a read-only guarantee. See the two tests below for the editable/nullable cases.
         var item = new GearItem { Slot = GearSlot.Unknown, ItemTypeName = "Sword" };
         var session = new GearReviewSession([Result(item)]);
 
         session.SetSlot(0, GearSlot.Weapon);
 
-        // ItemTypeName has no setter on ItemDraft — it must survive unchanged via Source.
         session.Build()[0].ItemTypeName.ShouldBe("Sword");
+    }
+
+    [Fact]
+    public void Session_Build_EditedItemTypeName_OverridesSeededSourceValue_AfterSlotCorrection()
+    {
+        // Combined edit: correcting Slot (Unknown -> Weapon) AND ItemTypeName together, mirroring the
+        // real review flow where a mis-slotted weapon also needs its concrete type corrected.
+        var item = new GearItem { Slot = GearSlot.Unknown, ItemTypeName = "Sword" };
+        var session = new GearReviewSession([Result(item)]);
+
+        session.SetSlot(0, GearSlot.Weapon);
+        session.Items[0].ItemTypeName = "Polearm";
+
+        var built = session.Build()[0];
+        built.Slot.ShouldBe(GearSlot.Weapon);
+        built.ItemTypeName.ShouldBe("Polearm");
+    }
+
+    [Fact]
+    public void Session_Build_ItemTypeNameClearedToNull_FlowsThrough()
+    {
+        // Clearing a bad OCR read back to null must be representable — it drops the item back onto
+        // the ordinal-keyed EquippedLoadout path instead of a (possibly wrong) type-gated one.
+        var item = new GearItem { Slot = GearSlot.Weapon, ItemTypeName = "Sword" };
+        var session = new GearReviewSession([Result(item)]);
+
+        session.Items[0].ItemTypeName = null;
+
+        session.Build()[0].ItemTypeName.ShouldBeNull();
     }
 
     [Fact]

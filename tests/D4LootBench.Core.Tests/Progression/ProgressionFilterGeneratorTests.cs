@@ -146,6 +146,52 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     [Fact]
+    public void ProgressionFilter_gates_weapon_rule_on_concrete_type()
+    {
+        var resolver = new NameResolver(new FilterDataService());
+        resolver.TryResolveItemType("Two-Handed Sword", out var expectedHash, out _).ShouldBeTrue();
+
+        var result = new ProgressionFilterGenerator(resolver)
+            .Generate(Diff(NeedsRule(GearSlot.Weapon, "Two-Handed Sword", 1u, 2u, 3u)));
+
+        var rule = RuleNamed(result, "Weapon (Two-Handed Sword)")!;
+        rule.Conditions.OfType<ItemTypeCondition>().Single().TypeIds.ShouldContain(expectedHash);
+        result.Warnings.ShouldNotContain(w => w.Contains("Ambiguous item type"));
+    }
+
+    [Fact]
+    public void ProgressionFilter_warns_when_weapon_type_missing()
+    {
+        var result = NewGenerator().Generate(Diff(NeedsRule(GearSlot.Weapon, 0, 1u, 2u, 3u)));
+
+        var rule = RuleNamed(result, "Weapon")!;
+        rule.Conditions.OfType<AffixCondition>().ShouldHaveSingleItem();
+        rule.Conditions.OfType<ItemTypeCondition>().ShouldBeEmpty();
+        result.Warnings.ShouldContain(w => w.Contains("Ambiguous item type"));
+    }
+
+    [Fact]
+    public void ProgressionFilter_barb_four_weapons_distinct_rules()
+    {
+        var resolver = new NameResolver(new FilterDataService());
+        var result = new ProgressionFilterGenerator(resolver).Generate(Diff(
+            NeedsRule(GearSlot.Weapon, "Sword", 1u, 2u, 3u),
+            NeedsRule(GearSlot.Weapon, "Two-Handed Sword", 1u, 2u, 3u),
+            NeedsRule(GearSlot.Weapon, "Two-Handed Mace", 1u, 2u, 3u),
+            NeedsRule(GearSlot.Weapon, "Polearm", 1u, 2u, 3u)));
+
+        var baseRules = result.Ruleset.Rules.Where(r => r.Visibility == Visibility.Recolor).ToList();
+        baseRules.Count.ShouldBe(4);
+        var gatedHashes = baseRules
+            .Select(r => r.Conditions.OfType<ItemTypeCondition>().Single().TypeIds.Single())
+            .ToList();
+        gatedHashes.Distinct().Count().ShouldBe(4);
+
+        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
+        decoded.Rules.Count.ShouldBe(result.Ruleset.Rules.Count);
+    }
+
+    [Fact]
     public void Generate_NoNeedySlots_OnlyHideAll()
     {
         var result = NewGenerator().Generate(Diff());
