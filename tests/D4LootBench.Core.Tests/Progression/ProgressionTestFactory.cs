@@ -1,5 +1,6 @@
 namespace D4LootBench.Core.Tests.Progression;
 
+using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Progression;
 
@@ -32,11 +33,14 @@ internal static class ProgressionTestFactory
         TargetAffixIds = targets,
     };
 
-    // NeedsRule diff keyed by a concrete weapon/offhand item type (item-type-gated rules).
-    public static SlotDiff NeedsRule(GearSlot slot, string itemType, params uint[] targets) => new()
+    // NeedsRule diff keyed by a class-aware weapon slot role (multi-type-gated rules).
+    public static SlotDiff NeedsRule(GearSlot slot, WeaponSlotRole role, params uint[] targets) => new()
     {
-        Slot = new SlotKey(slot, 0, itemType),
+        Slot = new SlotKey(slot, 0, role),
         Status = SlotDiffStatus.NeedsRule,
         TargetAffixIds = targets,
     };
+
+    // A weapon role map backed by a fresh live catalog resolver.
+    public static WeaponRoleMap RoleMap() => new(new NameResolver(new FilterDataService()));
 }

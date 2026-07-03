@@ -38,16 +38,18 @@ The read is a best-effort structural guess, not ground truth. Check every card:
 ## Setting the goal and generating
 
 1. Paste the **gear section of a build guide** from Mobalytics, Maxroll, or Icy Veins.
-2. Pick the **format** and the **match strictness** — how many affixes an item must have to count as *complete* for a slot.
+2. Pick the **format** and your **character class**.
 3. Click **Generate**, then either **Copy Code** (paste the share code into D4) or **Open in Editor** (fine-tune the rules first).
+
+The **character class** picker makes weapon rules class-aware. Leaving it on **All** keeps the legacy class-agnostic behavior (a weapon slot gates on a single item type); picking a class expands each weapon slot to the concrete item types that class can equip in that role — e.g. a Barbarian main-hand rule highlights every one-handed weapon type the class uses, not just one.
 
 ## How progression works
 
-The generated filter is built from a **slot-drop model**:
+The generated filter is built from a **slot-drop model** that highlights upgrades:
 
-- Slots that already meet the goal emit **no rule at all** — they drop out of the filter. Only the slots you still need get rules.
-- The rule budget freed by those dropped slots (D4 enforces a **25-rule cap**) is spent on **stricter** rules for the neediest slots: a higher required-affix count plus a required greater affix. This means near-complete slots surface only genuine upgrades instead of every candidate.
-- A **Target Uniques** rule and a **Hide All** fallback bookend the filter. If more slots need rules than the 25-rule cap allows, the lowest-priority slots are dropped first and a warning is shown.
+- Each incomplete slot gets **one Recolor rule** that highlights any item with **more of the slot's target affixes than your equipped piece already has** (an empty slot needs just one target affix). This surfaces every genuine upgrade, not only "perfect" items.
+- A slot emits **no rule at all** — it drops out of the filter — once your equipped item already has **every** target affix. Only the slots you can still improve get rules.
+- A **Target Uniques** rule and a **Hide All** fallback bookend the filter. D4 enforces a **25-rule cap**; if more slots need rules than the cap allows, the lowest-priority slots are dropped first and a warning is shown.
 
 ## Static-snapshot caveat
 

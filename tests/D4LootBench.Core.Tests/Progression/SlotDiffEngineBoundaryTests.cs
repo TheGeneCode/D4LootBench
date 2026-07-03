@@ -1,6 +1,8 @@
 namespace D4LootBench.Core.Tests.Progression;
 
+using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
+using D4LootBench.Core.Models;
 using D4LootBench.Core.Progression;
 using Shouldly;
 using Xunit;
@@ -232,16 +234,87 @@ public class SlotDiffEngineBoundaryTests
     [Fact]
     public void DuplicateHash_InTargetList_DoesNotDoubleCountMatch()
     {
-        // Goal's own TargetAffixIds contains a duplicate; matched/missing are built by filtering
-        // targets (not present), so the duplicate propagates into MatchedAffixCount as 2 "hits"
-        // for what is really one distinct affix. Documents current (unguarded) behavior.
+        // A D4 item cannot roll the same affix twice, so a duplicate hash in TargetAffixIds is one
+        // distinct target. The engine dedupes targets before counting: matching the single present
+        // affix A counts as 1 hit (not 2), and only distinct targets remain unmatched.
         var item = Helm([ProgressionTestFactory.Affix(A)]);
         var goal = new SlotGoal { TargetAffixIds = [A, A, B], Threshold = MeetsGoalThreshold.NOf(2) };
 
         var diff = DiffHelm(item, goal);
 
+        diff.MatchedAffixCount.ShouldBe(1);
+        diff.TargetAffixIds.ShouldBe([A, B]);
+        // Only A present out of {A, B} → 1 of 2 distinct targets → NOf(2) not met.
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+    }
+
+    [Fact]
+    public void DuplicateTargetAffix_RequiredCountReflectsDistinctMatches_EndToEnd()
+    {
+        // Regression: a build helm listing "Maximum Life" twice (B here) plus a piece equipped with 2
+        // of the distinct targets must yield a rule requiring 3 (matched 2 + 1), not 4. Before the fix,
+        // the duplicate double-counted the match, inflating requiredCount to 4.
+        var item = Helm([ProgressionTestFactory.Affix(A), ProgressionTestFactory.Affix(B)]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, 0x1004u, 0x1005u, B] };
+
+        var diff = DiffHelm(item, goal);
         diff.MatchedAffixCount.ShouldBe(2);
+
+        var resolver = new NameResolver(new FilterDataService());
+        var generator = new ProgressionFilterGenerator(resolver, new WeaponRoleMap(resolver));
+        var result = generator.Generate(new SlotDiffResult { Slots = [diff] });
+
+        // The equipped piece has 2 matched, none greater, so a "Helm (Greater)" companion is also emitted;
+        // this regression is about the base affix-count rule, so select it by name.
+        var helmRule = result.Ruleset.Rules.Single(r => r.Name == "Helm");
+        helmRule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+    }
+
+    [Fact]
+    public void DuplicateTargetAffix_ThatIsAlsoGreaterAffix_GreaterAffixCountNotInflated()
+    {
+        // Target-side duplicate of a hash the item rolled as a greater affix must still count as
+        // exactly one GA match — matchedGa iterates the already-deduped `matched` list, so a
+        // repeated target hash cannot double-count the GA hit either.
+        var item = Helm([ProgressionTestFactory.Affix(A, greater: true), ProgressionTestFactory.Affix(B)]);
+        var goal = new SlotGoal { TargetAffixIds = [A, A, B], Threshold = MeetsGoalThreshold.WithGreaterAffixes(2, 1) };
+
+        var diff = DiffHelm(item, goal);
+
+        diff.MatchedAffixCount.ShouldBe(2);
+        diff.MatchedGreaterAffixCount.ShouldBe(1);
         diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
+
+    [Fact]
+    public void AllDuplicateTargetAffixes_DedupeToSingleTarget_ClampsRequiredCountToOne()
+    {
+        // A target list that is entirely one hash repeated dedupes to a single distinct target, so
+        // the NOfM Math.Min(RequiredAffixCount, targets.Count) clamp collapses to 1 regardless of
+        // the configured RequiredAffixCount — a single distinct target can never require 2+ matches.
+        var item = Helm([ProgressionTestFactory.Affix(A)]);
+        var goal = new SlotGoal { TargetAffixIds = [A, A, A], Threshold = MeetsGoalThreshold.NOf(3) };
+
+        var diff = DiffHelm(item, goal);
+
+        diff.TargetAffixIds.ShouldBe([A]);
+        diff.MatchedAffixCount.ShouldBe(1);
+        diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
+
+    [Fact]
+    public void ExactMatch_DuplicateTargetAffix_MissingListIsDeduped()
+    {
+        // ExactMatch's missing.Count == 0 check is unaffected by duplicates either way, but
+        // MissingAffixIds itself must reflect the deduped target set — one entry per distinct
+        // missing hash, not one per duplicate occurrence in the goal's raw target list.
+        var item = Helm([ProgressionTestFactory.Affix(A)]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, B], Threshold = MeetsGoalThreshold.Exact };
+
+        var diff = DiffHelm(item, goal);
+
+        diff.MissingAffixIds.ShouldBe([B]);
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
     }
 
     // --- Unique + affix interaction / note independence --------------------------------------
@@ -415,65 +488,55 @@ public class SlotDiffEngineBoundaryTests
         key.ToString().ShouldBe("Ring#0");
     }
 
-    // --- SlotKey.ItemType equality / formatting (weapon-slot-item-type-matching feature) -----
+    // --- SlotKey.Role equality / formatting (class-aware weapon slot role feature) -----
 
     [Fact]
-    public void SlotKey_DifferentItemType_NotEqual()
+    public void SlotKey_DifferentRole_NotEqual()
     {
-        new SlotKey(GearSlot.Weapon, 0, "Sword").ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, "Polearm"));
+        new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand)
+            .ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing));
     }
 
     [Fact]
-    public void SlotKey_ItemTypeEquality_IsCaseSensitive()
+    public void SlotKey_NoneRole_NotEqualToMainhandRole()
     {
-        // Record-struct equality uses default string equality (ordinal, case-sensitive) — an OCR read
-        // that differs only in case from the catalog name is a DIFFERENT dictionary key, not the same one.
-        new SlotKey(GearSlot.Weapon, 0, "Sword").ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, "sword"));
+        new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.None)
+            .ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand));
     }
 
     [Fact]
-    public void SlotKey_NullItemType_NotEqualToEmptyStringItemType()
+    public void SlotKey_SameSlotOrdinalRole_AreEqual()
     {
-        new SlotKey(GearSlot.Weapon, 0, null).ShouldNotBe(new SlotKey(GearSlot.Weapon, 0, string.Empty));
+        new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand)
+            .ShouldBe(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand));
     }
 
     [Fact]
-    public void SlotKey_SameSlotOrdinalItemType_AreEqual()
+    public void SlotKey_ToString_WithRole_FormatsAsRoleName()
     {
-        new SlotKey(GearSlot.Weapon, 0, "Sword").ShouldBe(new SlotKey(GearSlot.Weapon, 0, "Sword"));
+        new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing).ToString().ShouldBe("Slicing");
+        new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.TwoHand).ToString().ShouldBe("TwoHand");
     }
 
-    [Fact]
-    public void SlotKey_ToString_WithItemType_FormatsAsSlotParenType()
-    {
-        new SlotKey(GearSlot.Weapon, 0, "Two-Handed Sword").ToString().ShouldBe("Weapon (Two-Handed Sword)");
-    }
+    // --- SlotDiffEngine.Diff ordering with mixed role weapon keys ----------------------
 
     [Fact]
-    public void SlotKey_ToString_EmptyStringItemType_FormatsWithEmptyParens()
+    public void Diff_MixedRoleWeaponKeys_OrderedByRoleEnum()
     {
-        // ItemType="" is "not null", so the ItemType-suffix branch is taken even though it's blank.
-        new SlotKey(GearSlot.Weapon, 0, string.Empty).ToString().ShouldBe("Weapon ()");
-    }
-
-    // --- SlotDiffEngine.Diff ordering with mixed null/typed weapon keys ----------------------
-
-    [Fact]
-    public void Diff_MixedNullAndTypedWeaponKeys_OrderedNullFirstThenOrdinalByItemType()
-    {
-        // Regression for the SlotDiffEngine.Diff .ThenBy(ItemType, StringComparer.Ordinal) tiebreak:
-        // a null ItemType must sort before any non-null one, and non-null types sort ordinally.
+        // SlotDiffEngine.Diff tiebreaks on Role (enum order) after Slot and Ordinal — None(0) sorts
+        // before Mainhand(1) before Offhand(2).
         var loadout = new EquippedLoadout(new Dictionary<SlotKey, GearItem>
         {
-            [new SlotKey(GearSlot.Weapon, 0, "Sword")] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)], itemTypeName: "Sword"),
+            [new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Offhand)] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)]),
             [new SlotKey(GearSlot.Weapon, 0)] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)]),
-            [new SlotKey(GearSlot.Weapon, 0, "Axe")] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)], itemTypeName: "Axe"),
+            [new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand)] = ProgressionTestFactory.Item(GearSlot.Weapon, [ProgressionTestFactory.Affix(A)]),
         });
         var build = new GoalBuild(new Dictionary<SlotKey, SlotGoal>());
 
         var result = new SlotDiffEngine().Diff(loadout, build);
 
-        result.Slots.Select(s => s.Slot.ItemType).ShouldBe([null, "Axe", "Sword"]);
+        result.Slots.Select(s => s.Slot.Role)
+            .ShouldBe([WeaponSlotRole.None, WeaponSlotRole.Mainhand, WeaponSlotRole.Offhand]);
         result.Slots.ShouldAllBe(s => s.Status == SlotDiffStatus.NoGoal);
     }
 }

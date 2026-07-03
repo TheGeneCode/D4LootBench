@@ -141,4 +141,83 @@ public sealed class SlotRuleBuilderTests
 
         rule!.Conditions.OfType<AffixCondition>().Single().GreaterEntries.Count.ShouldBe(3);
     }
+
+    // ---- Name-length boundary matrix around MaxNameLength (24) ----
+    // D4 silently blanks over-long rule names (they render as "Rule #N"), which is the exact bug this
+    // truncation exists to prevent — so these boundaries matter more than a typical string-length cap.
+
+    [Theory]
+    [InlineData(23)] // just below max — untouched
+    [InlineData(24)] // at max — untouched (name.Length > MaxNameLength is false)
+    public void Build_NameAtOrBelowMaxLength_NotTruncated(int length)
+    {
+        var name = new string('A', length);
+
+        var rule = SlotRuleBuilder.Build(name, Visibility.Show, 0u, null, Affixes(1), [], 1);
+
+        rule!.Name.ShouldBe(name);
+        rule.Name.Length.ShouldBe(length);
+    }
+
+    [Fact]
+    public void Build_NameOneOverMaxLength_TruncatedToMaxLength()
+    {
+        var name = new string('A', SlotRuleBuilder.MaxNameLength + 1);
+
+        var rule = SlotRuleBuilder.Build(name, Visibility.Show, 0u, null, Affixes(1), [], 1);
+
+        rule!.Name.Length.ShouldBe(SlotRuleBuilder.MaxNameLength);
+        rule.Name.ShouldBe(new string('A', SlotRuleBuilder.MaxNameLength));
+    }
+
+    [Fact]
+    public void Build_TruncationBoundaryLandsOnSpace_TrimEndShortensBelowMaxLength()
+    {
+        // 23 'A's + a space at index 23 (the 24th char, i.e. exactly the truncation cut point) + more
+        // text. The hard cut keeps the space; TrimEnd then removes it, so the final name is 23 chars —
+        // shorter than MaxNameLength, but never blank.
+        var name = new string('A', 23) + " " + "REST-OF-NAME-BEYOND-CUT";
+
+        var rule = SlotRuleBuilder.Build(name, Visibility.Show, 0u, null, Affixes(1), [], 1);
+
+        rule!.Name.Length.ShouldBe(23);
+        rule.Name.ShouldBe(new string('A', 23));
+        rule.Name.ShouldNotEndWith(" ");
+    }
+
+    [Fact]
+    public void Build_NameWhoseFirstMaxLengthCharsAreAllWhitespace_CollapsesToEmptyName()
+    {
+        // BUG: when the first MaxNameLength characters of an over-long name are entirely whitespace,
+        // the hard cut + TrimEnd collapses the name to "". An empty rule name is exactly the "Rule #N"
+        // failure mode this whole truncation feature exists to prevent (see SlotRuleBuilder.cs class
+        // doc + QA-BRIEF-progression-filter.md). Not reachable via the two current callers today
+        // (ProgressionFilterGenerator passes GearSlot.ToString(); BuildGuideFilterGenerator passes an
+        // already-.Trim()'d parser SlotLabel) but SlotRuleBuilder.Build is a shared public API with no
+        // guard of its own — a future caller (or a parser that stops trimming) reintroduces the bug
+        // this feature was built to fix.
+        var name = new string(' ', 30) + "Real Name";
+
+        var rule = SlotRuleBuilder.Build(name, Visibility.Show, 0u, null, Affixes(1), [], 1);
+
+        rule!.Name.ShouldNotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
+    public void Build_SurrogatePairStraddlingTruncationBoundary_DoesNotSplitThePair()
+    {
+        // A UTF-16 surrogate pair (e.g. an emoji) that straddles index MaxNameLength would be split by
+        // a naive ordinal name[..MaxNameLength] cut, leaving a lone unpaired high surrogate — invalid
+        // UTF-16 that gets mangled (replacement-charactered) on UTF-8 encode in FilterCodec/ProtoWriter.
+        // 23 'A's (indices 0-22) + a surrogate pair at indices 23-24 puts the cut squarely inside it.
+        var name = new string('A', 23) + "\U0001F600" + "tail-beyond-the-cut";
+
+        var rule = SlotRuleBuilder.Build(name, Visibility.Show, 0u, null, Affixes(1), [], 1);
+
+        rule!.Name.Length.ShouldBeLessThanOrEqualTo(SlotRuleBuilder.MaxNameLength);
+        var lastChar = rule.Name[^1];
+        char.IsSurrogate(lastChar).ShouldBeFalse(
+            $"Truncated name ends with an unpaired surrogate (U+{(int)lastChar:X4}) — the emoji at the " +
+            "cut boundary was split in half, producing invalid UTF-16 that will be mangled on encode.");
+    }
 }

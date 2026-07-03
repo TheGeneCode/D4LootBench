@@ -1,0 +1,5 @@
+Ancestral Legendary Flail
+910 Item Power
++55% Damage
++190 Maximum Life
+Requires Level 60

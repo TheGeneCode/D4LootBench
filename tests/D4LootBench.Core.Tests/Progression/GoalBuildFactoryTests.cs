@@ -8,7 +8,11 @@ using Shouldly;
 
 public sealed class GoalBuildFactoryTests
 {
-    private static GoalBuildFactory NewFactory() => new(new NameResolver(new FilterDataService()));
+    private static GoalBuildFactory NewFactory()
+    {
+        var resolver = new NameResolver(new FilterDataService());
+        return new(resolver, new WeaponRoleMap(resolver));
+    }
 
     private static ParsedBuildGuide Guide(params ParsedSlot[] slots) => new() { Slots = [.. slots] };
 
@@ -43,7 +47,7 @@ public sealed class GoalBuildFactoryTests
             """;
         var resolver = new NameResolver(new FilterDataService());
         var guide = new BuildGuideImporter(resolver).Import(paste, BuildGuideFormat.Maxroll);
-        var result = new GoalBuildFactory(resolver).Create(guide, MeetsGoalThreshold.NOf(3));
+        var result = new GoalBuildFactory(resolver, new WeaponRoleMap(resolver)).Create(guide, MeetsGoalThreshold.NOf(3));
 
         resolver.TryResolveAffix("Movement Speed", out var movementSpeed, out _).ShouldBeTrue();
         result.GoalBuild.Goals[new SlotKey(GearSlot.Boots)].TargetAffixIds.ShouldContain(movementSpeed);
@@ -143,60 +147,119 @@ public sealed class GoalBuildFactoryTests
     }
 
     [Fact]
-    public void GoalBuildFactory_maps_generic_weapon_to_family_key()
+    public void GoalBuildFactory_maps_generic_weapon_to_mainhand_role()
     {
         var guide = Guide(Slot("Weapon", ["Strength", "Critical Strike Damage"]));
 
         var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(2));
 
-        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon));
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand));
         result.Warnings.ShouldBeEmpty();
     }
 
     [Fact]
-    public void GoalBuildFactory_maps_concrete_weapon_header_to_family_key()
+    public void GoalBuildFactory_maps_bludgeoning_and_slicing_headers_to_barb_roles()
     {
+        var guide = Guide(
+            Slot("Bludgeoning", ["Strength"]),
+            Slot("Slicing", ["Dexterity"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1), PlayerClass.Barbarian);
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Bludgeoning));
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_maps_concrete_two_hand_header_to_twohand_role()
+    {
+        // A concrete 2H header classified for a non-Barbarian class lands on the TwoHand role.
         var guide = Guide(Slot("Two-Handed Sword", ["Strength"]));
 
         var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
 
-        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon));
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.TwoHand));
         result.Warnings.ShouldNotContain(w => w.Contains("Unrecognized slot"));
     }
 
     [Fact]
-    public void GoalBuildFactory_maps_offhand_type_to_offhand_family()
+    public void GoalBuildFactory_barbarian_concrete_two_hand_sword_header_maps_to_slicing_role()
+    {
+        // Same "Two-Handed Sword" header as above, but for Barbarian: MapSlot's concrete-header fallback
+        // classifies through RoleForItemType, which routes Barbarian 2H swords to Slicing (not TwoHand) —
+        // the same key an explicit "Slicing" label would produce.
+        var guide = Guide(Slot("Two-Handed Sword", ["Strength"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1), PlayerClass.Barbarian);
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing));
+        result.GoalBuild.Goals.ShouldNotContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.TwoHand));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_barbarian_concrete_two_hand_mace_header_maps_to_bludgeoning_role()
+    {
+        var guide = Guide(Slot("Two-Handed Mace", ["Strength"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1), PlayerClass.Barbarian);
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Bludgeoning));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_druid_polearm_header_maps_to_twohand_not_slicing()
+    {
+        // Polearm is a two-handed irregular; for a non-Barbarian class it must land on TwoHand — the
+        // Bludgeoning/Slicing split only applies when cls == Barbarian.
+        var guide = Guide(Slot("Polearm", ["Strength"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1), PlayerClass.Druid);
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.TwoHand));
+        result.GoalBuild.Goals.ShouldNotContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_rogue_bow_header_maps_to_twohand_role()
+    {
+        var guide = Guide(Slot("Bow", ["Dexterity"]));
+
+        var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1), PlayerClass.Rogue);
+
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.TwoHand));
+    }
+
+    [Fact]
+    public void GoalBuildFactory_maps_offhand_type_to_offhand_role()
     {
         var guide = Guide(Slot("Focus", ["Intelligence"]));
 
         var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
 
-        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Offhand));
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Offhand, 0, WeaponSlotRole.Offhand));
     }
 
     [Fact]
-    public void GoalBuildFactory_maps_totem_offhand_type_to_offhand_family()
+    public void GoalBuildFactory_maps_totem_offhand_type_to_offhand_role()
     {
-        // Symmetric coverage to Focus above — Totem is the other name-substring exception in MapSlot.
+        // Symmetric coverage to Focus above — Totem is another offhand-internal type.
         var guide = Guide(Slot("Totem", ["Intelligence"]));
 
         var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
 
-        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Offhand));
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Offhand, 0, WeaponSlotRole.Offhand));
     }
 
     [Fact]
-    public void GoalBuildFactory_bare_shield_header_is_unrecognized_due_to_armor_category()
+    public void GoalBuildFactory_bare_shield_header_maps_to_offhand_role()
     {
-        // Known gap called out in the handoff: "Shield" resolves via NameResolver but its catalog
-        // category is "Armor", not "Weapons", so MapSlot's category gate rejects it and the slot is
-        // silently dropped with a warning rather than mapped to Offhand.
+        // Shield lives in the Armor category but plays an offhand role, so the role map now classifies
+        // it as Offhand rather than dropping it as an unrecognized slot.
         var guide = Guide(Slot("Shield", ["Maximum Life"]));
 
         var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1));
 
-        result.GoalBuild.Goals.ShouldBeEmpty();
-        result.Warnings.ShouldContain(w => w.Contains("Unrecognized slot") && w.Contains("Shield"));
+        result.GoalBuild.Goals.ShouldContainKey(new SlotKey(GearSlot.Offhand, 0, WeaponSlotRole.Offhand));
     }
 
     [Fact]
@@ -297,7 +360,7 @@ public sealed class GoalBuildFactoryTests
             ("Critical Strike Chance", 1),
             ("Cooldown Reduction", 0))); // positional (0) => sorts last
 
-        var result = new GoalBuildFactory(resolver).Create(guide, MeetsGoalThreshold.NOf(3));
+        var result = new GoalBuildFactory(resolver, new WeaponRoleMap(resolver)).Create(guide, MeetsGoalThreshold.NOf(3));
 
         result.GoalBuild.Goals[new SlotKey(GearSlot.Helm)].TargetAffixIds
             .ShouldBe([critHash, lifeHash, cdrHash]);
@@ -317,7 +380,7 @@ public sealed class GoalBuildFactoryTests
             ("Maximum Life", 0),
             ("Cooldown Reduction", 0)));
 
-        var result = new GoalBuildFactory(resolver).Create(guide, MeetsGoalThreshold.NOf(3));
+        var result = new GoalBuildFactory(resolver, new WeaponRoleMap(resolver)).Create(guide, MeetsGoalThreshold.NOf(3));
 
         result.GoalBuild.Goals[new SlotKey(GearSlot.Helm)].TargetAffixIds
             .ShouldBe([critHash, lifeHash, cdrHash]);
@@ -335,7 +398,7 @@ public sealed class GoalBuildFactoryTests
             ("Maximum Life", 1),
             ("Cooldown Reduction", -5)));
 
-        var result = new GoalBuildFactory(resolver).Create(guide, MeetsGoalThreshold.NOf(2));
+        var result = new GoalBuildFactory(resolver, new WeaponRoleMap(resolver)).Create(guide, MeetsGoalThreshold.NOf(2));
 
         result.GoalBuild.Goals[new SlotKey(GearSlot.Helm)].TargetAffixIds
             .ShouldBe([cdrHash, lifeHash]);

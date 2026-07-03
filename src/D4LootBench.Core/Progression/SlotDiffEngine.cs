@@ -20,7 +20,7 @@ public sealed class SlotDiffEngine
     public SlotDiffResult Diff(EquippedLoadout loadout, GoalBuild goal)
     {
         var keys = loadout.Slots.Concat(goal.Goals.Keys).Distinct()
-            .OrderBy(k => k.Slot).ThenBy(k => k.Ordinal).ThenBy(k => k.ItemType, StringComparer.Ordinal);
+            .OrderBy(k => k.Slot).ThenBy(k => k.Ordinal).ThenBy(k => k.Role);
 
         var diffs = new List<SlotDiff>();
         foreach (var key in keys)
@@ -69,7 +69,11 @@ public sealed class SlotDiffEngine
     private SlotDiff Evaluate(SlotKey key, GearItem? item, SlotGoal slotGoal)
     {
         var threshold = slotGoal.Threshold ?? _defaultThreshold;
-        var targets = slotGoal.TargetAffixIds;
+
+        // Target affixes are a distinct set — a D4 item cannot roll the same affix twice. Dedupe
+        // (preserving priority order) so a repeated hash isn't double-counted as a match, which
+        // would inflate MatchedAffixCount and, downstream, the generated rule's required count.
+        var targets = slotGoal.TargetAffixIds.Distinct().ToList();
         var notes = new List<string>();
 
         var present = BuildPresentMap(item);
@@ -77,11 +81,12 @@ public sealed class SlotDiffEngine
         var missing = targets.Where(t => !present.ContainsKey(t)).ToList();
         var matchedGa = matched.Count(t => present[t]);
 
-        // Unique gate: when required, item must be that unique.
+        // Unique gate: when required, item must be that unique. An empty slot is covered by the
+        // shared "no gear equipped" note below, so only flag a present-but-wrong unique here.
         var uniqueSatisfied = slotGoal.TargetUnique is not { } wanted || item?.UniqueHash == wanted;
-        if (slotGoal.TargetUnique is not null && !uniqueSatisfied)
+        if (slotGoal.TargetUnique is not null && !uniqueSatisfied && item is not null)
         {
-            notes.Add(item is null ? "no gear equipped" : "wrong or missing unique");
+            notes.Add("wrong or missing unique");
         }
 
         if (item is null)

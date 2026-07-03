@@ -1,11 +1,19 @@
+using System.Text.RegularExpressions;
+
 namespace D4LootBench.Core.Data;
 
 /// <summary>
 /// Resolves human-readable names (as output by the LLM) to hash IDs using the live catalogs.
 /// Falls back to case-insensitive partial matching for suggestions when exact lookup fails.
 /// </summary>
-public sealed class NameResolver(IFilterDataService data)
+public sealed partial class NameResolver(IFilterDataService data)
 {
+    // Matches the skill-rank phrasing D4 and the guides use ("Ranks to Whirlwind", "+3 Rank of Bash"),
+    // leaving just the skill name so it aligns with the catalog's "+<Skill>" entries. No catalog affix
+    // begins with "Ranks", so stripping this prefix cannot cannibalize a real affix name.
+    [GeneratedRegex(@"^\d*\s*ranks?\s+(?:to|of)\s+", RegexOptions.IgnoreCase)]
+    private static partial Regex SkillRankPrefixRegex();
+
     public bool TryResolveAffix(string name, out uint hash, out IReadOnlyList<string> suggestions)
     {
         if (data.Affixes.TryGetByName(name, out var entry))
@@ -69,7 +77,8 @@ public sealed class NameResolver(IFilterDataService data)
             i++;
         }
 
-        return s[i..].Trim().ToLowerInvariant();
+        var stripped = SkillRankPrefixRegex().Replace(s[i..].Trim(), string.Empty);
+        return stripped.Trim().ToLowerInvariant();
     }
 
     public bool TryResolveItemType(string name, out uint hash, out IReadOnlyList<string> suggestions)

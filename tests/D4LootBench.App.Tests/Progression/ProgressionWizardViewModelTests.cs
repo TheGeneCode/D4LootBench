@@ -3,6 +3,7 @@ using D4LootBench.Core.Codec;
 using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Import;
+using D4LootBench.Core.Models;
 using D4LootBench.Core.Progression;
 using Shouldly;
 
@@ -15,6 +16,21 @@ public sealed class ProgressionWizardViewModelTests
     private const string Guide =
         "Helm\nCritical Strike Chance\nMaximum Life\nCooldown Reduction\n" +
         "Gloves\nCritical Strike Chance\nMaximum Life\nCooldown Reduction\n";
+
+    // Maxroll-style guide with a bare "Weapon" header (recognized slot keyword). For a class-aware run the
+    // header maps to the class's weapon role: for Barbarian → Mainhand → the barb one-handers (multi-type).
+    private const string WeaponGuide =
+        "Weapon\nCritical Strike Chance\nMaximum Life\nCooldown Reduction\n";
+
+    // A two-handed mace tooltip (mirrors the weapon-base-damage parser fixture) — resolves to a single
+    // TwoHand weapon role, so two of them collide on one slot key.
+    private static readonly IReadOnlyList<string> TwoHandMaceLines =
+    [
+        "Crimson Crude Hammer of Steel",
+        "Magic Two-Handed Mace (Bludgeoning)",
+        "850 Item Power",
+        "+287 Weapon Damage [187 - 312]",
+    ];
 
     // Mirrors the legendary-helm parser fixture: slot Helm + three resolvable affixes.
     private static readonly IReadOnlyList<string> HelmLines =
@@ -35,13 +51,16 @@ public sealed class ProgressionWizardViewModelTests
         IGearReader reader, Action<string>? clipboard = null)
     {
         var data = new FilterDataService();
+        var resolver = new NameResolver(data);
+        var roleMap = new WeaponRoleMap(resolver);
         return new ProgressionWizardViewModel(
             reader,
             new GearTooltipParser(data),
             new BuildGuideImporter(),
-            new GoalBuildFactory(new NameResolver(data)),
+            new GoalBuildFactory(resolver, roleMap),
             new SlotDiffEngine(),
-            new ProgressionFilterGenerator(new NameResolver(data)),
+            new ProgressionFilterGenerator(resolver, roleMap),
+            roleMap,
             clipboard);
     }
 
@@ -214,6 +233,192 @@ public sealed class ProgressionWizardViewModelTests
         vm.StatusText.ShouldContain("Format could not be detected");
         vm.ShareCode.ShouldBeEmpty();
         vm.CurrentStep.ShouldBe(ProgressionStep.Goal); // stays put — failed generate doesn't advance to Result
+    }
+
+    [Fact]
+    public void Wizard_defaults_to_All_class()
+    {
+        var vm = NewVm(HelmLines);
+
+        vm.SelectedClass.ShouldBe(PlayerClass.All);
+        ProgressionWizardViewModel.Classes.ShouldContain(PlayerClass.Barbarian);
+    }
+
+    [Fact]
+    public async Task Wizard_barb_generates_multi_type_weapon_rule()
+    {
+        var vm = NewVm(HelmLines); // equipped: a helm only — the weapon slot is empty, so it needs a rule
+        vm.SelectedClass = PlayerClass.Barbarian;
+        await vm.AddGearFromImageAsync(new MemoryStream());
+        vm.NextToReviewCommand.Execute(null);
+        vm.PastedText = WeaponGuide;
+
+        vm.GenerateCommand.Execute(null);
+
+        vm.HasError.ShouldBeFalse();
+        vm.ShareCode.ShouldNotBeNullOrEmpty();
+        vm.GeneratedRuleset.ShouldNotBeNull();
+
+        // The class-aware weapon role expands to the concrete barb one-hander types (>1). Assert both the
+        // multi-type shape and that the exact hash set matches the Barbarian mainhand role — so a regression
+        // that dropped class threading (defaulting to All, a different set) would fail here too.
+        var expected = new WeaponRoleMap(new NameResolver(new FilterDataService()))
+            .AllowedTypeHashes(WeaponSlotRole.Mainhand, PlayerClass.Barbarian);
+        var typeIds = vm.GeneratedRuleset!.Rules
+            .Where(r => r.Visibility == Visibility.Recolor)
+            .SelectMany(r => r.Conditions.OfType<ItemTypeCondition>())
+            .Single()
+            .TypeIds;
+        typeIds.Count.ShouldBeGreaterThan(1);
+        typeIds.ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task Wizard_all_class_weapon_types_are_superset_of_barbarian()
+    {
+        var vmAll = NewVm(HelmLines); // SelectedClass defaults to All
+        await vmAll.AddGearFromImageAsync(new MemoryStream());
+        vmAll.NextToReviewCommand.Execute(null);
+        vmAll.PastedText = WeaponGuide;
+        vmAll.GenerateCommand.Execute(null);
+
+        var vmBarb = NewVm(HelmLines);
+        vmBarb.SelectedClass = PlayerClass.Barbarian;
+        await vmBarb.AddGearFromImageAsync(new MemoryStream());
+        vmBarb.NextToReviewCommand.Execute(null);
+        vmBarb.PastedText = WeaponGuide;
+        vmBarb.GenerateCommand.Execute(null);
+
+        var allTypeIds = vmAll.GeneratedRuleset!.Rules
+            .Where(r => r.Visibility == Visibility.Recolor)
+            .SelectMany(r => r.Conditions.OfType<ItemTypeCondition>())
+            .Single()
+            .TypeIds;
+        var barbTypeIds = vmBarb.GeneratedRuleset!.Rules
+            .Where(r => r.Visibility == Visibility.Recolor)
+            .SelectMany(r => r.Conditions.OfType<ItemTypeCondition>())
+            .Single()
+            .TypeIds;
+
+        // All = class-agnostic union across every class's one-handers; must be a strict superset of
+        // Barbarian's own mainhand set, not merely a differently-shaped set.
+        barbTypeIds.All(h => allTypeIds.Contains(h)).ShouldBeTrue();
+        allTypeIds.Count.ShouldBeGreaterThan(barbTypeIds.Count);
+    }
+
+    [Fact]
+    public async Task Wizard_spiritborn_weapon_role_empty_emits_affix_only_rule_with_warning()
+    {
+        // Spiritborn has no catalog one-handed "Mainhand" weapon types (fists/focus-based kit) — the
+        // class-aware role map legitimately resolves to an empty type set for this class. Regenerating
+        // must not crash or silently gate on zero types; it should fall back to an affix-only rule and
+        // surface the "ambiguous item type" warning (per ProgressionFilterGenerator.ResolveTypeHashes).
+        var vm = NewVm(HelmLines);
+        vm.SelectedClass = PlayerClass.Spiritborn;
+        await vm.AddGearFromImageAsync(new MemoryStream());
+        vm.NextToReviewCommand.Execute(null);
+        vm.PastedText = WeaponGuide;
+
+        vm.GenerateCommand.Execute(null);
+
+        vm.HasError.ShouldBeFalse();
+        vm.ShareCode.ShouldNotBeNullOrEmpty();
+        vm.Warnings.ShouldContain(w => w.Contains("Ambiguous item type", StringComparison.Ordinal));
+        var weaponRule = vm.GeneratedRuleset!.Rules.Single(r => r.Visibility == Visibility.Recolor);
+        weaponRule.Conditions.OfType<ItemTypeCondition>().ShouldBeEmpty();
+        weaponRule.Conditions.OfType<AffixCondition>().ShouldNotBeEmpty();
+    }
+
+    [Fact]
+    public async Task Wizard_regenerate_after_class_change_reflects_new_class_not_stale()
+    {
+        var vm = NewVm(HelmLines);
+        vm.SelectedClass = PlayerClass.Barbarian;
+        await vm.AddGearFromImageAsync(new MemoryStream());
+        vm.NextToReviewCommand.Execute(null);
+        vm.PastedText = WeaponGuide;
+        vm.GenerateCommand.Execute(null);
+        var barbTypeIds = vm.GeneratedRuleset!.Rules
+            .Where(r => r.Visibility == Visibility.Recolor)
+            .SelectMany(r => r.Conditions.OfType<ItemTypeCondition>())
+            .Single()
+            .TypeIds;
+
+        // Same session, no re-read of gear — only the class changes before regenerating. Verifies
+        // Generate() reads SelectedClass live each call rather than caching the first class's result.
+        vm.SelectedClass = PlayerClass.Sorcerer;
+        vm.GenerateCommand.Execute(null);
+
+        vm.HasError.ShouldBeFalse();
+        var sorcTypeIds = vm.GeneratedRuleset!.Rules
+            .Where(r => r.Visibility == Visibility.Recolor)
+            .SelectMany(r => r.Conditions.OfType<ItemTypeCondition>())
+            .Single()
+            .TypeIds;
+        sorcTypeIds.ShouldNotBe(barbTypeIds);
+    }
+
+    [Fact]
+    public async Task Wizard_class_selection_does_not_affect_non_weapon_slot_rules()
+    {
+        // Guide has no weapon header (Helm + Gloves only) — class threading must be scoped to
+        // weapon/offhand slots and leave ordinary armor-slot rule generation untouched.
+        var vmAll = NewVm(HelmLines);
+        await vmAll.AddGearFromImageAsync(new MemoryStream());
+        vmAll.NextToReviewCommand.Execute(null);
+        vmAll.PastedText = Guide;
+        vmAll.GenerateCommand.Execute(null);
+
+        var vmBarb = NewVm(HelmLines);
+        vmBarb.SelectedClass = PlayerClass.Barbarian;
+        await vmBarb.AddGearFromImageAsync(new MemoryStream());
+        vmBarb.NextToReviewCommand.Execute(null);
+        vmBarb.PastedText = Guide;
+        vmBarb.GenerateCommand.Execute(null);
+
+        vmBarb.GeneratedRuleset!.Rules.Select(r => r.Name)
+            .ShouldBe(vmAll.GeneratedRuleset!.Rules.Select(r => r.Name));
+        vmBarb.ShareCode.ShouldBe(vmAll.ShareCode);
+    }
+
+    [Fact]
+    public async Task Wizard_class_change_notifies_and_stays_generatable()
+    {
+        var vm = NewVm(HelmLines);
+        await vm.AddGearFromImageAsync(new MemoryStream());
+        vm.NextToReviewCommand.Execute(null);
+        vm.PastedText = WeaponGuide;
+
+        var raised = false;
+        vm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ProgressionWizardViewModel.SelectedClass))
+            {
+                raised = true;
+            }
+        };
+        vm.SelectedClass = PlayerClass.Barbarian;
+
+        raised.ShouldBeTrue();
+        vm.GenerateCommand.CanExecute(null).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Wizard_generate_surfaces_duplicate_slot_collision_warning()
+    {
+        // Same two-handed weapon snipped twice → both items resolve to the class's single TwoHand slot,
+        // so FromItems drops the first last-wins. Generate must surface that as a user-visible warning.
+        var vm = NewVmWithReader(new SequenceGearReader(TwoHandMaceLines, TwoHandMaceLines));
+        vm.SelectedClass = PlayerClass.Barbarian;
+        await vm.AddGearFromImageAsync(new MemoryStream());
+        await vm.AddGearFromImageAsync(new MemoryStream());
+        vm.NextToReviewCommand.Execute(null);
+        vm.PastedText = WeaponGuide;
+
+        vm.GenerateCommand.Execute(null);
+
+        vm.HasError.ShouldBeFalse();
+        vm.Warnings.ShouldContain(w => w.Contains("same", StringComparison.Ordinal) && w.Contains("slot", StringComparison.Ordinal));
     }
 
     [Fact]

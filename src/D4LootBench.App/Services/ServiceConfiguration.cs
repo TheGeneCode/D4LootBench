@@ -35,6 +35,7 @@ internal static class ServiceConfiguration
         services.AddSingleton<IGearReader, WindowsOcrGearReader>();
         services.AddSingleton<GearTooltipParser>();
 
+        services.AddSingleton<WeaponRoleMap>();
         services.AddSingleton<GoalBuildFactory>();
         services.AddSingleton<SlotDiffEngine>();          // per-slot threshold comes from SlotGoal
         services.AddSingleton<ProgressionFilterGenerator>();

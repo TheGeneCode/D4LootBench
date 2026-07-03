@@ -1,0 +1,9 @@
+Crimson Crude Hammer of Steel
+Magic Two-Handed Mace (Bludgeoning)
+850 Item Power
+3,072 Damage Per Second
+[2,789 - 4,039] Damage per Hit
+0.90 Attacks per Second (Slow)
++287 Weapon Damage [187 - 312]
+x14% Physical Damage Multiplier [14 -
+20]%

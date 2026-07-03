@@ -12,8 +12,11 @@ using static VerifyXunit.Verifier;
 
 public sealed class ProgressionFilterGeneratorTests
 {
-    private static ProgressionFilterGenerator NewGenerator() =>
-        new(new NameResolver(new FilterDataService()));
+    private static ProgressionFilterGenerator NewGenerator()
+    {
+        var resolver = new NameResolver(new FilterDataService());
+        return new(resolver, new WeaponRoleMap(resolver));
+    }
 
     private static SlotDiffResult Diff(params SlotDiff[] slots) => new() { Slots = slots };
 
@@ -45,7 +48,7 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     [Fact]
-    public void Generate_FewNeedySlots_SpendsBudgetOnStrictRules()
+    public void Generate_EachNeedySlot_EmitsExactlyOneRecolorRule()
     {
         var diff = Diff(
             NeedsRule(GearSlot.Helm, 0, 1u, 2u, 3u, 4u),
@@ -54,56 +57,65 @@ public sealed class ProgressionFilterGeneratorTests
 
         var result = NewGenerator().Generate(diff);
 
-        // Each needy slot gets a base (Recolor) + strict (Show) rule; plus Hide All.
-        result.TotalRuleCount.ShouldBe(1 + (3 * 2));
+        // One Recolor rule per slot + Hide All; no "way better" (Greater) rules at all.
+        result.TotalRuleCount.ShouldBe(3 + 1);
         result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Recolor).ShouldBe(3);
-        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Show).ShouldBe(3);
+        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Show).ShouldBe(0);
+        result.Ruleset.Rules.ShouldNotContain(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal));
     }
 
     [Fact]
-    public void Generate_StrictRule_TightensThreshold()
+    public void Generate_RequiredCount_IsEquippedMatchPlusOne()
     {
-        var diff = Diff(NeedsRule(GearSlot.Helm, 0, 1u, 2u, 3u, 4u));
+        // Equipped item already has 2 of the 4 targets → rule highlights items with 3+ (a real upgrade).
+        var diff = Diff(new SlotDiff
+        {
+            Slot = new SlotKey(GearSlot.Helm),
+            Status = SlotDiffStatus.NeedsRule,
+            TargetAffixIds = [1u, 2u, 3u, 4u],
+            MatchedAffixCount = 2,
+        });
 
         var result = NewGenerator().Generate(diff);
 
-        var baseRule = RuleNamed(result, "Helm")!;
-        var baseAffix = baseRule.Conditions.OfType<AffixCondition>().Single();
-        baseAffix.MinimumCount.ShouldBe(2);
-        baseRule.Conditions.OfType<GreaterAffixCondition>().ShouldBeEmpty();
-
-        var strictRule = RuleNamed(result, "Helm (Greater)")!;
-        strictRule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
-        strictRule.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+        var rule = RuleNamed(result, "Helm")!;
+        rule.Visibility.ShouldBe(Visibility.Recolor);
+        rule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        rule.Conditions.OfType<GreaterAffixCondition>().ShouldBeEmpty();
+        RuleNamed(result, "Helm (Greater)").ShouldBeNull();
     }
 
     [Fact]
-    public void Generate_PartialSlack_LimitsStrictRules()
+    public void Generate_EmptySlot_RequiresAtLeastOneTargetAffix()
     {
-        // 22 needy slots: capacity 24, slack 2 → exactly 2 strict rules (first two slots).
-        var slots = Enumerable.Range(0, 22)
-            .Select(i => NeedsRule(GearSlot.Helm, i, 1u, 2u, 3u, 4u))
-            .ToArray();
+        // No equipped gear (MatchedAffixCount defaults to 0) → require 1, so any target affix highlights.
+        var diff = Diff(NeedsRule(GearSlot.Helm, 0, 1u, 2u, 3u));
 
-        var result = NewGenerator().Generate(Diff(slots));
+        var result = NewGenerator().Generate(diff);
 
-        result.BudgetExceeded.ShouldBeFalse();
-        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Show).ShouldBe(2);
-        result.TotalRuleCount.ShouldBe(1 + 22 + 2);
+        RuleNamed(result, "Helm")!.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
 
-        // base-then-strict grouped per slot; only the first two slots get a strict rule.
-        result.Ruleset.Rules[0].Name.ShouldBe("Helm");
-        result.Ruleset.Rules[1].Name.ShouldBe("Helm (Greater)");
-        result.Ruleset.Rules[2].Name.ShouldBe("Helm#2");
-        result.Ruleset.Rules[3].Name.ShouldBe("Helm#2 (Greater)");
-        result.Ruleset.Rules[4].Name.ShouldBe("Helm#3"); // third slot: base only
+    [Fact]
+    public void Generate_RoleSlotName_StaysWithinDisplayLimit()
+    {
+        // Role names drive the rule name (e.g. "Bludgeoning"); the generator caps to the display limit
+        // so D4 never blanks an over-long name (→ "Rule #N").
+        var diff = Diff(NeedsRule(GearSlot.Weapon, WeaponSlotRole.Bludgeoning, 1u, 2u));
+
+        var result = NewGenerator().Generate(diff, PlayerClass.Barbarian);
+
+        var rule = result.Ruleset.Rules.Single(r => r.Visibility == Visibility.Recolor);
+        rule.Name.Length.ShouldBeLessThanOrEqualTo(SlotRuleBuilder.MaxNameLength);
+        rule.Name.ShouldBe("Bludgeoning");
     }
 
     [Fact]
     public void Generate_OverBudget_CapsAt25AndWarns()
     {
+        // Distinct affix sets per slot so the same-shape collapse doesn't merge them before the cap.
         var slots = Enumerable.Range(0, 30)
-            .Select(i => NeedsRule(GearSlot.Helm, i, 1u, 2u, 3u, 4u))
+            .Select(i => NeedsRule(GearSlot.Helm, i, (uint)(1000 + i), 2u, 3u, 4u))
             .ToArray();
 
         var result = NewGenerator().Generate(Diff(slots));
@@ -146,22 +158,33 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     [Fact]
-    public void ProgressionFilter_gates_weapon_rule_on_concrete_type()
+    public void ProgressionFilter_barb_slicing_gates_multi_type()
     {
         var resolver = new NameResolver(new FilterDataService());
-        resolver.TryResolveItemType("Two-Handed Sword", out var expectedHash, out _).ShouldBeTrue();
+        uint TypeHash(string n)
+        {
+            resolver.TryResolveItemType(n, out var h, out _).ShouldBeTrue();
+            return h;
+        }
 
-        var result = new ProgressionFilterGenerator(resolver)
-            .Generate(Diff(NeedsRule(GearSlot.Weapon, "Two-Handed Sword", 1u, 2u, 3u)));
+        var result = new ProgressionFilterGenerator(resolver, new WeaponRoleMap(resolver))
+            .Generate(Diff(NeedsRule(GearSlot.Weapon, WeaponSlotRole.Slicing, 1u, 2u, 3u)), PlayerClass.Barbarian);
 
-        var rule = RuleNamed(result, "Weapon (Two-Handed Sword)")!;
-        rule.Conditions.OfType<ItemTypeCondition>().Single().TypeIds.ShouldContain(expectedHash);
+        var rule = result.Ruleset.Rules.Single(r => r.Conditions.OfType<ItemTypeCondition>().Any());
+        var typeIds = rule.Conditions.OfType<ItemTypeCondition>().Single().TypeIds;
+        typeIds.ShouldBe(new[] { TypeHash("Polearm"), TypeHash("Two-Handed Sword"), TypeHash("Two-Handed Axe") }
+            .OrderBy(h => h).ToList());
         result.Warnings.ShouldNotContain(w => w.Contains("Ambiguous item type"));
+
+        // Codec round-trip is the format canary.
+        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
+        decoded.Rules.Count.ShouldBe(result.Ruleset.Rules.Count);
     }
 
     [Fact]
-    public void ProgressionFilter_warns_when_weapon_type_missing()
+    public void ProgressionFilter_warns_when_weapon_role_absent()
     {
+        // A weapon slot with no role (OCR type unresolved) has no item-type gate → affix-only + warning.
         var result = NewGenerator().Generate(Diff(NeedsRule(GearSlot.Weapon, 0, 1u, 2u, 3u)));
 
         var rule = RuleNamed(result, "Weapon")!;
@@ -171,24 +194,32 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     [Fact]
-    public void ProgressionFilter_barb_four_weapons_distinct_rules()
+    public void ProgressionFilter_barb_hands_same_affixes_collapse()
     {
-        var resolver = new NameResolver(new FilterDataService());
-        var result = new ProgressionFilterGenerator(resolver).Generate(Diff(
-            NeedsRule(GearSlot.Weapon, "Sword", 1u, 2u, 3u),
-            NeedsRule(GearSlot.Weapon, "Two-Handed Sword", 1u, 2u, 3u),
-            NeedsRule(GearSlot.Weapon, "Two-Handed Mace", 1u, 2u, 3u),
-            NeedsRule(GearSlot.Weapon, "Polearm", 1u, 2u, 3u)));
+        // Mainhand + Offhand with identical targets/matched resolve to the same 1H type set → one rule.
+        var diff = Diff(
+            NeedsRule(GearSlot.Weapon, WeaponSlotRole.Mainhand, 1u, 2u),
+            NeedsRule(GearSlot.Offhand, WeaponSlotRole.Offhand, 1u, 2u));
 
-        var baseRules = result.Ruleset.Rules.Where(r => r.Visibility == Visibility.Recolor).ToList();
-        baseRules.Count.ShouldBe(4);
-        var gatedHashes = baseRules
-            .Select(r => r.Conditions.OfType<ItemTypeCondition>().Single().TypeIds.Single())
-            .ToList();
-        gatedHashes.Distinct().Count().ShouldBe(4);
+        var result = NewGenerator().Generate(diff, PlayerClass.Barbarian);
 
-        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
-        decoded.Rules.Count.ShouldBe(result.Ruleset.Rules.Count);
+        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Recolor).ShouldBe(1);
+        result.SlotRuleCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void ProgressionFilter_barb_hands_diff_affixes_two_rules()
+    {
+        var diff = Diff(
+            NeedsRule(GearSlot.Weapon, WeaponSlotRole.Mainhand, 1u, 2u),
+            NeedsRule(GearSlot.Offhand, WeaponSlotRole.Offhand, 3u, 4u));
+
+        var result = NewGenerator().Generate(diff, PlayerClass.Barbarian);
+
+        var recolor = result.Ruleset.Rules.Where(r => r.Visibility == Visibility.Recolor).ToList();
+        recolor.Count.ShouldBe(2);
+        recolor.Select(r => r.Conditions.OfType<AffixCondition>().Single().AffixIds)
+            .Select(ids => string.Join(",", ids)).Distinct().Count().ShouldBe(2);
     }
 
     [Fact]
@@ -230,7 +261,9 @@ public sealed class ProgressionFilterGeneratorTests
         return Verify(result.Ruleset);
     }
 
-    // Fixed 3-needy (real item types) + 1 target unique — deterministic snapshot input.
+    // Fixed 4-needy (real item types) + 1 target unique — deterministic snapshot input. The Ring slot
+    // carries an equipped item with 2 of its 3 targets matched and NONE greater, so it exercises both the
+    // gold base rule (require 3 affixes) and the cyan Greater companion (same 2 affixes + one more GA).
     private static SlotDiffResult GoldenDiff() => new()
     {
         Slots =
@@ -253,6 +286,16 @@ public sealed class ProgressionFilterGeneratorTests
                 Slot = new SlotKey(GearSlot.Boots),
                 Status = SlotDiffStatus.NeedsRule,
                 TargetAffixIds = [0x88u, 0x99u],
+            },
+            new SlotDiff
+            {
+                Slot = new SlotKey(GearSlot.Ring),
+                Status = SlotDiffStatus.NeedsRule,
+                EquippedItem = Item(GearSlot.Ring, [Affix(0xA1u), Affix(0xA2u)]),
+                Goal = new SlotGoal { TargetAffixIds = [0xA1u, 0xA2u, 0xA3u] },
+                TargetAffixIds = [0xA1u, 0xA2u, 0xA3u],
+                MatchedAffixCount = 2,
+                MatchedGreaterAffixCount = 0,
             },
         ],
     };

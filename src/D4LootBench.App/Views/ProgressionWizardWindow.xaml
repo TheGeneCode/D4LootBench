@@ -182,7 +182,7 @@
                            Text="Step 3 of 4 — Paste your goal build"
                            FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
                 <TextBlock DockPanel.Dock="Top"
-                           Text="Paste the gear section of a build guide (Mobalytics, Maxroll, Icy Veins). Pick how strictly an item must match to count as a completed slot."
+                           Text="Paste the gear section of a build guide (Mobalytics, Maxroll, Icy Veins). The filter recolors any item that improves on your equipped gear; a slot drops out once your item already has every target affix."
                            TextWrapping="Wrap"
                            Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                            Margin="0,0,0,10" />
@@ -191,11 +191,11 @@
                     <TextBlock Text="Format:" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <ComboBox ItemsSource="{Binding FormatOptions}"
                               SelectedItem="{Binding SelectedFormatOption}"
-                              DisplayMemberPath="Label" MinWidth="140" Margin="0,0,16,0" />
-                    <TextBlock Text="Match:" VerticalAlignment="Center" Margin="0,0,8,0" />
-                    <ComboBox ItemsSource="{Binding ThresholdOptions}"
-                              SelectedItem="{Binding SelectedThresholdOption}"
-                              DisplayMemberPath="Label" MinWidth="200" />
+                              DisplayMemberPath="Label" MinWidth="140" />
+                    <TextBlock Text="Character class:" VerticalAlignment="Center" Margin="16,0,8,0" />
+                    <ComboBox ItemsSource="{Binding Classes}"
+                              SelectedItem="{Binding SelectedClass}"
+                              MinWidth="140" />
                 </DockPanel>
 
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"

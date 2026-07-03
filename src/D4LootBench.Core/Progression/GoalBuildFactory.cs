@@ -8,15 +8,21 @@ using D4LootBench.Core.Import;
 /// diff, resolving affix/unique names to hashes and stamping the caller's chosen threshold onto every
 /// slot goal. Mirrors the name-resolution loop of the build-guide filter generator.</summary>
 /// <param name="nameResolver">The shared fuzzy name resolver.</param>
-public sealed class GoalBuildFactory(NameResolver nameResolver)
+/// <param name="roleMap">The class-aware weapon role map.</param>
+public sealed class GoalBuildFactory(NameResolver nameResolver, WeaponRoleMap roleMap)
 {
     /// <summary>Converts a parsed build guide into a per-slot <see cref="GoalBuild"/>, stamping the chosen
     /// threshold onto every slot goal. Talisman/charm slots are skipped (progression is slot-based).</summary>
     /// <param name="guide">The parsed build guide.</param>
     /// <param name="threshold">The "meets goal" threshold to stamp on every slot goal.</param>
+    /// <param name="cls">The player class (drives class-aware weapon slot roles).</param>
     /// <param name="name">An optional display name for the goal build.</param>
     /// <returns>The goal build plus resolution warnings.</returns>
-    public GoalBuildResult Create(ParsedBuildGuide guide, MeetsGoalThreshold threshold, string? name = null)
+    public GoalBuildResult Create(
+        ParsedBuildGuide guide,
+        MeetsGoalThreshold threshold,
+        PlayerClass cls = PlayerClass.All,
+        string? name = null)
     {
         var goals = new Dictionary<SlotKey, SlotGoal>();
         var warnings = new List<string>();
@@ -29,7 +35,7 @@ public sealed class GoalBuildFactory(NameResolver nameResolver)
                 continue;
             }
 
-            if (MapSlot(slot.SlotLabel) is not { } key)
+            if (MapSlot(slot.SlotLabel, cls) is not { } key)
             {
                 warnings.Add($"Unrecognized slot \"{slot.SlotLabel}\" — skipped.");
                 continue;
@@ -50,9 +56,11 @@ public sealed class GoalBuildFactory(NameResolver nameResolver)
                 }
             }
 
+            // Deliberately permissive: attempt a unique lookup on any named item (mirrors the
+            // build-guide generator). Resolution failure is silent unless the guide asserted a
+            // unique via HasUniqueSentinel.
             uint? unique = null;
             if (slot.ItemName is not null &&
-                (slot.HasUniqueSentinel || LooksLikeUnique(slot)) &&
                 nameResolver.TryResolveUnique(slot.ItemName, out var uHash, out _))
             {
                 unique = uHash;
@@ -84,10 +92,9 @@ public sealed class GoalBuildFactory(NameResolver nameResolver)
     }
 
     // "ring 1"/"left ring" => Ring#0, "ring 2"/"right ring" => Ring#1, "rings"/"ring" => Ring#0.
-    // Generic and concrete weapon/offhand headers both map to the family-default key (ItemType=null); a
-    // concrete weapon type (e.g. "Two-Handed Sword") contributes its affixes to the single weapon-family
-    // goal (multiple concrete headers collapse last-wins, like duplicate labels).
-    private SlotKey? MapSlot(string label)
+    // Weapon/offhand headers map to a class-aware WeaponSlotRole key; a concrete weapon type header (e.g.
+    // "Two-Handed Sword") is classified through the role map so it lands on the right role for the class.
+    private SlotKey? MapSlot(string label, PlayerClass cls)
     {
         switch (label.Trim().ToLowerInvariant())
         {
@@ -99,26 +106,18 @@ public sealed class GoalBuildFactory(NameResolver nameResolver)
             case "amulet": return new SlotKey(GearSlot.Amulet);
             case "ring 1" or "left ring" or "rings" or "ring": return new SlotKey(GearSlot.Ring, 0);
             case "ring 2" or "right ring": return new SlotKey(GearSlot.Ring, 1);
-            case "weapon" or "mainhand" or "main hand": return new SlotKey(GearSlot.Weapon);
-            case "offhand" or "off-hand" or "off hand": return new SlotKey(GearSlot.Offhand);
+            case "bludgeoning weapon" or "bludgeoning": return new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Bludgeoning);
+            case "slicing weapon" or "slicing": return new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing);
+            case "weapon" or "mainhand" or "main hand": return new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand);
+            case "offhand" or "off-hand" or "off hand": return new SlotKey(GearSlot.Offhand, 0, WeaponSlotRole.Offhand);
         }
 
-        // Concrete weapon/offhand header (e.g. "Two-Handed Sword", "Focus"): map to the family-default key.
-        if (nameResolver.TryResolveItemType(label.Trim(), out var typeHash, out _) &&
-            ItemTypeDatabase.ByHash.TryGetValue(typeHash, out var entry) &&
-            entry.Category == "Weapons")
-        {
-            return entry.Name.Contains("Focus") || entry.Name.Contains("Totem") || entry.Name.Contains("Shield")
-                ? new SlotKey(GearSlot.Offhand)
-                : new SlotKey(GearSlot.Weapon);
-        }
-
-        return null;
+        // Concrete weapon/offhand header (e.g. "Two-Handed Sword", "Focus"): classify to its class-aware role.
+        var role = roleMap.RoleForItemType(label.Trim(), cls);
+        return role == WeaponSlotRole.None
+            ? null
+            : new SlotKey(role == WeaponSlotRole.Offhand ? GearSlot.Offhand : GearSlot.Weapon, 0, role);
     }
-
-    // Deliberately permissive: mirror the build-guide generator attempting a unique lookup on any item
-    // name. Resolution failure is silent unless the guide asserted a unique via HasUniqueSentinel.
-    private static bool LooksLikeUnique(ParsedSlot slot) => slot.ItemName is not null;
 }
 
 /// <summary>Result of converting a build guide into a goal build.</summary>

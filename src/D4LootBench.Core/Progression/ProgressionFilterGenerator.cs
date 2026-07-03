@@ -5,29 +5,32 @@ using D4LootBench.Core.Gear;
 using D4LootBench.Core.Models;
 
 /// <summary>Deterministically turns a <see cref="SlotDiffResult"/> into a native D4 loot filter:
-/// one base rule per incomplete slot, completed slots dropped, and the freed rule budget spent on
-/// stricter graded rules for the remaining slots. No LLM involvement.</summary>
-public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
+/// a gold Recolor rule per incomplete slot that highlights any item with more of the ranked target
+/// affixes than the equipped piece, optionally a cyan Greater-Affix companion rule that catches items
+/// with the SAME target-affix count but more Greater Affixes, plus a Target Uniques rule and a Hide All
+/// fallback. Weapon/offhand slots resolve their class-aware role to a SET of item types (one multi-type
+/// <see cref="ItemTypeCondition"/>); rules whose conditions are byte-identical collapse to a single rule
+/// (e.g. Barbarian dual-1H hands). Base rules rank above Greater companions so the bonus GA rules are the
+/// first to drop under the 25-rule cap. Completed slots (equipped item already meets the goal) are
+/// dropped. No LLM involvement.</summary>
+/// <param name="nameResolver">The shared fuzzy name resolver.</param>
+/// <param name="roleMap">The class-aware weapon role map.</param>
+public sealed class ProgressionFilterGenerator(NameResolver nameResolver, WeaponRoleMap roleMap)
 {
-    private const int BaseRequired = 2;
-    private const int StrictRequired = 3;
-    private const int StrictGreaterAffixCount = 1;
-
-    // Include every ranked guide affix the game will accept in one Required Affixes condition (D4's
-    // hard limit). A progression rule matches "N of these targets", so more targets is more inclusive
-    // — capping lower silently dropped the lowest-ranked guide affixes. SlotRuleBuilder re-clamps.
-    private const int MaxAffixesPerRule = AffixCondition.MaxSelectionCount;
-
-    private static readonly uint ColorBase = FilterRule.PackColor(255, 180, 0);   // gold — candidate
-    private static readonly uint ColorStrict = FilterRule.PackColor(255, 90, 0);  // orange — upgrade / stricter
-    private static readonly uint ColorUnique = FilterRule.PackColor(160, 32, 240); // purple
-    private static readonly uint ColorHideAll = FilterRule.PackColor(0, 0, 0);    // black
+    private static readonly uint ColorImprovement = FilterRule.PackColor(255, 180, 0); // gold — an affix-count upgrade
+    private static readonly uint ColorGreater = FilterRule.PackColor(0, 220, 255);      // cyan — a Greater-Affix upgrade
+    private static readonly uint ColorUnique = FilterRule.PackColor(160, 32, 240);      // purple
+    private static readonly uint ColorHideAll = FilterRule.PackColor(0, 0, 0);          // black
 
     /// <summary>Generates a progression filter from a slot diff.</summary>
     /// <param name="diff">The slot diff to render into rules.</param>
+    /// <param name="cls">The player class (drives class-aware weapon slot roles).</param>
     /// <param name="filterName">The filter display name.</param>
     /// <returns>The generated ruleset plus warnings and rule counts.</returns>
-    public ProgressionFilterResult Generate(SlotDiffResult diff, string filterName = "Progression Filter")
+    public ProgressionFilterResult Generate(
+        SlotDiffResult diff,
+        PlayerClass cls = PlayerClass.All,
+        string filterName = "Progression Filter")
     {
         var needy = diff.SlotsNeedingRules;
         var warnings = new List<string>();
@@ -49,77 +52,87 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
                 uniqueIds = uniqueIds.Take(SpecificUniqueCondition.MaxSelectionCount).ToList();
             }
 
-            uniqueRule = new FilterRule("Target Uniques", Visibility.Show, ColorUnique,
+            // Must be Recolor, not Show: in-game only Recolor rules apply their color, so Show would
+            // silently drop the ColorUnique purple highlight (see plan-notes known-defect section).
+            uniqueRule = new FilterRule("Target Uniques", Visibility.Recolor, ColorUnique,
                 [new SpecificUniqueCondition(uniqueIds)]);
         }
 
         var mandatory = 1 /* Hide All */ + (uniqueRule is not null ? 1 : 0);
         var capacity = FilterRuleset.MaxRuleCount - mandatory;
 
-        // Budget allocation.
-        bool budgetExceeded;
-        int strictCount;
-        IReadOnlyList<SlotDiff> activeSlots;
-
-        if (needy.Count > capacity)
+        // Build rules for EVERY needy slot first (slot order), then collapse byte-identical rules, then
+        // apply the 25-rule cap. Collapsing first means dual-1H hands sharing a shape don't each burn budget.
+        // Each slot can contribute up to two rules: an affix-count "base" rule and a Greater-Affix companion.
+        // The two tiers are kept separate so base rules rank ABOVE greater rules in the final ruleset — under
+        // the cap the bonus GA rules are dropped first, and an item that both adds an affix AND a GA still
+        // matches its higher-priority base rule (gold) rather than the GA rule (cyan).
+        var baseRules = new List<FilterRule>();
+        var greaterRules = new List<FilterRule>();
+        foreach (var slot in needy)
         {
-            budgetExceeded = true;
-            strictCount = 0;
-            activeSlots = needy.Take(capacity).ToList();
-            foreach (var dropped in needy.Skip(capacity))
-            {
-                warnings.Add($"Rule budget exceeded — dropped {dropped.Slot}");
-            }
-        }
-        else
-        {
-            budgetExceeded = false;
-            activeSlots = needy;
-            var slack = capacity - needy.Count;
-            strictCount = Math.Min(slack, needy.Count);
-        }
-
-        var slotRules = new List<FilterRule>();
-        var slotRuleCount = 0;
-
-        for (var i = 0; i < activeSlots.Count; i++)
-        {
-            var slot = activeSlots[i];
-            var itemTypeHash = ResolveItemTypeHash(slot.Slot);
-            if (itemTypeHash is null && slot.Slot.Slot is GearSlot.Weapon or GearSlot.Offhand or GearSlot.Unknown)
+            var typeHashes = ResolveTypeHashes(slot.Slot, cls);
+            if (typeHashes.Count == 0 && slot.Slot.Slot is GearSlot.Weapon or GearSlot.Offhand or GearSlot.Unknown)
             {
                 warnings.Add($"Ambiguous item type for {slot.Slot} — emitting affix-only rule");
             }
 
-            var affixIds = slot.TargetAffixIds.Take(MaxAffixesPerRule).ToList();
+            // Highlight any item that improves on what's equipped: require one more of the ranked
+            // target affixes than the equipped piece already has (min 1 for an empty/no-gear slot).
+            // SlotRuleBuilder clamps the required count to the affix count, so a maxed-out slot yields a
+            // rule that matches items with every target affix — i.e. any item equal to the equipped piece.
+            var requiredCount = Math.Max(1, slot.MatchedAffixCount + 1);
 
-            var baseRule = SlotRuleBuilder.Build(
-                slot.Slot.ToString(), Visibility.Recolor, ColorBase, itemTypeHash,
-                affixIds, greaterAffixIds: [], requiredCount: BaseRequired);
+            var rule = SlotRuleBuilder.BuildMultiType(
+                slot.Slot.ToString(), Visibility.Recolor, ColorImprovement, typeHashes,
+                slot.TargetAffixIds, greaterAffixIds: [], requiredCount: requiredCount);
 
-            if (baseRule is null)
+            if (rule is null)
             {
                 warnings.Add($"No conditions for {slot.Slot}");
                 continue;
             }
 
-            slotRules.Add(baseRule);
-            slotRuleCount++;
+            baseRules.Add(rule);
 
-            if (i < strictCount)
+            // GA-aware upgrade: an item with the SAME target-affix count as the equipped piece but strictly
+            // more Greater Affixes is an upgrade the base rule above misses (it requires one MORE affix). Emit
+            // a companion rule only when there is a real equipped item to beat AND it still has room to gain a
+            // GA among its matched targets (matchedGreater < matched) — otherwise the rule is unsatisfiable or
+            // redundant. See BuildGreaterRule for the chosen rule shape.
+            if (slot.EquippedItem is not null && slot.MatchedGreaterAffixCount < slot.MatchedAffixCount)
             {
-                var strictRule = SlotRuleBuilder.Build(
-                    $"{slot.Slot} (Greater)", Visibility.Show, ColorStrict, itemTypeHash,
-                    affixIds, greaterAffixIds: [], requiredCount: StrictRequired);
-
-                if (strictRule is not null)
+                var greaterRule = BuildGreaterRule(slot, typeHashes);
+                if (greaterRule is not null)
                 {
-                    strictRule.Conditions.Add(new GreaterAffixCondition(StrictGreaterAffixCount));
-                    slotRules.Add(strictRule);
-                    slotRuleCount++;
+                    greaterRules.Add(greaterRule);
                 }
             }
         }
+
+        // Collapse rules whose conditions are byte-identical (same type set + affix requirement + GA count).
+        // Base rules come first so, when a base and greater rule ever share a shape, the base keeps its name;
+        // first occurrence in this order wins, later duplicates are dropped.
+        var seen = new HashSet<string>();
+        var collapsed = baseRules.Concat(greaterRules).Where(r => seen.Add(ShapeKey(r))).ToList();
+
+        // Apply the 25-rule cap on the collapsed set; drop the lowest-priority survivors if we exceed it.
+        var budgetExceeded = collapsed.Count > capacity;
+        List<FilterRule> slotRules;
+        if (budgetExceeded)
+        {
+            slotRules = collapsed.Take(capacity).ToList();
+            foreach (var dropped in collapsed.Skip(capacity))
+            {
+                warnings.Add($"Rule budget exceeded — dropped {dropped.Name}");
+            }
+        }
+        else
+        {
+            slotRules = collapsed;
+        }
+
+        var slotRuleCount = slotRules.Count;
 
         var rules = new List<FilterRule>();
         if (uniqueRule is not null)
@@ -142,13 +155,59 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
         };
     }
 
-    private uint? ResolveItemTypeHash(SlotKey key)
+    // Builds the Greater-Affix companion rule for a slot: the SAME target-affix count as the equipped piece
+    // (min = matched count) plus a global Greater Affix Check (Type 4) requiring one more GA than the equipped
+    // piece currently has. The native filter's per-affix "greater" flag (AffixCondition.GreaterEntries) can
+    // only force SPECIFIC named affixes to be greater — it cannot express "any (matchedGreater+1) of the
+    // targets are greater" — so the count-based Greater Affix Check, D4's own primitive for "at least N
+    // greater affixes", is the correct shape (see docs/filter-format.md types 4 and 6). It counts GAs across
+    // ALL affixes, not just targets, so it is a deliberate approximation of "more GAs on target affixes".
+    private FilterRule? BuildGreaterRule(SlotDiff slot, IReadOnlyList<uint> typeHashes)
     {
-        // Weapon/Offhand carry their concrete OCR item type on the key — gate on that.
-        if (key.ItemType is not null &&
-            nameResolver.TryResolveItemType(key.ItemType, out var typeHash, out _))
+        var rule = SlotRuleBuilder.BuildMultiType(
+            slot.Slot + " (Greater)", Visibility.Recolor, ColorGreater, typeHashes,
+            slot.TargetAffixIds, greaterAffixIds: [], requiredCount: slot.MatchedAffixCount);
+
+        rule?.Conditions.Add(new GreaterAffixCondition(slot.MatchedGreaterAffixCount + 1));
+        return rule;
+    }
+
+    // Ordered, delimited digest of a rule's conditions — the "shape" used to collapse duplicate rules.
+    // Excludes the rule name; includes visibility, color, ordered type hashes, each affix condition's
+    // ordered affix ids + minimum count + ordered greater ids, and each greater-affix check's minimum count.
+    private static string ShapeKey(FilterRule rule)
+    {
+        var parts = new List<string> { $"v{(int)rule.Visibility}", $"c{rule.Color}" };
+        foreach (var condition in rule.Conditions)
         {
-            return typeHash;
+            switch (condition)
+            {
+                case ItemTypeCondition it:
+                    parts.Add("t:" + string.Join(",", it.TypeIds));
+                    break;
+                case AffixCondition af:
+                    parts.Add($"a:{string.Join(",", af.AffixIds)}|m{af.MinimumCount}|g{string.Join(",", af.GreaterEntries.Select(e => e.AffixId))}");
+                    break;
+                case GreaterAffixCondition ga:
+                    parts.Add($"ga:{ga.MinimumCount}");
+                    break;
+                default:
+                    parts.Add("?" + condition.GetType().Name);
+                    break;
+            }
+        }
+
+        return string.Join(";", parts);
+    }
+
+    // Resolves a slot key to the SET of item-type hashes its rule should gate on. Weapon/offhand roles
+    // expand to their class-aware type set (may be empty → affix-only rule); non-weapon slots map to a
+    // single armor/accessory type hash.
+    private IReadOnlyList<uint> ResolveTypeHashes(SlotKey key, PlayerClass cls)
+    {
+        if (key.Role != WeaponSlotRole.None)
+        {
+            return roleMap.AllowedTypeHashes(key.Role, cls);
         }
 
         var name = key.Slot switch
@@ -160,12 +219,12 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver)
             GearSlot.Boots => "Boots",
             GearSlot.Amulet => "Amulet",
             GearSlot.Ring => "Ring",
-            _ => null, // Weapon/Offhand with no OCR type, or Unknown — no gate
+            _ => null, // Weapon/Offhand with no role, or Unknown — no gate
         };
 
         return name is not null && nameResolver.TryResolveItemType(name, out var hash, out _)
-            ? hash
-            : null;
+            ? [hash]
+            : [];
     }
 }
 
@@ -178,7 +237,7 @@ public sealed record ProgressionFilterResult
     /// <summary>Gets human-readable warnings (dropped slots, ambiguous types, capped uniques).</summary>
     public IReadOnlyList<string> Warnings { get; init; } = [];
 
-    /// <summary>Gets the number of base + strict rules emitted for slots.</summary>
+    /// <summary>Gets the number of per-slot Recolor rules emitted (one per incomplete slot).</summary>
     public int SlotRuleCount { get; init; }
 
     /// <summary>Gets the total rule count, including the uniques rule and the hide-all fallback.</summary>

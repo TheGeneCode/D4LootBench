@@ -21,6 +21,7 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     private readonly GoalBuildFactory _goalFactory;
     private readonly SlotDiffEngine _diffEngine;
     private readonly ProgressionFilterGenerator _generator;
+    private readonly WeaponRoleMap _roleMap;
     private readonly Action<string> _setClipboard;
 
     private readonly List<GearParseResult> _parsed = [];
@@ -33,10 +34,10 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     private string _pastedText = "";
 
     [ObservableProperty]
-    private FormatOption _selectedFormatOption = FormatOptions[0];
+    private PlayerClass _selectedClass = PlayerClass.All;
 
     [ObservableProperty]
-    private ThresholdOption _selectedThresholdOption = ThresholdOptions[1];
+    private FormatOption _selectedFormatOption = FormatOptions[0];
 
     [ObservableProperty]
     private string _shareCode = "";
@@ -57,6 +58,7 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     /// <param name="goalFactory">The goal-build factory.</param>
     /// <param name="diffEngine">The slot-diff engine.</param>
     /// <param name="generator">The progression filter generator.</param>
+    /// <param name="roleMap">The weapon slot-role map, used to classify equipped weapons per class.</param>
     /// <param name="setClipboard">Clipboard write; defaults to the WPF clipboard, overridable for tests.</param>
     public ProgressionWizardViewModel(
         IGearReader reader,
@@ -65,6 +67,7 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         GoalBuildFactory goalFactory,
         SlotDiffEngine diffEngine,
         ProgressionFilterGenerator generator,
+        WeaponRoleMap roleMap,
         Action<string>? setClipboard = null)
     {
         _reader = reader;
@@ -73,6 +76,7 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         _goalFactory = goalFactory;
         _diffEngine = diffEngine;
         _generator = generator;
+        _roleMap = roleMap;
         _setClipboard = setClipboard ?? System.Windows.Clipboard.SetText;
     }
 
@@ -82,13 +86,8 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     /// <summary>Gets the build-guide format options (reused from the build-guide import VM).</summary>
     public static IReadOnlyList<FormatOption> FormatOptions => BuildGuideImportViewModel.FormatOptions;
 
-    /// <summary>Gets the "meets goal" threshold presets.</summary>
-    public static IReadOnlyList<ThresholdOption> ThresholdOptions { get; } =
-    [
-        new(MeetsGoalThreshold.NOf(2), "Loose (2 of target affixes)"),
-        new(MeetsGoalThreshold.NOf(3), "Default (3 of target affixes)"),
-        new(MeetsGoalThreshold.Exact, "Strict (all target affixes)"),
-    ];
+    /// <summary>Gets the selectable character classes for the class picker.</summary>
+    public static IReadOnlyList<PlayerClass> Classes { get; } = Enum.GetValues<PlayerClass>();
 
     /// <summary>Gets the review drafts, one per read item.</summary>
     public ObservableCollection<GearItemDraftViewModel> Items { get; } = [];
@@ -171,14 +170,17 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         try
         {
             var guide = _importer.Import(PastedText.Trim(), SelectedFormatOption.Format);
-            var goal = _goalFactory.Create(guide, SelectedThresholdOption.Threshold, "Progression Filter");
-            var loadout = EquippedLoadout.FromItems(_session!.Build());
+
+            // A slot is "done" (no rule) only once the equipped item has every target affix; every other
+            // slot gets a Recolor rule highlighting items that improve on what's equipped.
+            var goal = _goalFactory.Create(guide, MeetsGoalThreshold.Exact, SelectedClass, "Progression Filter");
+            var loadout = EquippedLoadout.FromItems(_session!.Build(), out var loadoutWarnings, SelectedClass, _roleMap);
             var diff = _diffEngine.Diff(loadout, goal.GoalBuild);
-            var filter = _generator.Generate(diff, "Progression Filter");
+            var filter = _generator.Generate(diff, SelectedClass, "Progression Filter");
 
             GeneratedRuleset = filter.Ruleset;
             ShareCode = FilterCodec.Encode(filter.Ruleset);
-            Warnings = [.. goal.Warnings, .. filter.Warnings];
+            Warnings = [.. loadoutWarnings, .. goal.Warnings, .. filter.Warnings];
             SetStatus(
                 $"Generated {filter.TotalRuleCount} rule(s) for {diff.SlotsNeedingRules.Count} slot(s) needing upgrades.",
                 error: false);

@@ -31,26 +31,41 @@ public class GoalBuildTests
     }
 
     [Fact]
-    public void Lookup_ConcreteWeaponResolvesToFamilyGoal()
+    public void Lookup_RoleKeyExactMatch()
     {
-        var family = new SlotGoal { TargetAffixIds = [1, 2] };
-        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal> { [new SlotKey(GearSlot.Weapon)] = family });
+        var slicing = new SlotGoal { TargetAffixIds = [1, 2] };
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
+        {
+            [new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing)] = slicing,
+        });
 
-        goal.Lookup(new SlotKey(GearSlot.Weapon, 0, "Two-Handed Axe")).ShouldBe(family);
+        goal.Lookup(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing)).ShouldBe(slicing);
     }
 
     [Fact]
-    public void Lookup_ExactWeaponTypeGoalBeatsFamily()
+    public void Lookup_RoleOrdinalStripFallback()
     {
-        var family = new SlotGoal { TargetAffixIds = [1] };
-        var polearm = new SlotGoal { TargetAffixIds = [2] };
+        // An ordinal>0 role slot falls back to the (Slot, 0, Role) default.
+        var mainhand = new SlotGoal { TargetAffixIds = [1] };
         var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
         {
-            [new SlotKey(GearSlot.Weapon)] = family,
-            [new SlotKey(GearSlot.Weapon, 0, "Polearm")] = polearm,
+            [new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand)] = mainhand,
         });
 
-        goal.Lookup(new SlotKey(GearSlot.Weapon, 0, "Polearm")).ShouldBe(polearm);
+        goal.Lookup(new SlotKey(GearSlot.Weapon, 1, WeaponSlotRole.Mainhand)).ShouldBe(mainhand);
+    }
+
+    [Fact]
+    public void Lookup_DifferentRole_DoesNotFallBack()
+    {
+        // Role is part of identity — a Slicing goal must NOT resolve for a Mainhand lookup.
+        var slicing = new SlotGoal { TargetAffixIds = [1] };
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
+        {
+            [new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Slicing)] = slicing,
+        });
+
+        goal.Lookup(new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand)).ShouldBeNull();
     }
 
     [Fact]
@@ -71,43 +86,13 @@ public class GoalBuildTests
     }
 
     [Fact]
-    public void Lookup_NullTypeSecondWeapon_FallsBackToSlotDefault()
+    public void Lookup_NullRoleSecondWeapon_FallsBackToSlotDefault()
     {
-        // Two weapons with unresolved OCR types land at (Weapon,0,null) and (Weapon,1,null) — the
-        // second one has Ordinal!=0 and ItemType==null, so it skips the family-strip tier entirely
-        // (guarded on key.ItemType is not null) and lands on the (Slot,0) ordinal-strip tier instead.
+        // Two weapons with no resolved role land at (Weapon,0,None) and (Weapon,1,None) — the second
+        // has Ordinal!=0 and the same Role, so it resolves to the (Slot,0,Role) ordinal-strip default.
         var slotDefault = new SlotGoal { TargetAffixIds = [1] };
         var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal> { [new SlotKey(GearSlot.Weapon)] = slotDefault });
 
         goal.Lookup(new SlotKey(GearSlot.Weapon, 1)).ShouldBe(slotDefault);
-    }
-
-    [Fact]
-    public void Lookup_CaseMismatchedItemType_NoFamilyDefault_ReturnsNull()
-    {
-        // SlotKey equality is case-sensitive (plain string ==). A goal authored for "Sword" is
-        // invisible to gear whose OCR-read type differs only in case, with no family default to
-        // catch it — this is the case-sensitivity risk flagged for this feature.
-        var perType = new SlotGoal { TargetAffixIds = [1] };
-        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal> { [new SlotKey(GearSlot.Weapon, 0, "Sword")] = perType });
-
-        goal.Lookup(new SlotKey(GearSlot.Weapon, 0, "sword")).ShouldBeNull();
-    }
-
-    [Fact]
-    public void Lookup_CaseMismatchedItemType_FamilyDefaultPresent_SilentlyFallsBackToFamily_NotPerTypeGoal()
-    {
-        // When a family default IS authored, a case-mismatched exact key doesn't fail outright — but
-        // it also does NOT reach the per-type override; it silently resolves to the (weaker/different)
-        // family goal instead. Documents that case mismatches degrade specificity rather than erroring.
-        var family = new SlotGoal { TargetAffixIds = [9] };
-        var perType = new SlotGoal { TargetAffixIds = [1] };
-        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
-        {
-            [new SlotKey(GearSlot.Weapon)] = family,
-            [new SlotKey(GearSlot.Weapon, 0, "Sword")] = perType,
-        });
-
-        goal.Lookup(new SlotKey(GearSlot.Weapon, 0, "sword")).ShouldBe(family);
     }
 }

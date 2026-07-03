@@ -1,0 +1,8 @@
+Riveted Talent
+Rare Helm
+785 Item Power
+1,178 Armor
++246 Resistance to All Elements [229 -
+259]
++408 Lightning Resistance [367 - 415]
+8.0% Cooldown Reduction [5.0 - 8.0]%

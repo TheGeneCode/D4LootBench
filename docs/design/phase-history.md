@@ -152,6 +152,39 @@ New pure class library with no WPF dependency, added alongside `D4LootBench.Core
 
 ---
 
+## Progression Phase 1 ✅ — Screenshot-OCR Gear Reader
+
+Design context: `plans/screenshot-ocr-gear-reader.md`
+
+- `NameResolver` promoted `D4LootBench.Ai` → `D4LootBench.Core.Data` so the parser and LLM assistant share one fuzzy resolver.
+- `IGearReader` seam isolates the WinRT OCR call in new `src/D4LootBench.Vision/` (`WindowsOcrGearReader`, the only project on `net10.0-windows10.0.19041.0`).
+- `GearTooltipParser` (Core) — tooltip text lines → `GearParseResult` (`GearItem`/`GearAffix`).
+- `GearReviewSession` (Core) — mutable review state; greater-affix flags set by hand.
+- English-client only; requires D4 "Advanced Tooltip Information" ON; never touches the game process.
+- App TFM bumped to `net10.0-windows10.0.19041.0` to reference Vision — WinRT calls still confined to Vision.
+
+---
+
+## Progression Phase 2 ✅ — Slot-Diff Engine
+
+- `SlotDiffEngine` + `SlotKey` (Core/Progression) compare an `EquippedLoadout` against a `GoalBuild`, producing per-slot `SlotDiffResult` (matched/missing affixes, `MeetsGoalThreshold`).
+- `SlotKey` later gained weapon/offhand item-type keying so dual-wield/2H builds diff correctly per weapon slot.
+
+---
+
+## Progression Phase 3 ✅ — Slot-Diff → Filter Generation
+
+Design context: `plans/phase-3-filter-generation.md`
+
+- `ProgressionFilterGenerator` (Core/Progression) turns a `SlotDiffResult` into a native filter (no LLM): a **gold base Recolor rule per incomplete slot**, highlighting any item with more of the ranked target affixes than the equipped piece — `requiredCount = max(1, SlotDiff.MatchedAffixCount + 1)` over all ranked guide affixes (up to `AffixCondition.MaxSelectionCount`).
+- **GA-aware companion (cyan):** when a slot has a real equipped item that still has room to gain a Greater Affix among its matched targets (`MatchedGreaterAffixCount < MatchedAffixCount`), a second `<slot> (Greater)` rule catches items with the SAME target-affix count but more GAs — affix min = matched count + a global `GreaterAffixCondition` (Type 4) requiring `MatchedGreaterAffixCount + 1`. The native filter's per-affix "greater" flag (`AffixCondition.GreaterEntries`) can only force SPECIFIC named affixes to be greater, so it can't express "any N of the targets are greater" — the count-based Greater Affix Check is the correct primitive (counts GAs across all affixes, a deliberate approximation of "GAs on targets"). Base rules rank above all companions, so companions are the first to drop under the 25-rule cap.
+- A slot is dropped only when the equipped item already meets the goal; the wizard passes `MeetsGoalThreshold.Exact` for the drop decision.
+- Bookended by a `Target Uniques` rule and a `Hide All` fallback; hard-capped at 25 rules (drops lowest-priority slots + warns on overflow).
+- Per-slot rule assembly shared with `BuildGuideFilterGenerator` via `SlotRuleBuilder` (Core/Models) — both emit byte-identical rule shapes. `SlotRuleBuilder` truncates rule names to `MaxNameLength` (24) because D4 blanks over-long names ("Rule #N").
+- Golden tests (Verify) snapshot the exact share code + decoded structure; codec round-trip is the format canary.
+
+---
+
 ## Progression Phase 4 ✅ — WPF User Flow (read → review → goal → generate)
 
 The complete progression wizard, closing the roadmap's Phase 4. Delivered in two slices; **no new

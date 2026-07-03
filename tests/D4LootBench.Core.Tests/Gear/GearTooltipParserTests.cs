@@ -46,6 +46,37 @@ public sealed class GearTooltipParserTests
     }
 
     [Fact]
+    public void Parse_WrappedRange_RejoinsSplitLineAndCapturesDigitLedAffix()
+    {
+        // OCR wrapped the first affix's roll range onto its own line ("259]") and the last affix leads with
+        // a digit ("8.0% Cooldown Reduction") — the old "+"-led scan dropped both. All three must survive.
+        var result = NewParser().Parse(LoadFixture("riveted-helm-wrapped.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Helm);
+        result.Item.Affixes.Count.ShouldBe(3);
+        result.Item.Affixes[0].RawText.ShouldBe("+246 Resistance to All Elements [229 - 259]");
+        result.Item.Affixes.ShouldAllBe(a => a.IsResolved);
+    }
+
+    [Fact]
+    public void Parse_CutOffRanges_CapturesAllAffixesDespiteTruncation()
+    {
+        // A cropped screenshot left two ranges with an unclosed "[" ("[15 -"). Membership keys off the
+        // affix marker, not a closed range, so all three affixes are captured — including the uncatalogued
+        // "Fortify Generation", which is kept unresolved rather than dropped.
+        var result = NewParser().Parse(LoadFixture("rare-boots-cutoff.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Boots);
+        result.Item.Affixes.Count.ShouldBe(3);
+        var raws = result.Item.Affixes.Select(a => a.RawText).ToList();
+        raws.ShouldContain(r => r.Contains("Movement Speed"));
+        raws.ShouldContain(r => r.Contains("Fortify Generation"));
+        raws.ShouldContain(r => r.Contains("War Cry"));
+        result.Item.Affixes.ShouldContain(
+            a => a.IsResolved && a.ResolvedName!.Contains("Movement Speed"));
+    }
+
+    [Fact]
     public void Parse_TwoAffixRing_ResolvesAffixes()
     {
         var result = NewParser().Parse(LoadFixture("ring-two-affix.txt"));
@@ -94,6 +125,37 @@ public sealed class GearTooltipParserTests
 
         result.Item.Slot.ShouldBe(GearSlot.Weapon);
         result.Item.ItemTypeName.ShouldNotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void Parse_FlailWeapon_MapsToWeaponSlot()
+    {
+        // Flail (Paladin) is not yet in the filterable item-type catalog, so slot detection must fall
+        // back to the weapon-keyword scan rather than reporting Unknown.
+        var result = NewParser().Parse(LoadFixture("flail-weapon.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Weapon);
+        result.Item.ItemTypeName.ShouldBe("Flail");
+    }
+
+    [Fact]
+    public void Parse_PolearmWithWrappedAndGlyphMangledRanges_RejoinsAllAndResolvesMultiplier()
+    {
+        // Real capture defects on one item: the Critical Strike range fully wrapped onto its own line
+        // ("[26 - 50]…"), its closing '%' misread as "0/6", and the Physical Damage range half-wrapped
+        // ("[14 -" + "20]%"). All three must fold back onto their affixes, and the leading multiplier
+        // "x" must be stripped so the Critical Strike Damage Multiplier resolves.
+        var result = NewParser().Parse(LoadFixture("silent-charge-polearm.txt"));
+
+        result.Item.Slot.ShouldBe(GearSlot.Weapon);
+        result.Item.Affixes.Select(a => a.RawText).ShouldBe(
+        [
+            "+284 Weapon Damage [187 - 312]",
+            "x36% Critical Strike Damage Multiplier [26 - 50]%",
+            "x20% Physical Damage Multiplier [14 - 20]%",
+        ]);
+        result.Item.Affixes.ShouldContain(
+            a => a.IsResolved && a.ResolvedName!.Contains("Critical Strike Damage Multiplier"));
     }
 
     [Fact]

@@ -1,0 +1,11 @@
+Silent Charge
+Rare Polearm (Slashing)
+850 Item Power
+3,069 Damage Per Second
+[2,786 - 4,036] Damage per Hit
+0.90 Attacks per Second (Slow)
++284 Weapon Damage [187 - 312]
+x36% Critical Strike Damage Multiplier
+[26 - 50]0/6
+x20% Physical Damage Multiplier [14 -
+20]%

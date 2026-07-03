@@ -48,6 +48,31 @@ public sealed class NameResolverTests
     }
 
     [Fact]
+    public void TryResolveAffix_SkillRankPhrase_ResolvesToSkillRankAffix()
+    {
+        // Guides/game render skill-rank affixes as "Ranks to <Skill>" ("+X Ranks to Whirlwind"), but
+        // the catalog names them "+<Skill>" (e.g. "+Whirlwind"). The rank phrasing must resolve to the
+        // same skill-rank affix instead of being dropped.
+        var resolver = NewResolver();
+
+        var resolved = resolver.TryResolveAffix("Ranks to Whirlwind", out var hash, out _);
+
+        resolved.ShouldBeTrue();
+        resolver.TryResolveAffix("+Whirlwind", out var expectedHash, out _);
+        hash.ShouldBe(expectedHash);
+    }
+
+    [Fact]
+    public void IsKnownAffixPhrase_SkillRankPhrase_RecognizedAsAffix()
+    {
+        // The Maxroll parser uses this to tell a first-line affix from an item name. A skill-rank
+        // phrase must read as an affix so it is not swallowed as the slot's item name.
+        var resolver = NewResolver();
+
+        resolver.IsKnownAffixPhrase("Ranks to Whirlwind").ShouldBeTrue();
+    }
+
+    [Fact]
     public void TryResolveAffix_LowercaseSignlessPhrase_ResolvesViaNormalizedTier_CaseInsensitive()
     {
         // NormalizeAffixKey lowercases before comparing, independent of the sign-stripping behavior.

@@ -22,10 +22,23 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
         "Empty Socket", "Durability", "Upgrade", "Sacred", "Ancestral",
     ];
 
+    // Weapon / off-hand base-damage properties printed under "Damage Per Second", between the Item Power
+    // line and the real affixes. They carry roll-range brackets and numbers just like affixes ("[2,789 -
+    // 4,039] Damage per Hit"), so the affix-marker test alone would admit them and let the markerless
+    // "Attacks per Second" line prematurely terminate the affix run — cutting off every affix below,
+    // including the trailing "]%" multiplier. Excluded by phrase so the genuine affixes are still reached.
+    private static readonly string[] BaseStatMarkers =
+    [
+        "Damage Per Second", "Damage per Hit", "Attacks per Second",
+    ];
+
     private static readonly string[] WeaponKeywords =
     [
         "mace", "sword", "axe", "staff", "scythe", "dagger", "polearm", "wand", "bow", "crossbow",
+        "flail", "glaive",
     ];
+
+    private static readonly char[] AffixMarkers = ['+', '%', '['];
 
     private readonly NameResolver _resolver = new(data);
 
@@ -35,7 +48,7 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
     public GearParseResult Parse(IReadOnlyList<string> lines)
     {
         var usable = lines
-            .Select(l => l?.Trim() ?? string.Empty)
+            .Select(l => CorrectOcrGlyphs(l?.Trim() ?? string.Empty))
             .Where(l => l.Length > 0)
             .ToList();
 
@@ -151,6 +164,22 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
             }
         }
 
+        // Fallback: newer weapon types (Flail, Glaive, Quarterstaff) aren't yet in the filterable
+        // item-type catalog, so the catalog scan above misses them. Recognize the bare weapon word so
+        // the slot is still Weapon; the recovered word becomes the concrete ItemTypeName used for
+        // weapon SlotKey keying.
+        foreach (var line in lines)
+        {
+            foreach (var keyword in WeaponKeywords)
+            {
+                if (line.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                {
+                    var typeName = char.ToUpperInvariant(keyword[0]) + keyword[1..];
+                    return (GearSlot.Weapon, typeName);
+                }
+            }
+        }
+
         return (GearSlot.Unknown, null);
     }
 
@@ -210,15 +239,12 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
         return affixes;
     }
 
-    // The basic-affix block is the first contiguous run of "+"-led lines at or after the Item Power
-    // line. This deliberately excludes the item header and base stats (Armor / DPS / Item Power — never
-    // "+"-led), the legendary/unique power (a sentence that is not "+"-led, which ends the run), and
-    // everything after it: tempered affixes and gem/socket bonuses. OCR cannot read the diamond / star /
-    // anvil bullet icons that separate these in-game, so structural position is the only signal we have.
+    // The basic-affix block is the run of affix-shaped lines beginning at or after the Item Power line.
+    // "Affix-shaped" keys off structure OCR can actually read (see IsAffixLine): base stats, the
+    // legendary/unique power sentence, and everything after it (tempered affixes, gem/socket bonuses) are
+    // excluded, because OCR cannot read the diamond / star / anvil bullet icons that separate them in-game.
     private static List<string> ExtractBasicAffixBlock(IReadOnlyList<string> lines)
     {
-        // Anchor the search after the Item Power line when present; base stats sit between it and the
-        // affixes. With no Item Power line (a cropped tooltip) fall back to scanning from the top.
         var start = 0;
         for (var i = 0; i < lines.Count; i++)
         {
@@ -229,55 +255,105 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
             }
         }
 
-        var first = -1;
+        var block = new List<string>();
+        var started = false;
         for (var i = start; i < lines.Count; i++)
         {
-            if (IsAffixLine(lines[i]))
+            var line = lines[i];
+
+            // Re-join an OCR-wrapped roll range onto the affix it belongs to rather than treating it as a line.
+            if (block.Count > 0 && IsRangeContinuation(block[^1], line))
             {
-                first = i;
+                block[^1] = $"{block[^1]} {line}";
+                continue;
+            }
+
+            if (IsAffixLine(line))
+            {
+                block.Add(line);
+                started = true;
+            }
+            else if (started)
+            {
+                // First non-affix line after the run ends the basic block — the legendary/unique power
+                // sentence, a noise marker, or a base stat. Tempered affixes and gem bonuses sit past it and
+                // are deliberately excluded.
                 break;
             }
-        }
-
-        if (first < 0)
-        {
-            return [];
-        }
-
-        var block = new List<string>();
-        for (var i = first; i < lines.Count && IsAffixLine(lines[i]); i++)
-        {
-            block.Add(lines[i]);
         }
 
         return block;
     }
 
-    // A "+"-led line: after any leading icon/punctuation junk, the first meaningful glyph is '+'. D4
-    // renders every gear affix as "+X …" (basic, greater, tempered, and gem lines all qualify); base
-    // stats and power sentences never lead with '+'. Noise markers are excluded so a stray line such as
-    // "+Sockets" cannot anchor or extend the affix block.
+    // A basic-affix line, keyed off what OCR can see: not a noise marker, not a full sentence (the
+    // legendary/unique power reads as prose and ends with '.'), and carrying an affix roll marker — '+',
+    // '%', or '[' — which base stats ("1,594 Armor", "700 Damage Per Second") never do. This admits affixes
+    // that start with a digit ("8.0% Cooldown Reduction"), an 'x' multiplier, or a wrapped range head, none
+    // of which the old '+'-led scan accepted. Resolvability is intentionally NOT required for membership, so
+    // a real-but-uncatalogued affix ("Fortify Generation") is still captured and surfaced for review.
     private static bool IsAffixLine(string line)
     {
-        if (NoiseMarkers.Any(m => line.Contains(m, StringComparison.OrdinalIgnoreCase)))
+        var trimmed = line.Trim();
+        if (trimmed.Length == 0
+            || NoiseMarkers.Any(m => trimmed.Contains(m, StringComparison.OrdinalIgnoreCase))
+            || BaseStatMarkers.Any(m => trimmed.Contains(m, StringComparison.OrdinalIgnoreCase)))
         {
             return false;
         }
 
-        foreach (var c in line)
+        if (trimmed.EndsWith('.'))
         {
-            if (c == '+')
-            {
-                return true;
-            }
-
-            if (char.IsLetterOrDigit(c))
-            {
-                return false;
-            }
+            return false;
         }
 
-        return false;
+        return trimmed.IndexOfAny(AffixMarkers) >= 0;
+    }
+
+    // True when this line is the wrapped roll range of the previous affix, covering both OCR wrap shapes:
+    //  • Fully wrapped — the entire range moved to its own line, so it OPENS with '[' ("[26 - 50]%").
+    //    A genuine D4 affix never begins with '[' (they lead with +/x/a digit/a stat name), so a
+    //    '['-led line is unambiguously a range tail regardless of the previous line's bracket state.
+    //  • Half wrapped — the previous line left an unclosed '[' ("[14 -") and this line is the bare
+    //    numeric tail that closes it ("20]%").
+    private static bool IsRangeContinuation(string previous, string line)
+    {
+        if (line.TrimStart().StartsWith('['))
+        {
+            return true;
+        }
+
+        return HasUnclosedBracket(previous) && IsContinuationTail(line);
+    }
+
+    private static bool HasUnclosedBracket(string line)
+        => line.Count(c => c == '[') > line.Count(c => c == ']');
+
+    // A wrapped range tail carries only digits and range punctuation ("259]", "- 8.0]%") and never opens a
+    // new affix (no leading '+'), so it can be safely appended to the previous unclosed line.
+    private static bool IsContinuationTail(string line)
+    {
+        var trimmed = line.Trim();
+        return trimmed.Length > 0
+            && !trimmed.StartsWith('+')
+            && ContinuationTailRegex().IsMatch(trimmed);
+    }
+
+    // Repairs the two OCR glyph defects seen on real captures before any structural parsing runs, so
+    // every downstream heuristic — and the RawText shown in review — sees clean text. Both substitutions
+    // are deliberately anchored to keep false positives out of genuine affix words:
+    //  • A '%' printed after a roll range ("50]%") is frequently misread as a slash pair ("50]0/0",
+    //    "50]0/6"). Only a '%'-shaped token IMMEDIATELY following ']' is rewritten to '%'.
+    //  • A stray '1' reads as a vertical bar ('|'). Vertical bars never legitimately appear on D4 gear
+    //    tooltips, so every '|' is mapped to '1'.
+    private static string CorrectOcrGlyphs(string line)
+    {
+        if (line.Length == 0)
+        {
+            return line;
+        }
+
+        var corrected = PercentAfterBracketRegex().Replace(line, "]%");
+        return corrected.Replace('|', '1');
     }
 
     // Strip roll ranges, numbers, %, +/- and collapse whitespace to leave the affix phrase.
@@ -286,7 +362,19 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
         var stripped = RangeRegex().Replace(line, " ");
         stripped = NumberRegex().Replace(stripped, " ");
         stripped = stripped.Replace("%", " ").Replace("+", " ").Replace("-", " ");
-        return WhitespaceRegex().Replace(stripped, " ").Trim();
+        var phrase = WhitespaceRegex().Replace(stripped, " ").Trim();
+
+        // D4 prints damage multipliers with a leading "x" sign ("x36%"). After the numeric strip it
+        // survives as a lone leading "x"/"×" token that derails resolution — remove it so the bare stat
+        // name resolves. Only a standalone leading token is stripped, never an 'x' inside a word.
+        if (phrase.Length > 1
+            && (phrase[0] is 'x' or 'X' or '×')
+            && phrase[1] == ' ')
+        {
+            phrase = phrase[2..];
+        }
+
+        return phrase;
     }
 
     private static GearParseConfidence DetermineConfidence(
@@ -326,12 +414,19 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
     [GeneratedRegex(@"\d{2,4}")]
     private static partial Regex ItemPowerRegex();
 
-    [GeneratedRegex(@"\[[^\]]*\]")]
+    [GeneratedRegex(@"\[[^\]]*\]?")]
     private static partial Regex RangeRegex();
+
+    [GeneratedRegex(@"^[\d\s.,\-\[\]%]+$")]
+    private static partial Regex ContinuationTailRegex();
 
     [GeneratedRegex(@"\d+(\.\d+)?")]
     private static partial Regex NumberRegex();
 
     [GeneratedRegex(@"\s+")]
     private static partial Regex WhitespaceRegex();
+
+    // A ']' immediately followed by a '%'-shaped slash pair ("0/0", "0/6", "o/o", "O/0" …).
+    [GeneratedRegex(@"\][0oO]/[0-9oO]")]
+    private static partial Regex PercentAfterBracketRegex();
 }

@@ -51,12 +51,12 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 
 ### Build a progression filter
 
-Highlights only gear that moves you toward a goal build — completed slots are dropped, and the freed rule budget is spent on stricter rules for the slots you still need.
+Recolors any dropped item that improves on your currently-equipped gear for a goal build — a slot drops out of the filter once your equipped item already has every target affix.
 
 1. Click **Progression…** in the toolbar
 2. **Read gear** — screenshot each equipped item's tooltip in-game (<kbd>Win+Shift+S</kbd>, "Advanced Tooltip Information" ON) and click **Paste Screenshot**, or **Open Image…** for a saved file
 3. **Review** — correct any misread slot / item power / rarity / affix, and tick greater affixes by hand (OCR can't detect them)
-4. **Goal** — paste the gear section of a build guide, choose the format and how strictly an item must match to count as complete, then **Generate**
+4. **Goal** — paste the gear section of a build guide, choose the format and your character class, then **Generate** (picking a class makes weapon rules class-aware — a weapon slot expands to every item type that class equips in that role; **All** keeps the class-agnostic single-type behavior)
 5. **Result** — **Copy Code** to paste into D4, or **Open in Editor** to fine-tune
 
 > Full walkthrough, required settings, and the static-snapshot caveat: **[User Guide](docs/user-guide.md)**.
