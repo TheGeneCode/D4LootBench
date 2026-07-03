@@ -155,7 +155,7 @@ public sealed class GearTooltipParserTests
             "x20% Physical Damage Multiplier [14 - 20]%",
         ]);
         result.Item.Affixes.ShouldContain(
-            a => a.IsResolved && a.ResolvedName!.Contains("Critical Strike Damage Multiplier"));
+            a => a.IsResolved && a.ResolvedName!.Contains("Critical Strike Damage"));
     }
 
     [Fact]

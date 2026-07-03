@@ -7,9 +7,10 @@ namespace D4LootBench.Core.Tests.Data;
 /// Boundary coverage for <see cref="NameResolver"/> — the shared name→hash resolver used by OCR
 /// parsing, guide import, the LLM assistant, and progression filter generation. Focuses on the
 /// prefix-insensitive exact tier added between exact and fuzzy matching in <c>TryResolveAffix</c>,
-/// and its interaction with catalog affixes that share a normalized key. The colliding display name
-/// exercised below is "All Damage Multiplier", which the catalog carries as seven distinct per-source
-/// entries sharing the same display name.
+/// and its interaction with catalog affixes that share a normalized key. The ambiguity exercised below
+/// is the "Damage Multiplier" family — nine distinct affixes (All/Vulnerable/Physical/Cold/Fire/Shadow/
+/// Poison/Lightning/Holy) whose display names all end in "Damage Multiplier", so a bare "Damage
+/// Multiplier" query substring-matches every one while matching none exactly.
 /// </summary>
 public sealed class NameResolverTests
 {
@@ -102,20 +103,19 @@ public sealed class NameResolverTests
     // ── Ambiguous normalized key must fall through to fuzzy, not mis-resolve or throw ──
 
     [Fact]
-    public void TryResolveAffix_AmbiguousNormalizedKey_FallsThroughToFuzzy_StaysUnresolved()
+    public void TryResolveAffix_AmbiguousFuzzyKey_FallsThroughToFuzzy_StaysUnresolved()
     {
-        // The catalog carries "All Damage Multiplier" as SEVEN distinct entries (different hashes,
-        // identical display name — one per class-agnostic source). A lowercase, signless query
-        // normalizes to the same key for all seven, so the normalized tier must NOT pick one
-        // arbitrarily (keyed.Count == 7) — it must fall through to fuzzy, where all seven also match
-        // via substring containment, so it correctly stays ambiguous rather than resolving to an
-        // arbitrary hash or throwing (e.g. a Single()-style crash on the multi-match set).
+        // A bare "Damage Multiplier" query matches no exact catalog name and normalizes to a key no
+        // single affix owns (keyed.Count == 0), so it reaches the fuzzy pass — where all NINE
+        // "<Element> Damage Multiplier" affixes match via substring containment. The resolver must stay
+        // ambiguous rather than resolving to an arbitrary hash or throwing (e.g. a Single()-style crash
+        // on the multi-match set).
         var resolver = NewResolver();
 
-        var ex = Record.Exception(() => resolver.TryResolveAffix("all damage multiplier", out _, out _));
+        var ex = Record.Exception(() => resolver.TryResolveAffix("damage multiplier", out _, out _));
         ex.ShouldBeNull();
 
-        var resolved = resolver.TryResolveAffix("all damage multiplier", out var hash, out var suggestions);
+        var resolved = resolver.TryResolveAffix("damage multiplier", out var hash, out var suggestions);
 
         resolved.ShouldBeFalse();
         hash.ShouldBe(0u);
@@ -123,11 +123,11 @@ public sealed class NameResolverTests
     }
 
     [Fact]
-    public void TryResolveAffix_ExactCaseMatchOnCollidingName_BypassesAmbiguity()
+    public void TryResolveAffix_ExactCaseFamilyMember_ResolvesDirectly()
     {
-        // Exact-case "All Damage Multiplier" is an unambiguous dictionary hit on the exact tier
-        // (last-write-wins in AffixDatabase.ByName) — it must resolve directly without ever reaching
-        // the ambiguous normalized/fuzzy tiers, even though seven entries share this display name.
+        // Exact-case "All Damage Multiplier" is an unambiguous dictionary hit on the exact tier — it
+        // must resolve directly without ever reaching the normalized/fuzzy tiers, even though eight
+        // sibling affixes share the "Damage Multiplier" suffix.
         var resolver = NewResolver();
 
         var resolved = resolver.TryResolveAffix("All Damage Multiplier", out var hash, out var suggestions);
@@ -138,18 +138,19 @@ public sealed class NameResolverTests
     }
 
     [Fact]
-    public void TryResolveAffix_SignPrefixedVariantOfCollidingName_FallsThroughToFuzzy_StaysUnresolved()
+    public void TryResolveAffix_SignPrefixedFamilyMember_ResolvesViaNormalizedTier()
     {
-        // "+All Damage Multiplier" does not exact-match any catalog entry (none carry a sign
-        // prefix), so it reaches the normalized tier, which is ambiguous across all seven hashes,
-        // then fuzzy, which is equally ambiguous — must stay unresolved, not silently pick one.
+        // A guide/OCR phrase may carry a stray sign ("+All Damage Multiplier") the catalog entry lacks.
+        // Exact match fails, but the sign-stripped normalized key ("all damage multiplier") is now owned
+        // by exactly one affix, so the normalized tier resolves it to the same hash as the bare name —
+        // the sign must not block resolution or shunt it into the ambiguous fuzzy pass.
         var resolver = NewResolver();
 
-        var resolved = resolver.TryResolveAffix("+All Damage Multiplier", out var hash, out var suggestions);
+        var resolved = resolver.TryResolveAffix("+All Damage Multiplier", out var hash, out _);
 
-        resolved.ShouldBeFalse();
-        hash.ShouldBe(0u);
-        suggestions.ShouldNotBeEmpty();
+        resolved.ShouldBeTrue();
+        resolver.TryResolveAffix("All Damage Multiplier", out var expectedHash, out _);
+        hash.ShouldBe(expectedHash);
     }
 
     // ── Unresolved / degenerate inputs ───────────────────────────────────────
@@ -215,17 +216,18 @@ public sealed class NameResolverTests
     }
 
     [Fact]
-    public void IsKnownAffixPhrase_AmbiguousSharedName_StillReturnsTrue()
+    public void IsKnownAffixPhrase_AmbiguousFamilyPhrase_StillReturnsTrue()
     {
         // Unlike TryResolveAffix (which requires an unambiguous single match to auto-resolve),
-        // IsKnownAffixPhrase only asks "does this phrase NAME an affix" via the normalized-key identity
-        // check — so "all damage multiplier" (seven colliding hashes) that leaves TryResolveAffix
-        // unresolved must still classify as an affix phrase here. MaxrollParser.LooksLikeAffix depends
-        // on this so an ambiguous first-line affix is kept rather than swallowed as an item name.
+        // IsKnownAffixPhrase only asks "does this phrase NAME an affix" via the normalized-key
+        // containment check — so "damage multiplier" (nine sibling hashes, ambiguous) that leaves
+        // TryResolveAffix unresolved must still classify as an affix phrase here. MaxrollParser
+        // .LooksLikeAffix depends on this so an ambiguous first-line affix is kept rather than
+        // swallowed as an item name.
         var resolver = NewResolver();
 
-        resolver.TryResolveAffix("all damage multiplier", out _, out _).ShouldBeFalse(); // sanity: still ambiguous
-        resolver.IsKnownAffixPhrase("all damage multiplier").ShouldBeTrue();
+        resolver.TryResolveAffix("damage multiplier", out _, out _).ShouldBeFalse(); // sanity: still ambiguous
+        resolver.IsKnownAffixPhrase("damage multiplier").ShouldBeTrue();
     }
 
     [Fact]

@@ -332,10 +332,10 @@ cluster.
 | Affix | Hash |
 |-------|------|
 | Weapon Damage | `0x0027fc93` |
-| All Damage Multiplier | `0x001beac6` |
-| Attack Speed | `0x001beace` |
-| Critical Strike Chance | `0x001bead2` |
-| Critical Strike Damage Multiplier | `0x001bead4` |
+| All Damage Multiplier | `0x001bead4` |
+| Attack Speed | `0x001beab4` |
+| Critical Strike Chance | `0x001beace` |
+| Critical Strike Damage | `0x001bead2` |
 | Vulnerable Damage Multiplier | `0x001bfc80` |
 | Damage Over Time Multiplier | `0x001bead6` |
 | Cold Damage Multiplier | `0x00270af5` |
@@ -351,7 +351,7 @@ cluster.
 |-------|------|
 | Strength | `0x001beac2` |
 | Intelligence | `0x001beabe` |
-| Willpower | `0x001beab4` |
+| Willpower | `0x001beac6` |
 | % Cooldown Reduction | `0x001beab8` |
 | Dexterity | `0x001beaba` |
 
@@ -699,7 +699,7 @@ All individual skills use `X1_` prefix (Vessel of Hatred DLC). Guardian category
 
 To validate a codec implementation, generate the "Generic Crit" preset and verify the output matches known-good game imports:
 
-Core stats: Critical Strike Chance, Critical Strike Damage Multiplier, Attack Speed, All Damage Multiplier, Vulnerable Damage Multiplier
+Core stats: Critical Strike Chance, Critical Strike Damage, Attack Speed, All Damage Multiplier, Vulnerable Damage Multiplier
 Secondary: Maximum Life, Armor
 Skills: Core Skills, All Skills
 Gold threshold: 2+ core stats

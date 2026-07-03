@@ -222,15 +222,16 @@ public sealed class BuildGuideParserTests
     [Fact]
     public void Maxroll_WithResolver_CatalogAbsentAffix_FallsBackToItemName()
     {
-        // DATA GAP (not a parser bug): typed/conditional damage multipliers like "Physical Damage
-        // Multiplier" are absent from d4-data.json (the catalog carries only a generic "All Damage
-        // Multiplier"). Even after the value prefix is stripped the name resolves to nothing, so the
-        // first line is treated as the item name. Tracked in docs/design/data-gaps.md.
+        // DATA GAP (not a parser bug): purely conditional damage multipliers like "Damage to Distant
+        // Enemies" are absent from d4-data.json (catalog v5 added the elemental "<Element> Damage
+        // Multiplier" family, but not the target/state-conditional ones). Even after the value prefix
+        // is stripped the name resolves to nothing, so the first line is treated as the item name.
+        // Tracked in docs/design/data-gaps.md.
         var guide = new MaxrollParser(NewResolver()).Parse(NoItemNameFixture);
 
         var amulet = guide.Slots.First(s => s.SlotLabel == "Amulet");
-        amulet.ItemName.ShouldBe("x24% Physical Damage Multiplier");
-        amulet.Affixes.ShouldNotContain(a => a.RawName.Contains("Multiplier"));
+        amulet.ItemName.ShouldBe("x24% Damage to Distant Enemies");
+        amulet.Affixes.ShouldNotContain(a => a.RawName.Contains("Distant"));
     }
 
     [Fact]
@@ -472,7 +473,7 @@ public sealed class BuildGuideParserTests
         Resistance to All Elements
         Movement Speed
         Amulet
-        x24% Physical Damage Multiplier
+        x24% Damage to Distant Enemies
         Strength
         Maximum Life
         Critical Strike Chance

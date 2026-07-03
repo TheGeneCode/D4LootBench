@@ -189,7 +189,7 @@ public sealed class FilterCodecTests
     {
         var cond = new TalismanSetCondition
         {
-            SetIds     = [0x00112233, 0x00445566],
+            SetIds = [0x00112233, 0x00445566],
             SetEntries = [new TalismanSetEntry(0x00112233, 0x00aabbcc)]
         };
         var decoded = RoundTripRule(new FilterRule("Set", Visibility.Show, FilterColors.Blue, [cond]));
@@ -207,7 +207,7 @@ public sealed class FilterCodecTests
         // Multiple items in the same set should be packed into one sub-message and round-trip intact.
         var cond = new TalismanSetCondition
         {
-            SetIds     = [0x00230acc],
+            SetIds = [0x00230acc],
             SetEntries =
             [
                 new TalismanSetEntry(0x00230acc, 0x00250ee3),
@@ -392,7 +392,7 @@ public sealed class FilterCodecTests
         uint[] coreIds =
         [
             AffixDatabase.ByName["+Critical Strike Chance"].Hash,
-            AffixDatabase.ByName["Critical Strike Damage Multiplier"].Hash,
+            AffixDatabase.ByName["Critical Strike Damage"].Hash,
             AffixDatabase.ByName["+Attack Speed"].Hash,
             AffixDatabase.ByName["All Damage Multiplier"].Hash,
             AffixDatabase.ByName["Vulnerable Damage Multiplier"].Hash,
@@ -434,15 +434,15 @@ public sealed class FilterCodecTests
 
         ruleset.Name.ShouldBe("Uniques");
         ruleset.Rules.Count.ShouldBe(1);
-        
+
         var rule = ruleset.Rules[0];
         rule.Conditions.Count.ShouldBe(1);
         rule.Conditions[0].ShouldBeOfType<SpecificUniqueCondition>();
-        
+
         var unique = (SpecificUniqueCondition)rule.Conditions[0];
         // These should be hash IDs from the wire format
         unique.UniqueIds.Count.ShouldBeGreaterThan(0);
-        
+
         // Log the IDs for inspection
         var idStrs = unique.UniqueIds.Select(id => $"0x{id:x8}").ToList();
         System.Diagnostics.Debug.WriteLine($"Unique IDs: {string.Join(", ", idStrs)}");

@@ -858,7 +858,7 @@ public sealed class GearTooltipParserBoundaryTests
 
         result.Item.Affixes.ShouldHaveSingleItem();
         result.Item.Affixes[0].IsResolved.ShouldBeTrue();
-        result.Item.Affixes[0].ResolvedName!.ShouldContain("Critical Strike Damage Multiplier");
+        result.Item.Affixes[0].ResolvedName!.ShouldContain("Critical Strike Damage");
     }
 
     [Fact]
@@ -1052,7 +1052,7 @@ public sealed class GearTooltipParserBoundaryTests
 
         result.Item.Affixes.ShouldHaveSingleItem();
         result.Item.Affixes[0].IsResolved.ShouldBeTrue();
-        result.Item.Affixes[0].ResolvedName!.ShouldContain("Critical Strike Damage Multiplier");
+        result.Item.Affixes[0].ResolvedName!.ShouldContain("Critical Strike Damage");
     }
 
     [Fact]
@@ -1070,7 +1070,7 @@ public sealed class GearTooltipParserBoundaryTests
 
         result.Item.Affixes.ShouldHaveSingleItem();
         result.Item.Affixes[0].IsResolved.ShouldBeTrue();
-        result.Item.Affixes[0].ResolvedName!.ShouldContain("Critical Strike Damage Multiplier");
+        result.Item.Affixes[0].ResolvedName!.ShouldContain("Critical Strike Damage");
     }
 
     // --- MaxAffixes cap interplay with range-continuation merging ---

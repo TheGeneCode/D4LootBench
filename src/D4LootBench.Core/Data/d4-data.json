@@ -1,6 +1,6 @@
 {
-  "formatVersion": 4,
-  "source": "LootBenchDataExtract build 3.1.0.72592",
+  "formatVersion": 5,
+  "source": "LootBenchDataExtract build 3.1.0.72698",
   "affixes": [
     {
       "displayName": "\u002BArmor",
@@ -87,7 +87,7 @@
       "snoName": "S04_CritDamage"
     },
     {
-      "displayName": "Vulnerable Damage Multiplier",
+      "displayName": "All Damage Multiplier",
       "hash": "0x001BEAD4",
       "classes": [
         "All"
@@ -215,7 +215,7 @@
       "snoName": "S04_Resource_Max_AllClasses"
     },
     {
-      "displayName": "Critical Strike Damage Multiplier",
+      "displayName": "Vulnerable Damage Multiplier",
       "hash": "0x001BFC80",
       "classes": [
         "All"
@@ -2038,7 +2038,7 @@
       "snoName": "X2_Evade_MovementSpeed"
     },
     {
-      "displayName": "All Damage Multiplier",
+      "displayName": "Physical Damage Multiplier",
       "hash": "0x00270AD0",
       "classes": [
         "Druid",
@@ -2052,7 +2052,7 @@
       "snoName": "X2_DamageType_Physical"
     },
     {
-      "displayName": "All Damage Multiplier",
+      "displayName": "Cold Damage Multiplier",
       "hash": "0x00270AF5",
       "classes": [
         "Sorcerer",
@@ -2062,7 +2062,7 @@
       "snoName": "X2_DamageType_Cold"
     },
     {
-      "displayName": "All Damage Multiplier",
+      "displayName": "Fire Damage Multiplier",
       "hash": "0x00270AF7",
       "classes": [
         "Sorcerer",
@@ -2073,7 +2073,7 @@
       "snoName": "X2_DamageType_Fire"
     },
     {
-      "displayName": "All Damage Multiplier",
+      "displayName": "Shadow Damage Multiplier",
       "hash": "0x00270AF9",
       "classes": [
         "Rogue",
@@ -2083,7 +2083,7 @@
       "snoName": "X2_DamageType_Shadow"
     },
     {
-      "displayName": "All Damage Multiplier",
+      "displayName": "Poison Damage Multiplier",
       "hash": "0x00270AFB",
       "classes": [
         "Druid",
@@ -2093,7 +2093,7 @@
       "snoName": "X2_DamageType_Poison"
     },
     {
-      "displayName": "All Damage Multiplier",
+      "displayName": "Lightning Damage Multiplier",
       "hash": "0x00270AFD",
       "classes": [
         "Sorcerer",
@@ -2103,7 +2103,7 @@
       "snoName": "X2_DamageType_Lightning"
     },
     {
-      "displayName": "All Damage Multiplier",
+      "displayName": "Holy Damage Multiplier",
       "hash": "0x00270AFF",
       "classes": [
         "Paladin"
