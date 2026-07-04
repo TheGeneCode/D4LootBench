@@ -36,8 +36,8 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
             TargetAffixIds = affixes,
         };
 
-    // A NeedsRule diff with a real equipped item so the Greater-Affix companion gate (EquippedItem != null)
-    // can fire; matched/matchedGreater are set directly to probe the companion's emission boundaries.
+    // A non-maxed NeedsRule diff with a real equipped item (IsMaxedOnTargets defaults false), used for the
+    // gold same-or-more rule; matched/matchedGreater are set directly to probe the gold rule's boundaries.
     private static SlotDiff NeedsRuleEquipped(GearSlot slot, int ordinal, int matched, int matchedGreater, params uint[] targets) =>
         new()
         {
@@ -50,230 +50,397 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
             MatchedGreaterAffixCount = matchedGreater,
         };
 
+    // A maxed-on-targets NeedsRule diff with an explicit ordinal (so cyan rules for distinct ordinals stay
+    // separate for budget/ordering tests). IsMaxedOnTargets is derived from matched >= cap, matching the
+    // engine, so the generator takes the cyan (Greater) branch.
+    private static SlotDiff MaxedEquipped(GearSlot slot, int ordinal, int matched, int matchedGreater, int cap, params uint[] targets) =>
+        new()
+        {
+            Slot = new SlotKey(slot, ordinal),
+            Status = SlotDiffStatus.NeedsRule,
+            EquippedItem = Item(slot, []),
+            Goal = new SlotGoal { TargetAffixIds = targets },
+            TargetAffixIds = targets,
+            MatchedAffixCount = matched,
+            MatchedGreaterAffixCount = matchedGreater,
+            EffectiveTargetCap = cap,
+            IsMaxedOnTargets = matched >= cap,
+        };
+
     private static FilterRule? GreaterRule(ProgressionFilterResult result, string slotName) =>
         result.Ruleset.Rules.FirstOrDefault(r => r.Name == slotName + " (Greater)");
 
-    // ---- Greater-Affix companion rule: emission gate, shape, ordering, budget priority ----
+    // ---- Cyan maxed-slot rule: emission, shape, ordering, budget priority. Once the equipped piece is
+    // maxed on its target affixes for its rarity the only catchable upgrade is more Greater Affixes, so the
+    // slot emits a single cyan (Greater) rule instead of a gold one. ----
 
     [Fact]
-    public void Generate_EquippedWithNonGreaterMatch_EmitsCyanGreaterCompanion()
+    public void Generate_MaxedSlot_EmitsCyanGaRuleNoGold()
     {
-        // Equipped ring has 2 of its 3 targets, none greater → base rule requires 3 (an affix upgrade),
-        // and a cyan companion catches an item with the SAME 2 affixes but one Greater Affix.
+        // Ring maxed on 3 of 3 targets, none greater → a single cyan rule requiring the same 3 affixes plus
+        // at least one Greater Affix. No gold rule is emitted for a maxed slot.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Ring, 0, 3, 0, 3, 1u, 2u, 3u)));
+
+        var cyan = GreaterRule(result, "Ring").ShouldNotBeNull();
+        cyan.Visibility.ShouldBe(Visibility.Recolor);
+        cyan.Color.ShouldBe(FilterRule.PackColor(0, 220, 255));
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+        result.Ruleset.Rules.ShouldNotContain(r => r.Name == "Ring"); // no gold rule for a maxed slot
+    }
+
+    [Fact]
+    public void Generate_MaxedSlot_RequiresSameOrMoreGa()
+    {
+        // Maxed on 3 of 3 with 2 already greater → cyan rule demands at least 2 GA (same-or-more) at the
+        // same target-affix count.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Amulet, 0, 3, 2, 3, 1u, 2u, 3u)));
+
+        var cyan = GreaterRule(result, "Amulet").ShouldNotBeNull();
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(2);
+    }
+
+    [Fact]
+    public void Generate_MaxedSingleTarget_MinimalCyan()
+    {
+        // Smallest maxed slot: one target, present but not greater (cap 1) → cyan requires that one affix
+        // plus one GA — the minimal viable cyan rule.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Ring, 0, 1, 0, 1, 1u)));
+
+        var cyan = GreaterRule(result, "Ring").ShouldNotBeNull();
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_MaxedSlot_MatchedGreaterFloorsGaAtOne()
+    {
+        // matchedGa 0 on a maxed 2-target slot → the GA requirement floors at 1 (Math.Max(1, 0)), never 0,
+        // so the cyan rule always gates on at least one Greater Affix.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Ring, 0, 2, 0, 2, 1u, 2u)));
+
+        var cyan = GreaterRule(result, "Ring").ShouldNotBeNull();
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_NonMaxedSlot_NeverEmitsGreaterAffixCondition()
+    {
+        // A non-maxed equipped slot (matched 2 of 3, none greater) yields ONE gold rule requiring the SAME
+        // OR MORE count (2, not 3) and no cyan rule — GreaterAffixCondition is exclusive to maxed slots.
         var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 2, 0, 1u, 2u, 3u)));
 
-        var baseRule = result.Ruleset.Rules.Single(r => r.Name == "Ring");
-        baseRule.Color.ShouldBe(FilterRule.PackColor(255, 180, 0));
-        baseRule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
-        baseRule.Conditions.OfType<GreaterAffixCondition>().ShouldBeEmpty();
-
-        var greater = GreaterRule(result, "Ring").ShouldNotBeNull();
-        greater.Visibility.ShouldBe(Visibility.Recolor);
-        greater.Color.ShouldBe(FilterRule.PackColor(0, 220, 255));
-        greater.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2); // same count as equipped
-        greater.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1); // one more GA than 0
-    }
-
-    [Fact]
-    public void Generate_GreaterCompanion_RequiresOneMoreGaThanEquipped()
-    {
-        // Equipped has 3 matched, 1 already greater → companion demands 2 GA (one more) at the same count.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Amulet, 0, 3, 1, 1u, 2u, 3u, 4u)));
-
-        var greater = GreaterRule(result, "Amulet").ShouldNotBeNull();
-        greater.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
-        greater.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(2);
-    }
-
-    [Fact]
-    public void Generate_AllMatchedAlreadyGreater_NoGreaterCompanion()
-    {
-        // matchedGreater == matched → no room to add a GA among the matched targets → no companion emitted.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 2, 2, 1u, 2u, 3u)));
-
+        var gold = result.Ruleset.Rules.Single(r => r.Name == "Ring");
+        gold.Color.ShouldBe(FilterRule.PackColor(255, 180, 0));
+        gold.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2); // same-or-more, not +1
         GreaterRule(result, "Ring").ShouldBeNull();
         result.Ruleset.Rules.ShouldNotContain(r => r.Conditions.OfType<GreaterAffixCondition>().Any());
     }
 
     [Fact]
-    public void Generate_NoEquippedItem_NoGreaterCompanionEvenWithMatchedCount()
+    public void Generate_NonMaxedMatchedZero_GoldMinOneNoGa()
     {
-        // A hand-built diff reporting matches but NO equipped item (matchedGreater 0 < matched 2) must not
-        // emit a companion — the gate requires a real item to beat, not just a matched count.
-        var diff = Diff(new SlotDiff
+        // Non-maxed with zero matched targets → gold rule floors the required count at 1, still no GA gate.
+        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 0, 0, 1u, 2u)));
+
+        var gold = result.Ruleset.Rules.Single(r => r.Name == "Ring");
+        gold.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
+        GreaterRule(result, "Ring").ShouldBeNull();
+    }
+
+    [Fact]
+    public void Generate_StaleDiff_MatchedGreaterExceedsMatched_NonMaxed_NoThrow()
+    {
+        // A hand-built/stale SlotDiff could report MORE greater matches than matches (shouldn't happen via
+        // SlotDiffEngine, but Generate() takes a public SlotDiffResult). When not maxed the generator emits
+        // a plain gold rule and must not throw on the out-of-range combination.
+        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 1, 5, 1u, 2u)));
+
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Ring");
+        GreaterRule(result, "Ring").ShouldBeNull();
+    }
+
+    [Fact]
+    public void Generate_MaxedSlot_CapExceedsTargetCount_ClampsAffixMinNoThrow()
+    {
+        // A stale maxed diff whose EffectiveTargetCap exceeds the actual target count must not overflow the
+        // cyan rule's AffixCondition — SlotRuleBuilder clamps requiredCount to [1, capped.Count].
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Helm, 0, 10, 0, 10, 1u, 2u, 3u)));
+
+        var cyan = GreaterRule(result, "Helm").ShouldNotBeNull();
+        var affixCondition = cyan.Conditions.OfType<AffixCondition>().Single();
+        affixCondition.MinimumCount.ShouldBe(3);
+        affixCondition.MinimumCount.ShouldBeLessThanOrEqualTo(affixCondition.AffixIds.Count);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_MaxedSlot_RoundTripsThroughCodec()
+    {
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Ring, 0, 2, 0, 2, 1u, 2u)));
+        var cyan = GreaterRule(result, "Ring").ShouldNotBeNull();
+
+        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
+        var decodedCyan = decoded.Rules.Single(r => r.Name == "Ring (Greater)");
+        decodedCyan.Conditions.Select(c => c.GetType().Name)
+            .ShouldBe(cyan.Conditions.Select(c => c.GetType().Name));
+        decodedCyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_MaxedAmbiguousWeapon_AffixOnlyCyanRoundTrips()
+    {
+        // Weapon with role None resolves to an EMPTY type-hash set (ambiguous), so the cyan rule has no
+        // ItemTypeCondition at all — just AffixCondition + GreaterAffixCondition. Confirm this shape
+        // survives encode/decode too.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Weapon, 0, 2, 0, 2, 1u, 2u)));
+
+        var cyan = GreaterRule(result, "Weapon").ShouldNotBeNull();
+        cyan.Conditions.OfType<ItemTypeCondition>().ShouldBeEmpty();
+        cyan.Conditions.OfType<AffixCondition>().ShouldHaveSingleItem();
+        cyan.Conditions.OfType<GreaterAffixCondition>().ShouldHaveSingleItem();
+
+        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
+        var decodedCyan = decoded.Rules.Single(r => r.Name == "Weapon (Greater)");
+        decodedCyan.Conditions.Select(c => c.GetType().Name)
+            .ShouldBe(cyan.Conditions.Select(c => c.GetType().Name));
+        decodedCyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_AllGoldRulesRankAboveAllCyanRules()
+    {
+        // A mix of non-maxed (gold) and maxed (cyan) slots: every gold rule must precede every cyan rule so
+        // the lower-value cyan rules are the first to drop under the cap.
+        var result = NewGenerator().Generate(Diff(
+            NeedsRuleEquipped(GearSlot.Helm, 0, 1, 0, 1u, 2u),      // gold
+            MaxedEquipped(GearSlot.Gloves, 0, 2, 0, 2, 3u, 4u)));   // cyan
+
+        var names = result.Ruleset.Rules.Select(r => r.Name).ToList();
+        names.IndexOf("Helm").ShouldBeLessThan(names.IndexOf("Gloves (Greater)"));
+    }
+
+    [Fact]
+    public void Generate_BudgetPressure_DropsCyanBeforeGold()
+    {
+        // 20 distinct non-maxed (gold) + 20 distinct maxed (cyan) = 40 rules for a 24-rule (no-unique)
+        // capacity. Gold rules rank first, so all 20 gold survive and every dropped rule is a cyan one.
+        var gold = Enumerable.Range(0, 20)
+            .Select(i => NeedsRuleEquipped(GearSlot.Helm, i, 1, 0, (uint)(1000 + i)))
+            .ToArray();
+        var cyan = Enumerable.Range(0, 20)
+            .Select(i => MaxedEquipped(GearSlot.Ring, i, 1, 0, 1, (uint)(2000 + i)))
+            .ToArray();
+
+        var result = NewGenerator().Generate(Diff(gold.Concat(cyan).ToArray()));
+
+        result.BudgetExceeded.ShouldBeTrue();
+        result.Warnings.Where(w => w.Contains("dropped")).ShouldAllBe(w => w.Contains("(Greater)"));
+        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal))
+            .ShouldBe(NoUniqueCapacity - 20); // 4 cyan survive after the 20 gold rules
+        result.Ruleset.Rules.Count(r => r.Color == FilterRule.PackColor(255, 180, 0)).ShouldBe(20);
+    }
+
+    [Fact]
+    public void Generate_IdenticalCyanShapes_CollapseToOne()
+    {
+        // Two maxed Ring ordinals sharing item type, targets, cap AND matchedGa produce byte-identical cyan
+        // rules (same ga:{n} shape key) — collapse must merge them just like gold rules.
+        var result = NewGenerator().Generate(Diff(
+            MaxedEquipped(GearSlot.Ring, 0, 2, 0, 2, 10u, 20u),
+            MaxedEquipped(GearSlot.Ring, 1, 2, 0, 2, 10u, 20u)));
+
+        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_DifferingCyanGa_DoNotCollapse()
+    {
+        // Same base shape (type/targets/cap) but different matchedGa → the ga:{MinimumCount} segment differs
+        // (1 vs 2), so both cyan rules survive collapse.
+        var result = NewGenerator().Generate(Diff(
+            MaxedEquipped(GearSlot.Ring, 0, 2, 1, 2, 10u, 20u),
+            MaxedEquipped(GearSlot.Ring, 1, 2, 2, 2, 10u, 20u)));
+
+        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(2);
+    }
+
+    // ---- Cyan rule when EffectiveTargetCap is 0 / targets are empty (a maxed unique-only slot). The
+    // engine trivially marks matched(0) >= cap(0) as maxed, so a unique-only goal with zero affix targets
+    // takes the cyan branch. Confirm the GreaterAffixCondition still attaches when a type gate exists, and
+    // document what happens when it doesn't (no type gate + no affixes == no conditions at all, so
+    // SlotRuleBuilder returns null and the GA requirement is silently lost). ----
+
+    [Fact]
+    public void Generate_MaxedZeroTargetResolvableSlot_ItemTypePlusGreaterOnlyRule_NoAffixCondition()
+    {
+        // Helm resolves to a real item type; zero targets + maxed (matched 0 >= cap 0) → the cyan rule
+        // has an ItemTypeCondition + GreaterAffixCondition but NO AffixCondition at all.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Helm, 0, 0, 0, 0)));
+
+        var cyan = GreaterRule(result, "Helm").ShouldNotBeNull();
+        cyan.Conditions.OfType<ItemTypeCondition>().ShouldHaveSingleItem();
+        cyan.Conditions.OfType<AffixCondition>().ShouldBeEmpty();
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+        result.Warnings.ShouldNotContain(w => w.Contains("No conditions"));
+    }
+
+    [Fact]
+    public void Generate_MaxedZeroTargetResolvableSlot_RoundTripsThroughCodec()
+    {
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Helm, 0, 0, 0, 0)));
+        var cyan = GreaterRule(result, "Helm").ShouldNotBeNull();
+
+        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
+        var decodedCyan = decoded.Rules.Single(r => r.Name == "Helm (Greater)");
+        decodedCyan.Conditions.Select(c => c.GetType().Name)
+            .ShouldBe(cyan.Conditions.Select(c => c.GetType().Name));
+        decodedCyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_MaxedZeroTargetAmbiguousSlot_DroppedEntirely_GreaterAffixRequirementLost()
+    {
+        // Weapon (role None) resolves to NO item type AND has zero target affixes → BuildMultiType has
+        // nothing to build a condition from and returns null, so the slot is skipped entirely — even
+        // though IsMaxedOnTargets is true and the diff calls for an "at least 1 Greater Affix" rule. The
+        // generic "Ambiguous item type" warning still fires and (misleadingly, in this specific case)
+        // claims an affix-only rule is being emitted, when in fact NO rule is emitted for this slot.
+        // Documents current behavior — flagged as a potential gap in the QA findings, not asserted correct.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Weapon, 0, 0, 0, 0)));
+
+        result.SlotRuleCount.ShouldBe(0);
+        result.Warnings.ShouldContain(w => w.Contains("No conditions") && w.Contains("Weapon"));
+        result.Warnings.ShouldContain(w => w.Contains("Ambiguous item type") && w.Contains("Weapon"));
+        result.Ruleset.Rules.ShouldHaveSingleItem(); // Hide All only — the maxed slot vanishes silently
+    }
+
+    [Fact]
+    public void Generate_MaxedSlot_NegativeEffectiveTargetCap_ClampsToOneNoThrow()
+    {
+        // A stale/hand-built diff could report a negative EffectiveTargetCap (never happens via
+        // SlotDiffEngine, whose cap is Math.Min(targets.Count, rollableCap) — always >= 0). Confirm
+        // SlotRuleBuilder's Math.Clamp(requiredCount, 1, capped.Count) floors it to 1 rather than
+        // throwing or silently requesting a zero/negative affix count.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Ring, 0, 0, 0, -3, 1u, 2u, 3u)));
+
+        var cyan = GreaterRule(result, "Ring").ShouldNotBeNull();
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_MaxedSlot_NegativeMatchedGreaterAffixCount_FloorsToOneNoThrow()
+    {
+        // Another stale-diff shape: MatchedGreaterAffixCount negative. Math.Max(1, matchedGa) must floor
+        // it to 1 (a GreaterAffixCondition can't sensibly ask for < 1) — never throw, never emit <= 0.
+        var result = NewGenerator().Generate(Diff(MaxedEquipped(GearSlot.Ring, 0, 2, -5, 2, 1u, 2u)));
+
+        var cyan = GreaterRule(result, "Ring").ShouldNotBeNull();
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_EndToEnd_UniqueOnlyMaxedSlotWrongUnique_ResolvableSlot_EmitsCyanGaOnlyRule()
+    {
+        // Real SlotDiffEngine + RelativeToEquipped, not a hand-built diff: a Helm goal with a required
+        // unique and ZERO affix targets, wrong unique equipped. effectiveCap = min(0, cap) = 0, so
+        // matched(0) >= 0 trivially maxes the slot — NeedsRule fires purely off the unique mismatch, and
+        // Generate() takes the cyan branch, producing an ItemType + GreaterAffixCondition-only rule.
+        var loadout = EquippedLoadout.FromItems([Item(GearSlot.Helm, [], uniqueHash: 0xDEADu)]);
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
         {
-            Slot = new SlotKey(GearSlot.Ring),
-            Status = SlotDiffStatus.NeedsRule,
-            TargetAffixIds = [1u, 2u, 3u],
-            MatchedAffixCount = 2,
-            MatchedGreaterAffixCount = 0,
+            [new SlotKey(GearSlot.Helm)] = new SlotGoal
+            {
+                TargetUnique = 0xBEEFu,
+                TargetAffixIds = [],
+                Threshold = MeetsGoalThreshold.RelativeToEquipped,
+            },
         });
+        var diff = new SlotDiffEngine().Diff(loadout, goal);
+        var slotDiff = diff.Slots.Single();
+        slotDiff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+        slotDiff.IsMaxedOnTargets.ShouldBeTrue();
+        slotDiff.UniqueSatisfied.ShouldBeFalse();
 
         var result = NewGenerator().Generate(diff);
 
-        GreaterRule(result, "Ring").ShouldBeNull();
-        result.Ruleset.Rules.ShouldNotContain(r => r.Conditions.OfType<GreaterAffixCondition>().Any());
+        var cyan = GreaterRule(result, "Helm").ShouldNotBeNull();
+        cyan.Conditions.OfType<ItemTypeCondition>().ShouldHaveSingleItem();
+        cyan.Conditions.OfType<AffixCondition>().ShouldBeEmpty();
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Target Uniques"); // the unique gate still fires
     }
 
     [Fact]
-    public void Generate_GreaterCompanion_RoundTripsThroughCodec()
+    public void Generate_EndToEnd_UniqueOnlyMaxedSlotWrongUnique_AmbiguousWeaponSlot_SilentlyDropped()
     {
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 2, 0, 1u, 2u, 3u)));
-        var greater = GreaterRule(result, "Ring").ShouldNotBeNull();
+        // Same scenario as above but on an ambiguous slot (Weapon, no ItemTypeName so it keys role-less):
+        // the maxed cyan branch has neither a type gate nor affix targets to build from, so the slot is
+        // dropped entirely — the player gets NO highlighting for a slot that genuinely still needs the
+        // correct unique. Confirms the gap found via hand-built diffs is reachable through the real
+        // engine end-to-end, not just a synthetic SlotDiff.
+        var loadout = EquippedLoadout.FromItems([Item(GearSlot.Weapon, [], uniqueHash: 0xDEADu)]);
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
+        {
+            [new SlotKey(GearSlot.Weapon)] = new SlotGoal
+            {
+                TargetUnique = 0xBEEFu,
+                TargetAffixIds = [],
+                Threshold = MeetsGoalThreshold.RelativeToEquipped,
+            },
+        });
+        var diff = new SlotDiffEngine().Diff(loadout, goal);
+        var slotDiff = diff.Slots.Single();
+        slotDiff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+        slotDiff.IsMaxedOnTargets.ShouldBeTrue();
 
-        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
-        var decodedGreater = decoded.Rules.Single(r => r.Name == "Ring (Greater)");
-        decodedGreater.Conditions.Select(c => c.GetType().Name)
-            .ShouldBe(greater.Conditions.Select(c => c.GetType().Name));
-        decodedGreater.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+        var result = NewGenerator().Generate(diff);
+
+        result.SlotRuleCount.ShouldBe(0);
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Target Uniques"); // unique gate is unaffected
+        result.Warnings.ShouldContain(w => w.Contains("No conditions") && w.Contains("Weapon"));
     }
 
     [Fact]
-    public void Generate_AllBaseRulesRankAboveAllGreaterCompanions()
+    public void Generate_GoldRules_DifferByMatchedGreaterAffixCountOnly_StillCollapse()
     {
+        // Gold rules never attach a GreaterAffixCondition and never factor MatchedGreaterAffixCount into
+        // the required count — so two otherwise-identical non-maxed slots with DIFFERENT matchedGreater
+        // must still collapse to a single gold rule (ShapeKey is blind to GA count on the gold tier).
         var result = NewGenerator().Generate(Diff(
-            NeedsRuleEquipped(GearSlot.Helm, 0, 1, 0, 1u, 2u),
-            NeedsRuleEquipped(GearSlot.Gloves, 0, 1, 0, 3u, 4u)));
+            NeedsRuleEquipped(GearSlot.Ring, 0, 1, 0, 500u),
+            NeedsRuleEquipped(GearSlot.Ring, 1, 1, 3, 500u)));
 
-        var names = result.Ruleset.Rules.Select(r => r.Name).ToList();
-        var lastBase = Math.Max(names.IndexOf("Helm"), names.IndexOf("Gloves"));
-        var firstGreater = Math.Min(names.IndexOf("Helm (Greater)"), names.IndexOf("Gloves (Greater)"));
-        lastBase.ShouldBeLessThan(firstGreater); // every base rule precedes every companion
+        result.Ruleset.Rules.Count(r => r.Color == FilterRule.PackColor(255, 180, 0)).ShouldBe(1);
+        result.SlotRuleCount.ShouldBe(1);
     }
 
     [Fact]
-    public void Generate_BudgetPressure_DropsGreaterCompanionsBeforeBaseRules()
+    public void Generate_BudgetPressure_WithUniqueRule_MixedGoldCyan_DropsCyanFirst_CapacityShrunkByTwo()
     {
-        // 24 distinct equipped slots → 24 base + 24 companion = 48 rules for a 24-rule (no-unique) capacity.
-        // Base rules rank first, so all 24 base rules survive and all 24 companions are dropped.
-        var slots = Enumerable.Range(0, NoUniqueCapacity)
-            .Select(i => NeedsRuleEquipped(GearSlot.Helm, i, 1, 0, (uint)(1000 + i)))
+        // Capacity with a uniques rule is 23 (25 - Hide All - Target Uniques). 15 distinct gold (sharing
+        // one target unique so the Uniques rule exists) + 15 distinct cyan == 30 raw rules. Gold ranks
+        // first, so all 15 gold survive and only 8 of the 15 cyan fit (23 - 15), dropping the other 7 —
+        // landing the total exactly on the 25-rule ceiling.
+        var gold = Enumerable.Range(0, 15)
+            .Select(i => NeedsUniqueRule(GearSlot.Helm, i, 0xAAAAu, (uint)(1000 + i)))
+            .ToArray();
+        var cyan = Enumerable.Range(0, 15)
+            .Select(i => MaxedEquipped(GearSlot.Ring, i, 1, 0, 1, (uint)(2000 + i)))
             .ToArray();
 
-        var result = NewGenerator().Generate(Diff(slots));
+        var result = NewGenerator().Generate(Diff(gold.Concat(cyan).ToArray()));
 
         result.BudgetExceeded.ShouldBeTrue();
-        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(0);
-        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Recolor).ShouldBe(NoUniqueCapacity);
-        result.Warnings.Count(w => w.Contains("dropped") && w.Contains("(Greater)")).ShouldBe(NoUniqueCapacity);
-    }
-
-    // ---- Greater-Affix companion: matched/matchedGreater edge combinations beyond the nominal
-    // matched=2/3 cases above (gate is `EquippedItem is not null && MatchedGreaterAffixCount <
-    // MatchedAffixCount`; the companion's own required-affix-count has NO Math.Max(1, ...) floor like
-    // the base rule does — it relies solely on SlotRuleBuilder's clamp). ----
-
-    [Fact]
-    public void Generate_MatchedZero_EquippedItemPresent_GateFalse_NoCompanion()
-    {
-        // matchedGreater(0) < matched(0) is false — the "must have room to gain a GA" gate must reject
-        // this even though an equipped item exists, since there's nothing matched to begin with.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 0, 0, 1u, 2u)));
-
-        GreaterRule(result, "Ring").ShouldBeNull();
-        result.Ruleset.Rules.ShouldNotContain(r => r.Conditions.OfType<GreaterAffixCondition>().Any());
-    }
-
-    [Fact]
-    public void Generate_MatchedOneMatchedGreaterZero_CompanionRequiresOneAffixOneGa()
-    {
-        // Smallest nonzero matched count: gate 0 < 1 true. Companion required-affix-count clamps to the
-        // single target (1) and the GA requirement is just one (0 + 1) — the minimal viable companion.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 1, 0, 1u)));
-
-        var greater = GreaterRule(result, "Ring").ShouldNotBeNull();
-        greater.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
-        greater.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
-    }
-
-    [Fact]
-    public void Generate_MatchedGreaterOneBelowMatched_CompanionRequiresAllMatchedToBeGreater()
-    {
-        // matchedGreater == matched - 1 (the last boundary before "AllMatchedAlreadyGreater" suppresses
-        // the companion entirely): GA requirement becomes matchedGreater + 1 == matched, i.e. every
-        // currently-matched affix must be greater — the strictest satisfiable companion shape.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 2, 1, 1u, 2u, 3u)));
-
-        var greater = GreaterRule(result, "Ring").ShouldNotBeNull();
-        greater.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2);
-        greater.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(2);
-    }
-
-    [Fact]
-    public void Generate_MatchedGreaterExceedsMatched_StaleDiff_NoCompanionNoThrow()
-    {
-        // A hand-built/stale SlotDiff could report MORE greater matches than matches (shouldn't happen via
-        // SlotDiffEngine, but Generate() takes a public SlotDiffResult). Gate (matchedGreater < matched)
-        // is false, so no companion — and the generator must not throw on this out-of-range combination.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Ring, 0, 1, 5, 1u, 2u)));
-
-        GreaterRule(result, "Ring").ShouldBeNull();
-        result.Ruleset.Rules.ShouldNotContain(r => r.Conditions.OfType<GreaterAffixCondition>().Any());
-    }
-
-    [Fact]
-    public void Generate_GreaterCompanion_MatchedExceedsTargetCount_ClampsAffixMinNoThrow()
-    {
-        // Companion-specific variant of the base-rule clamp test above: a stale diff reporting more
-        // matches than there are targets must not overflow the companion's AffixCondition either —
-        // SlotRuleBuilder clamps requiredCount to [1, capped.Count] regardless of caller input.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Helm, 0, 10, 0, 1u, 2u, 3u)));
-
-        var greater = GreaterRule(result, "Helm").ShouldNotBeNull();
-        var affixCondition = greater.Conditions.OfType<AffixCondition>().Single();
-        affixCondition.MinimumCount.ShouldBe(3);
-        affixCondition.MinimumCount.ShouldBeLessThanOrEqualTo(affixCondition.AffixIds.Count);
-        greater.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
-    }
-
-    [Fact]
-    public void Generate_AmbiguousSlotWithEquippedItem_AffixOnlyGreaterCompanionRoundTrips()
-    {
-        // Weapon/Offhand with role None resolves to an EMPTY type-hash set (ambiguous), so the companion
-        // has no ItemTypeCondition at all — just AffixCondition + GreaterAffixCondition. This shape isn't
-        // covered by the resolvable-slot round-trip test above; confirm it survives encode/decode too.
-        var result = NewGenerator().Generate(Diff(NeedsRuleEquipped(GearSlot.Weapon, 0, 2, 0, 1u, 2u, 3u)));
-
-        var greater = GreaterRule(result, "Weapon").ShouldNotBeNull();
-        greater.Conditions.OfType<ItemTypeCondition>().ShouldBeEmpty();
-        greater.Conditions.OfType<AffixCondition>().ShouldHaveSingleItem();
-        greater.Conditions.OfType<GreaterAffixCondition>().ShouldHaveSingleItem();
-
-        var decoded = FilterCodec.Decode(FilterCodec.Encode(result.Ruleset));
-        var decodedGreater = decoded.Rules.Single(r => r.Name == "Weapon (Greater)");
-        decodedGreater.Conditions.Select(c => c.GetType().Name)
-            .ShouldBe(greater.Conditions.Select(c => c.GetType().Name));
-        decodedGreater.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
-    }
-
-    [Fact]
-    public void Generate_IdenticalShapeCompanions_CollapseToOne()
-    {
-        // Two Ring ordinals sharing the same resolved item type, targets, matched, AND matchedGreater
-        // produce byte-identical companion rules (same ga:{n} shape key) — collapse must merge them just
-        // like base rules do (e.g. Barbarian dual-1H hands sharing a companion shape).
-        var result = NewGenerator().Generate(Diff(
-            NeedsRuleEquipped(GearSlot.Ring, 0, 2, 0, 10u, 20u),
-            NeedsRuleEquipped(GearSlot.Ring, 1, 2, 0, 10u, 20u)));
-
-        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(1);
-        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Recolor
-            && !r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(1);
-    }
-
-    [Fact]
-    public void Generate_DifferingMatchedGreaterCompanions_DoNotCollapse()
-    {
-        // Same base shape (same type/targets/matched) but different matchedGreater → the ShapeKey's
-        // ga:{MinimumCount} segment differs, so both companions must survive collapse even though the
-        // base rules (which don't depend on matchedGreater) DO collapse to one.
-        var result = NewGenerator().Generate(Diff(
-            NeedsRuleEquipped(GearSlot.Ring, 0, 2, 0, 10u, 20u),
-            NeedsRuleEquipped(GearSlot.Ring, 1, 2, 1, 10u, 20u)));
-
-        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(2);
-        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Recolor
-            && !r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(1);
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Target Uniques");
+        result.Warnings.Where(w => w.Contains("dropped")).ShouldAllBe(w => w.Contains("(Greater)"));
+        result.Ruleset.Rules.Count(r => r.Color == FilterRule.PackColor(255, 180, 0)).ShouldBe(15);
+        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal))
+            .ShouldBe(WithUniqueCapacity - 15); // 8 cyan survive
+        result.Ruleset.Rules.Count.ShouldBe(FilterRuleset.MaxRuleCount); // lands exactly on the ceiling
     }
 
     // ---- Budget boundary: exact slack == 0, no uniques rule ----
@@ -346,8 +513,10 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
     // SlotDiffResult so a caller could pass one anyway). ----
 
     [Fact]
-    public void Generate_MatchedAffixCountOne_RequiredCountIsTwo()
+    public void Generate_MatchedAffixCountOne_RequiredCountIsOne()
     {
+        // Non-maxed with 1 matched target → the gold rule requires the SAME OR MORE count (max(1, 1) == 1),
+        // not matched + 1.
         var diff = Diff(new SlotDiff
         {
             Slot = new SlotKey(GearSlot.Helm),
@@ -359,17 +528,17 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
         var result = NewGenerator().Generate(diff);
 
         result.Ruleset.Rules.Single(r => r.Name == "Helm")
-            .Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2);
+            .Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
     }
 
     [Fact]
     public void Generate_MatchedAffixCountEqualsTargetCount_StillNeedsRule_RequiresAllTargets()
     {
-        // The equipped item already has every ranked affix (e.g. a unique gate is still unmet, so the
-        // slot is NeedsRule rather than MeetsGoal). requiredCount = count+1 clamps down to count in
-        // SlotRuleBuilder, so the rule ends up requiring ALL targets — an unmatchable-by-affixes-alone
-        // rule that only the unique condition (elsewhere) can practically satisfy. This is the exact
-        // scenario the QA brief calls out; lock it down rather than let it regress silently.
+        // The equipped item already has every ranked affix but is NOT flagged maxed (e.g. a hand-built diff
+        // whose unique gate is unmet, so the slot is NeedsRule). The non-maxed gold branch requires the SAME
+        // OR MORE count (max(1, 4) == 4), clamped by SlotRuleBuilder to the 4 targets — an
+        // unmatchable-by-affixes-alone rule that only the unique condition (elsewhere) can practically
+        // satisfy. Lock it down rather than let it regress silently.
         var diff = Diff(new SlotDiff
         {
             Slot = new SlotKey(GearSlot.Amulet),
@@ -721,31 +890,42 @@ public sealed class ProgressionFilterGeneratorBoundaryTests
     }
 
     [Fact]
-    public void Generate_CollapseWithBothTiers_RawExceedsCapButCollapsedFitsExactly_NoDrops()
+    public void Generate_CollapseAcrossBothTiers_RawExceedsCapButCollapsedFitsExactly_NoDrops()
     {
-        // Collapse-then-cap must merge byte-identical rules across BOTH tiers (base + greater companion)
-        // before the 24-rule budget is applied. 13 identical equipped Rings raise 13 base + 13 greater = 26
-        // RAW rules (already over the 24 no-unique capacity on their own), yet collapse to just 1 base + 1
-        // greater. Adding 11 distinct equipped Helms (11 base + 11 greater, all distinct) brings the
-        // COLLAPSED total to exactly 24 — so if collapse ran after the cap (or ignored the greater tier)
-        // this would spuriously drop rules; because collapse runs first across both tiers, nothing drops.
-        var identicalRings = Enumerable.Range(0, 13)
+        // Collapse-then-cap must merge byte-identical rules within EACH tier (gold + cyan) before the
+        // 24-rule budget is applied. 13 identical non-maxed Rings collapse to 1 gold; 13 identical maxed
+        // Amulets collapse to 1 cyan (26 RAW rules already over the no-unique capacity on their own). Adding
+        // 11 distinct non-maxed Helms (11 gold) and 11 distinct maxed Boots (11 cyan) brings the COLLAPSED
+        // total to (1+11) gold + (1+11) cyan == 24 — so if collapse ran after the cap this would spuriously
+        // drop rules; because collapse runs first across both tiers, nothing drops.
+        var identicalGoldRings = Enumerable.Range(0, 13)
             .Select(i => NeedsRuleEquipped(GearSlot.Ring, i, 1, 0, 500u))
             .ToArray();
-        var distinctHelms = Enumerable.Range(0, 11)
+        var identicalCyanAmulets = Enumerable.Range(0, 13)
+            .Select(i => MaxedEquipped(GearSlot.Amulet, i, 1, 0, 1, 600u))
+            .ToArray();
+        var distinctGoldHelms = Enumerable.Range(0, 11)
             .Select(i => NeedsRuleEquipped(GearSlot.Helm, i, 1, 0, (uint)(1000 + i)))
             .ToArray();
+        var distinctCyanBoots = Enumerable.Range(0, 11)
+            .Select(i => MaxedEquipped(GearSlot.Boots, i, 1, 0, 1, (uint)(2000 + i)))
+            .ToArray();
 
-        var result = NewGenerator().Generate(Diff(identicalRings.Concat(distinctHelms).ToArray()));
+        var slots = identicalGoldRings
+            .Concat(identicalCyanAmulets)
+            .Concat(distinctGoldHelms)
+            .Concat(distinctCyanBoots)
+            .ToArray();
+
+        var result = NewGenerator().Generate(Diff(slots));
 
         result.BudgetExceeded.ShouldBeFalse();
         result.Warnings.ShouldNotContain(w => w.Contains("dropped"));
-        result.SlotRuleCount.ShouldBe(NoUniqueCapacity); // (1 ring + 11 helm) base + (1 ring + 11 helm) greater == 24
+        result.SlotRuleCount.ShouldBe(NoUniqueCapacity); // (1+11) gold + (1+11) cyan == 24
         result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(12);
-        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Recolor
-            && !r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(12);
-        result.Ruleset.Rules.ShouldContain(r => r.Name == "Ring");           // the collapsed ring base survives
-        result.Ruleset.Rules.ShouldContain(r => r.Name == "Ring (Greater)"); // and its collapsed companion
+        result.Ruleset.Rules.Count(r => r.Color == FilterRule.PackColor(255, 180, 0)).ShouldBe(12);
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Ring");            // the collapsed gold ring survives
+        result.Ruleset.Rules.ShouldContain(r => r.Name == "Amulet (Greater)"); // and the collapsed cyan amulet
     }
 
     // ---- Class-filter disagreement (QA-pinned): RoleForItemType classifies purely by item shape and

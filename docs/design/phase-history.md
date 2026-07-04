@@ -212,3 +212,36 @@ already existed. 270 Core + 14 App tests passing, 0 warnings.
   `ImportFromBuildGuide`'s "replace current filter?" flow. Loading into the editor happens only if the
   user clicks **Open in Editor**; copy-and-close leaves the main window untouched (`DialogResult` not
   true).
+
+---
+
+## Better-Item Detection ✅ — Equipped-Relative "Better Item" Model
+
+Design context: `plans/better-item-detection-phase-01.md`, `plans/better-item-detection-phase-02.md`,
+`plans/strategy-better-item-detection.md`. Supersedes the Phase 3 gold-base-plus-GA-companion scheme.
+
+Reframes the drop decision from an absolute goal ("has every target affix", `MeetsGoalThreshold.Exact`)
+to an **equipped-relative** one ("no upgrade a static filter can still catch"). A slot is now "done" only
+when the equipped item is maxed on its target affixes *for its rarity* **and** already holds the maximum
+catchable Greater Affixes.
+
+- **Phase 1 (Core model):** `ItemAffixLimits` supplies the per-rarity rollable-affix cap (Magic 3, all
+  other rarities 4) and `MaxGreaterAffixCount` (3). `SlotDiff` gained `EffectiveTargetCap =
+  min(target count, rarity cap)` and `IsMaxedOnTargets = matched ≥ EffectiveTargetCap`.
+  `MeetsGoalThreshold.RelativeToEquipped` = `IsMaxedOnTargets && matchedGa ≥ min(EffectiveTargetCap, 3)`.
+  `MaxrollParser` strips the tempered affix from targets (it's not a base-roll slot).
+- **Phase 2 (generation + wizard):** `ProgressionFilterGenerator` now emits **exactly one rule per needy
+  slot**, keyed on `IsMaxedOnTargets`:
+  - **Gold** (`<slot>`) for a non-maxed slot — highlights any item with the **same or more** ranked
+    target affixes than equipped: `requiredCount = max(1, MatchedAffixCount)` (min 1 for an empty slot).
+    This subsumes the old strictly-more (`matched + 1`) base rule *and* its separate GA companion.
+  - **Cyan** (`<slot> (Greater)`) for a maxed slot — the only catchable upgrade is more Greater Affixes:
+    same target-affix count (`EffectiveTargetCap`) plus a global `GreaterAffixCondition` requiring
+    `max(1, MatchedGreaterAffixCount)` GAs (D4's Type-4 primitive counts GAs across all affixes — a
+    deliberate approximation of "more GAs on the target affixes"). Maxed slots, previously dropped as
+    "done", now get this rule.
+  - Gold rules still rank above cyan, so under the 25-rule cap the lower-value maxed-GA rules drop first;
+    `ShapeKey` collapse and budget-trim are unchanged. The old two-list (`base` + `greater companion`)
+    machinery and the `BuildGreaterRule` helper are gone.
+- The wizard's `Generate()` now passes `MeetsGoalThreshold.RelativeToEquipped` (was `Exact`).
+- Golden Verify snapshots updated: the Ring fixture is now a maxed slot, exercising the cyan path.

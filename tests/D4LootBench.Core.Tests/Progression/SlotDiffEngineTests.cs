@@ -264,4 +264,104 @@ public class SlotDiffEngineTests
             new SlotKey(GearSlot.Ring, 1),
         ]);
     }
+
+    // ── RelativeToEquipped ("no filter-detectable upgrade left") ─────────────────────────────
+
+    private const uint E = 0x1005;
+    private const uint F = 0x1006;
+    private const uint G = 0x1007;
+
+    // Diffs a single Helm slot with the equipped-relative engine default (goal.Threshold left null).
+    private static SlotDiff DiffHelmRelative(GearItem? item, SlotGoal goal)
+    {
+        var items = new Dictionary<SlotKey, GearItem>();
+        if (item is not null)
+        {
+            items[new SlotKey(GearSlot.Helm)] = item;
+        }
+
+        var loadout = new EquippedLoadout(items);
+        var build = new GoalBuild(new Dictionary<SlotKey, SlotGoal> { [new SlotKey(GearSlot.Helm)] = goal });
+        return new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped).Diff(loadout, build).Slots.Single();
+    }
+
+    [Fact]
+    public void Relative_MaxedAndAllGa_MeetsGoal()
+    {
+        // Legendary (cap 4), 3 targets → effectiveCap 3, gaGoal 3; item has all 3 as greater affixes.
+        var item = Helm([
+            ProgressionTestFactory.Affix(A, greater: true),
+            ProgressionTestFactory.Affix(B, greater: true),
+            ProgressionTestFactory.Affix(C, greater: true),
+        ]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C] };
+
+        var diff = DiffHelmRelative(item, goal);
+
+        diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
+
+    [Fact]
+    public void Relative_MaxedZeroGa_NeedsRule()
+    {
+        // Maxed on target affixes but zero greater affixes → GA upgrade still catchable → rule.
+        var item = Helm([ProgressionTestFactory.Affix(A), ProgressionTestFactory.Affix(B), ProgressionTestFactory.Affix(C)]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C] };
+
+        var diff = DiffHelmRelative(item, goal);
+
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.EffectiveTargetCap.ShouldBe(3);
+        diff.MatchedGreaterAffixCount.ShouldBe(0);
+    }
+
+    [Fact]
+    public void Relative_TwoOfFour_NeedsRuleNotMaxed()
+    {
+        // 4 targets on a Legendary → effectiveCap 4; only 2 present → not yet maxed on targets.
+        var item = Helm([ProgressionTestFactory.Affix(A), ProgressionTestFactory.Affix(B)]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D] };
+
+        var diff = DiffHelmRelative(item, goal);
+
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+        diff.IsMaxedOnTargets.ShouldBeFalse();
+        diff.MatchedAffixCount.ShouldBe(2);
+    }
+
+    [Fact]
+    public void Relative_LongWishlistCappedByRarity()
+    {
+        // 7 targets but a Legendary can only hold 4 rollable affixes → effectiveCap 4; the item holds
+        // 4 of them (0 GA), so it is maxed on catchable target affixes yet still misses the GA goal.
+        var item = Helm([
+            ProgressionTestFactory.Affix(A),
+            ProgressionTestFactory.Affix(B),
+            ProgressionTestFactory.Affix(C),
+            ProgressionTestFactory.Affix(D),
+        ]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D, E, F, G] };
+
+        var diff = DiffHelmRelative(item, goal);
+
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.EffectiveTargetCap.ShouldBe(4);
+    }
+
+    [Fact]
+    public void Relative_ShortWishlistMaxedByTargetCount()
+    {
+        // Rare item, only 2 targets → effectiveCap 2, gaGoal 2; both present and both greater → done.
+        var item = ProgressionTestFactory.Item(
+            GearSlot.Helm,
+            [ProgressionTestFactory.Affix(A, greater: true), ProgressionTestFactory.Affix(B, greater: true)],
+            rarity: ItemRarity.Rare);
+        var goal = new SlotGoal { TargetAffixIds = [A, B] };
+
+        var diff = DiffHelmRelative(item, goal);
+
+        diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
 }

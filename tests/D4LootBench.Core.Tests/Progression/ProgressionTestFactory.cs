@@ -17,11 +17,12 @@ internal static class ProgressionTestFactory
 
     public static GearAffix UnresolvedAffix() => new() { RawText = "unresolved", AffixHash = null };
 
-    public static GearItem Item(GearSlot slot, IEnumerable<GearAffix> affixes, uint? uniqueHash = null, string? itemTypeName = null) => new()
+    public static GearItem Item(GearSlot slot, IEnumerable<GearAffix> affixes, uint? uniqueHash = null, string? itemTypeName = null, ItemRarity rarity = ItemRarity.Legendary) => new()
     {
         Slot = slot,
         UniqueHash = uniqueHash,
         ItemTypeName = itemTypeName,
+        Rarity = rarity,
         Affixes = affixes.ToList(),
     };
 
@@ -39,6 +40,19 @@ internal static class ProgressionTestFactory
         Slot = new SlotKey(slot, 0, role),
         Status = SlotDiffStatus.NeedsRule,
         TargetAffixIds = targets,
+    };
+
+    // A maxed-on-targets NeedsRule diff (GA-only upgrade regime) for generator tests in Phase 2.
+    public static SlotDiff MaxedNeedsRule(GearSlot slot, int matched, int matchedGa, int cap, params uint[] targets) => new()
+    {
+        Slot = new SlotKey(slot),
+        Status = SlotDiffStatus.NeedsRule,
+        TargetAffixIds = targets,
+        MatchedAffixCount = matched,
+        MatchedGreaterAffixCount = matchedGa,
+        EffectiveTargetCap = cap,
+        IsMaxedOnTargets = matched >= cap,
+        EquippedItem = Item(slot, [], null),
     };
 
     // A weapon role map backed by a fresh live catalog resolver.

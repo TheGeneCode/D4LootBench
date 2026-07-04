@@ -65,24 +65,103 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     [Fact]
-    public void Generate_RequiredCount_IsEquippedMatchPlusOne()
+    public void Generate_NonMaxedSlot_EmitsGoldSameOrMoreRule()
     {
-        // Equipped item already has 2 of the 4 targets → rule highlights items with 3+ (a real upgrade).
+        // Equipped item has 2 of 4 targets and is not yet maxed → a single gold rule highlighting items
+        // with the SAME OR MORE (2+) target affixes. No GreaterAffixCondition and no (Greater) rule.
         var diff = Diff(new SlotDiff
         {
             Slot = new SlotKey(GearSlot.Helm),
             Status = SlotDiffStatus.NeedsRule,
             TargetAffixIds = [1u, 2u, 3u, 4u],
             MatchedAffixCount = 2,
+            EffectiveTargetCap = 4,
+            IsMaxedOnTargets = false,
         });
 
         var result = NewGenerator().Generate(diff);
 
         var rule = RuleNamed(result, "Helm")!;
         rule.Visibility.ShouldBe(Visibility.Recolor);
-        rule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        rule.Color.ShouldBe(FilterRule.PackColor(255, 180, 0));
+        rule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2);
         rule.Conditions.OfType<GreaterAffixCondition>().ShouldBeEmpty();
         RuleNamed(result, "Helm (Greater)").ShouldBeNull();
+        result.Ruleset.Rules.Count(r => r.Visibility == Visibility.Recolor).ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_MaxedZeroGa_EmitsCyanGaRule()
+    {
+        // Slot maxed on 3 of 3 targets, none greater → a single cyan (Greater) rule: the same 3 affixes
+        // plus at least one Greater Affix. No gold rule is emitted for a maxed slot.
+        var diff = Diff(MaxedNeedsRule(GearSlot.Ring, 3, 0, 3, 1u, 2u, 3u));
+
+        var result = NewGenerator().Generate(diff);
+
+        var cyan = RuleNamed(result, "Ring (Greater)")!;
+        cyan.Visibility.ShouldBe(Visibility.Recolor);
+        cyan.Color.ShouldBe(FilterRule.PackColor(0, 220, 255));
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+        RuleNamed(result, "Ring").ShouldBeNull();
+    }
+
+    [Fact]
+    public void Generate_MaxedTwoGa_RequiresSameOrMoreGa()
+    {
+        // Maxed on 3 of 3 with 2 already greater → cyan rule demands at least 2 GA (same-or-more) at the
+        // same target-affix count.
+        var diff = Diff(MaxedNeedsRule(GearSlot.Ring, 3, 2, 3, 1u, 2u, 3u));
+
+        var result = NewGenerator().Generate(diff);
+
+        var cyan = RuleNamed(result, "Ring (Greater)")!;
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(2);
+    }
+
+    [Fact]
+    public void Generate_GoldRanksAboveCyan()
+    {
+        // A mix of non-maxed (gold) and maxed (cyan) needy slots: every gold rule precedes every cyan rule
+        // so the lower-value maxed-GA rules are the first to drop under the cap.
+        var diff = Diff(
+            new SlotDiff
+            {
+                Slot = new SlotKey(GearSlot.Helm),
+                Status = SlotDiffStatus.NeedsRule,
+                TargetAffixIds = [1u, 2u],
+                MatchedAffixCount = 1,
+                EffectiveTargetCap = 2,
+            },
+            MaxedNeedsRule(GearSlot.Ring, 2, 0, 2, 3u, 4u));
+
+        var result = NewGenerator().Generate(diff);
+
+        var slotRules = result.Ruleset.Rules.Where(r => r.Visibility == Visibility.Recolor).ToList();
+        var lastGold = slotRules.FindLastIndex(r => r.Color == FilterRule.PackColor(255, 180, 0));
+        var firstCyan = slotRules.FindIndex(r => r.Color == FilterRule.PackColor(0, 220, 255));
+        lastGold.ShouldBeLessThan(firstCyan);
+    }
+
+    [Fact]
+    public void Generate_OverCap_DropsCyanFirst()
+    {
+        // 20 distinct gold (non-maxed) + 20 distinct cyan (maxed) exceed the 24-rule capacity; gold ranks
+        // first, so all 20 gold survive and every dropped rule is a cyan (Greater) one.
+        var gold = Enumerable.Range(0, 20)
+            .Select(i => NeedsRule(GearSlot.Helm, i, (uint)(1000 + i), 2u))
+            .ToArray();
+        var cyan = Enumerable.Range(0, 20)
+            .Select(i => MaxedNeedsRule(GearSlot.Ring, 1, 0, 1, (uint)(2000 + i)))
+            .ToArray();
+
+        var result = NewGenerator().Generate(Diff(gold.Concat(cyan).ToArray()));
+
+        result.BudgetExceeded.ShouldBeTrue();
+        result.Warnings.Where(w => w.Contains("dropped")).ShouldAllBe(w => w.Contains("(Greater)"));
+        result.Ruleset.Rules.Count(r => r.Color == FilterRule.PackColor(255, 180, 0)).ShouldBe(20);
     }
 
     [Fact]
@@ -261,9 +340,10 @@ public sealed class ProgressionFilterGeneratorTests
         return Verify(result.Ruleset);
     }
 
-    // Fixed 4-needy (real item types) + 1 target unique — deterministic snapshot input. The Ring slot
-    // carries an equipped item with 2 of its 3 targets matched and NONE greater, so it exercises both the
-    // gold base rule (require 3 affixes) and the cyan Greater companion (same 2 affixes + one more GA).
+    // Fixed 4-needy (real item types) + 1 target unique — deterministic snapshot input. Helm/Gloves/Boots
+    // are non-maxed (matched 0) so they exercise the gold same-or-more rule (require 1 affix). The Ring slot
+    // is MAXED on all 3 of its targets with NONE greater, so it exercises the cyan maxed-GA rule (require
+    // the same 3 affixes + at least one Greater Affix).
     private static SlotDiffResult GoldenDiff() => new()
     {
         Slots =
@@ -291,11 +371,13 @@ public sealed class ProgressionFilterGeneratorTests
             {
                 Slot = new SlotKey(GearSlot.Ring),
                 Status = SlotDiffStatus.NeedsRule,
-                EquippedItem = Item(GearSlot.Ring, [Affix(0xA1u), Affix(0xA2u)]),
+                EquippedItem = Item(GearSlot.Ring, [Affix(0xA1u), Affix(0xA2u), Affix(0xA3u)]),
                 Goal = new SlotGoal { TargetAffixIds = [0xA1u, 0xA2u, 0xA3u] },
                 TargetAffixIds = [0xA1u, 0xA2u, 0xA3u],
-                MatchedAffixCount = 2,
+                MatchedAffixCount = 3,
                 MatchedGreaterAffixCount = 0,
+                EffectiveTargetCap = 3,
+                IsMaxedOnTargets = true,
             },
         ],
     };

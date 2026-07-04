@@ -11,6 +11,11 @@ public enum ThresholdMode
 
     /// <summary>N target affixes present AND at least K of the matched targets are greater affixes.</summary>
     AffixWithGreaterAffixCount,
+
+    /// <summary>Equipped-relative: a slot is met only when the item is maxed on target affixes
+    /// for its rarity AND already has the maximum catchable Greater Affixes — i.e. no upgrade a
+    /// static filter can detect remains. Ignores RequiredAffixCount/RequiredGreaterAffixCount.</summary>
+    RelativeToEquipped,
 }
 
 /// <summary>Configurable "meets goal" threshold. Immutable; reuse presets or build your own.</summary>
@@ -29,6 +34,10 @@ public sealed record MeetsGoalThreshold
 
     /// <summary>Gets a threshold requiring all target affixes present.</summary>
     public static MeetsGoalThreshold Exact { get; } = new() { Mode = ThresholdMode.ExactMatch };
+
+    /// <summary>Gets the equipped-relative "no filter-detectable upgrade left" threshold.</summary>
+    public static MeetsGoalThreshold RelativeToEquipped { get; } =
+        new() { Mode = ThresholdMode.RelativeToEquipped };
 
     /// <summary>At least <paramref name="n"/> of the target affixes present.</summary>
     /// <param name="n">The minimum matched target-affix count.</param>

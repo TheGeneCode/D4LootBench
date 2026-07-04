@@ -42,6 +42,15 @@ public sealed record SlotDiff
     /// <summary>Gets how many matched target affixes were greater affixes.</summary>
     public int MatchedGreaterAffixCount { get; init; }
 
+    /// <summary>Gets the effective target-affix ceiling for the equipped item:
+    /// min(target count, rollable affix cap for its rarity). Zero when there are no targets.</summary>
+    public int EffectiveTargetCap { get; init; }
+
+    /// <summary>Gets a value indicating whether the equipped item already holds as many target
+    /// affixes as it can (matched &gt;= EffectiveTargetCap) — the GA-only upgrade regime. Always
+    /// false for an empty slot.</summary>
+    public bool IsMaxedOnTargets { get; init; }
+
     /// <summary>Gets a value indicating whether the unique gate was satisfied (true when no unique required).</summary>
     public bool UniqueSatisfied { get; init; } = true;
 

@@ -251,9 +251,10 @@ public class SlotDiffEngineBoundaryTests
     [Fact]
     public void DuplicateTargetAffix_RequiredCountReflectsDistinctMatches_EndToEnd()
     {
-        // Regression: a build helm listing "Maximum Life" twice (B here) plus a piece equipped with 2
-        // of the distinct targets must yield a rule requiring 3 (matched 2 + 1), not 4. Before the fix,
-        // the duplicate double-counted the match, inflating requiredCount to 4.
+        // Regression: a build helm listing "Maximum Life" twice (B here) plus a piece equipped with 2 of the
+        // distinct targets must dedupe to a matched count of 2, so the gold same-or-more rule requires 2 (not
+        // 3). Before the dedup fix, the duplicate double-counted the match, inflating the matched count — and
+        // thus the required count — by one.
         var item = Helm([ProgressionTestFactory.Affix(A), ProgressionTestFactory.Affix(B)]);
         var goal = new SlotGoal { TargetAffixIds = [A, B, C, 0x1004u, 0x1005u, B] };
 
@@ -264,10 +265,10 @@ public class SlotDiffEngineBoundaryTests
         var generator = new ProgressionFilterGenerator(resolver, new WeaponRoleMap(resolver));
         var result = generator.Generate(new SlotDiffResult { Slots = [diff] });
 
-        // The equipped piece has 2 matched, none greater, so a "Helm (Greater)" companion is also emitted;
-        // this regression is about the base affix-count rule, so select it by name.
+        // The slot is not maxed (2 of 4 effective cap), so it emits a single gold "Helm" rule requiring the
+        // same-or-more matched count (2). No "(Greater)" rule is emitted for a non-maxed slot.
         var helmRule = result.Ruleset.Rules.Single(r => r.Name == "Helm");
-        helmRule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        helmRule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2);
     }
 
     [Fact]
@@ -538,5 +539,263 @@ public class SlotDiffEngineBoundaryTests
         result.Slots.Select(s => s.Slot.Role)
             .ShouldBe([WeaponSlotRole.None, WeaponSlotRole.Mainhand, WeaponSlotRole.Offhand]);
         result.Slots.ShouldAllBe(s => s.Status == SlotDiffStatus.NoGoal);
+    }
+
+    // --- RelativeToEquipped boundary cases -----------------------------------------------------
+
+    [Fact]
+    public void Relative_EmptySlot_NeedsRuleNotMaxed()
+    {
+        // An empty slot can never be "maxed on targets"; the effective cap still reflects the target
+        // count clamped by the fallback (Unknown) rarity ceiling of 4 → 3.
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(null, goal, engine);
+
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+        diff.IsMaxedOnTargets.ShouldBeFalse();
+        diff.EffectiveTargetCap.ShouldBe(3);
+    }
+
+    [Fact]
+    public void Relative_UniqueOnlySlot_MeetsWhenUniqueEquipped()
+    {
+        // No affix targets (effectiveCap 0, trivially maxed, gaGoal 0) → the unique gate alone decides.
+        var item = Helm([], uniqueHash: UniqueU);
+        var goal = new SlotGoal { TargetAffixIds = [], TargetUnique = UniqueU };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
+
+    // --- RelativeToEquipped: gaGoal clamp at MaxGreaterAffixCount (3) --------------------------
+
+    private const uint D = 0x1004;
+    private const uint E = 0x1005;
+
+    [Fact]
+    public void Relative_EffectiveCapFour_GaGoalClampedToThree_ThreeGaMeets()
+    {
+        // Legendary (cap 4) with 4 distinct targets → effectiveCap 4, but gaGoal is
+        // Math.Min(4, MaxGreaterAffixCount=3) == 3, NOT 4. All 4 targets present, exactly 3 greater.
+        var item = Helm([
+            ProgressionTestFactory.Affix(A, greater: true),
+            ProgressionTestFactory.Affix(B, greater: true),
+            ProgressionTestFactory.Affix(C, greater: true),
+            ProgressionTestFactory.Affix(D),
+        ]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(4);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.MatchedGreaterAffixCount.ShouldBe(3);
+        diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
+
+    [Fact]
+    public void Relative_EffectiveCapFour_GaGoalClampedToThree_TwoGaOneBelow_NeedsRule()
+    {
+        // Same maxed 4-of-4 item, but only 2 greater affixes — one below the clamped gaGoal of 3.
+        var item = Helm([
+            ProgressionTestFactory.Affix(A, greater: true),
+            ProgressionTestFactory.Affix(B, greater: true),
+            ProgressionTestFactory.Affix(C),
+            ProgressionTestFactory.Affix(D),
+        ]);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(4);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.MatchedGreaterAffixCount.ShouldBe(2);
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+    }
+
+    // --- RelativeToEquipped: shortest possible wishlist (effectiveCap == 1) -------------------
+
+    [Fact]
+    public void Relative_SingleTargetWishlist_PresentAndGreater_MeetsGoal()
+    {
+        // effectiveCap = Math.Min(1, cap) == 1 regardless of rarity; gaGoal = Math.Min(1, 3) == 1.
+        var item = Helm([ProgressionTestFactory.Affix(E, greater: true)]);
+        var goal = new SlotGoal { TargetAffixIds = [E] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(1);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
+
+    [Fact]
+    public void Relative_SingleTargetWishlist_PresentButNotGreater_MaxedYetNeedsRule()
+    {
+        // Maxed on the sole target (matched 1 >= effectiveCap 1) but it isn't a greater affix, so
+        // gaGoal (1) is unmet — a GA-only upgrade is still catchable by the filter.
+        var item = Helm([ProgressionTestFactory.Affix(E)]);
+        var goal = new SlotGoal { TargetAffixIds = [E] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(1);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.MatchedGreaterAffixCount.ShouldBe(0);
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+    }
+
+    // --- RelativeToEquipped: Magic rarity (cap 3) specifically ---------------------------------
+
+    [Fact]
+    public void Relative_MagicRarity_LongWishlist_CappedAtThreeNotFour()
+    {
+        // Magic's rollable cap is 3 (not the 4 every other rarity gets). A 4-target wishlist on a
+        // Magic item must clamp effectiveCap to 3, not 4 — distinguishes Magic from the Legendary
+        // long-wishlist case already covered (which clamps to 4).
+        var item = ProgressionTestFactory.Item(
+            GearSlot.Helm,
+            [
+                ProgressionTestFactory.Affix(A, greater: true),
+                ProgressionTestFactory.Affix(B, greater: true),
+                ProgressionTestFactory.Affix(C, greater: true),
+            ],
+            rarity: ItemRarity.Magic);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(3);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.Status.ShouldBe(SlotDiffStatus.MeetsGoal);
+    }
+
+    [Fact]
+    public void Relative_MagicRarity_LongWishlist_TwoOfThreeGa_NeedsRule()
+    {
+        var item = ProgressionTestFactory.Item(
+            GearSlot.Helm,
+            [
+                ProgressionTestFactory.Affix(A, greater: true),
+                ProgressionTestFactory.Affix(B, greater: true),
+                ProgressionTestFactory.Affix(C),
+            ],
+            rarity: ItemRarity.Magic);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(3);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+        diff.MatchedGreaterAffixCount.ShouldBe(2);
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+    }
+
+    // --- RelativeToEquipped: matched.Count vs effectiveCap boundary (below/at/above) ------------
+
+    [Fact]
+    public void Relative_MatchedOneBelowEffectiveCap_NotMaxed_NeedsRule()
+    {
+        // Rare (cap 4) with 4 distinct targets → effectiveCap 4; only 3 matched → one below, not maxed.
+        var item = ProgressionTestFactory.Item(
+            GearSlot.Helm,
+            [
+                ProgressionTestFactory.Affix(A, greater: true),
+                ProgressionTestFactory.Affix(B, greater: true),
+                ProgressionTestFactory.Affix(C, greater: true),
+            ],
+            rarity: ItemRarity.Rare);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(4);
+        diff.MatchedAffixCount.ShouldBe(3);
+        diff.IsMaxedOnTargets.ShouldBeFalse();
+        diff.Status.ShouldBe(SlotDiffStatus.NeedsRule);
+    }
+
+    [Fact]
+    public void Relative_MatchedExactlyAtEffectiveCap_IsMaxed()
+    {
+        // Same setup, 4th target now present too → matched == effectiveCap exactly → maxed boundary.
+        var item = ProgressionTestFactory.Item(
+            GearSlot.Helm,
+            [
+                ProgressionTestFactory.Affix(A, greater: true),
+                ProgressionTestFactory.Affix(B, greater: true),
+                ProgressionTestFactory.Affix(C, greater: true),
+                ProgressionTestFactory.Affix(D),
+            ],
+            rarity: ItemRarity.Rare);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(4);
+        diff.MatchedAffixCount.ShouldBe(4);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Relative_MatchedAboveEffectiveCap_StillMaxed()
+    {
+        // Magic (cap 3) with 5 distinct wishlist targets → effectiveCap 3. The test factory does not
+        // enforce the rarity's real rollable-affix ceiling, so an item can be built with 4 matched
+        // targets here — one MORE than effectiveCap. isMaxed uses >=, so "above max" must still read
+        // as maxed (never crash, never read as "not maxed").
+        var item = ProgressionTestFactory.Item(
+            GearSlot.Helm,
+            [
+                ProgressionTestFactory.Affix(A, greater: true),
+                ProgressionTestFactory.Affix(B, greater: true),
+                ProgressionTestFactory.Affix(C, greater: true),
+                ProgressionTestFactory.Affix(D, greater: true),
+            ],
+            rarity: ItemRarity.Magic);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D, E] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(3);
+        diff.MatchedAffixCount.ShouldBe(4);
+        diff.IsMaxedOnTargets.ShouldBeTrue();
+    }
+
+    // --- RelativeToEquipped: RollableAffixCap plumbed correctly for every ItemRarity value -----
+
+    [Theory]
+    [InlineData(ItemRarity.Unknown, 4)]
+    [InlineData(ItemRarity.Common, 4)]
+    [InlineData(ItemRarity.Magic, 3)]
+    [InlineData(ItemRarity.Rare, 4)]
+    [InlineData(ItemRarity.Legendary, 4)]
+    [InlineData(ItemRarity.Unique, 4)]
+    [InlineData(ItemRarity.Mythic, 4)]
+    public void Relative_EffectiveTargetCap_MatchesRollableAffixCap_ForEveryRarity(ItemRarity rarity, int expectedCap)
+    {
+        // A 5-target wishlist exceeds every rarity's cap, so EffectiveTargetCap must equal exactly
+        // ItemAffixLimits.RollableAffixCap(rarity) for each of the seven enum values — the same table
+        // ItemAffixLimitsTests locks down in isolation, verified here through the engine's plumbing.
+        var item = ProgressionTestFactory.Item(GearSlot.Helm, [], rarity: rarity);
+        var goal = new SlotGoal { TargetAffixIds = [A, B, C, D, E] };
+        var engine = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped);
+
+        var diff = DiffHelm(item, goal, engine);
+
+        diff.EffectiveTargetCap.ShouldBe(expectedCap);
     }
 }

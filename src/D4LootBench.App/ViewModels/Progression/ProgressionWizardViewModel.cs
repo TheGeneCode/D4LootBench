@@ -171,9 +171,11 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         {
             var guide = _importer.Import(PastedText.Trim(), SelectedFormatOption.Format);
 
-            // A slot is "done" (no rule) only once the equipped item has every target affix; every other
-            // slot gets a Recolor rule highlighting items that improve on what's equipped.
-            var goal = _goalFactory.Create(guide, MeetsGoalThreshold.Exact, SelectedClass, "Progression Filter");
+            // A slot is "done" (no rule) only once the equipped item is maxed on its target affixes for its
+            // rarity AND already holds the maximum catchable Greater Affixes — i.e. no upgrade a static filter
+            // can detect remains. Every other slot gets a Recolor rule highlighting items that improve on
+            // what's equipped (gold for a target-affix gain, cyan once the slot is maxed and only GAs remain).
+            var goal = _goalFactory.Create(guide, MeetsGoalThreshold.RelativeToEquipped, SelectedClass, "Progression Filter");
             var loadout = EquippedLoadout.FromItems(_session!.Build(), out var loadoutWarnings, SelectedClass, _roleMap);
             var diff = _diffEngine.Diff(loadout, goal.GoalBuild);
             var filter = _generator.Generate(diff, SelectedClass, "Progression Filter");

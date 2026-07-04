@@ -5,7 +5,9 @@ namespace D4LootBench.Core.Import;
 
 /// <summary>
 /// Parses the gear section copied from a Maxroll build guide page.
-/// Blocks are delimited by known slot-name keywords. Affixes are listed in priority order (implicit).
+/// Blocks are delimited by known slot-name keywords. Affixes are listed in priority order (implicit),
+/// with the slot's tempered affix as the trailing positional line — that last affix is dropped (a drop
+/// never pre-rolls a tempered affix), except when it is the slot's sole affix line.
 /// Supports ↑ (Greater Affix), x prefix (multiplicative), "Unique Effect" sentinel, Seal/Charm talisman slots.
 /// </summary>
 /// <param name="affixResolver">Resolver used to tell a first-line item/aspect name from a first-line
@@ -151,6 +153,16 @@ public sealed partial class MaxrollParser(NameResolver? affixResolver = null) : 
         void EmitSlot()
         {
             if (slotLabel is null) return;
+
+            // Maxroll lists the slot's tempered affix as the last positional line; drops never pre-roll
+            // a tempered affix (the player tempers it in afterward), so exclude it from the target set —
+            // mirroring the temper stripping the Icy Veins / Mobalytics parsers already do structurally.
+            // Guard the sole-affix case so a one-line slot keeps its single target.
+            if (affixes.Count > 1)
+            {
+                affixes.RemoveAt(affixes.Count - 1);
+            }
+
             slots.Add(new ParsedSlot
             {
                 SlotLabel = slotLabel,

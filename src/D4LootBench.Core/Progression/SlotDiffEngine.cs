@@ -81,6 +81,11 @@ public sealed class SlotDiffEngine
         var missing = targets.Where(t => !present.ContainsKey(t)).ToList();
         var matchedGa = matched.Count(t => present[t]);
 
+        var cap = ItemAffixLimits.RollableAffixCap(item?.Rarity ?? ItemRarity.Unknown);
+        var effectiveCap = Math.Min(targets.Count, cap);
+        var isMaxed = item is not null && matched.Count >= effectiveCap;
+        var gaGoal = Math.Min(effectiveCap, ItemAffixLimits.MaxGreaterAffixCount);
+
         // Unique gate: when required, item must be that unique. An empty slot is covered by the
         // shared "no gear equipped" note below, so only flag a present-but-wrong unique here.
         var uniqueSatisfied = slotGoal.TargetUnique is not { } wanted || item?.UniqueHash == wanted;
@@ -101,6 +106,7 @@ public sealed class SlotDiffEngine
             ThresholdMode.AffixWithGreaterAffixCount =>
                 matched.Count >= Math.Min(threshold.RequiredAffixCount, targets.Count)
                 && matchedGa >= threshold.RequiredGreaterAffixCount,
+            ThresholdMode.RelativeToEquipped => isMaxed && matchedGa >= gaGoal,
             _ => false,
         };
 
@@ -116,6 +122,8 @@ public sealed class SlotDiffEngine
             MissingAffixIds = missing,
             MatchedAffixCount = matched.Count,
             MatchedGreaterAffixCount = matchedGa,
+            EffectiveTargetCap = effectiveCap,
+            IsMaxedOnTargets = isMaxed,
             UniqueSatisfied = uniqueSatisfied,
             Notes = notes,
         };

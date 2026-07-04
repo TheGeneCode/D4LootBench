@@ -4,15 +4,16 @@ using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Models;
 
-/// <summary>Deterministically turns a <see cref="SlotDiffResult"/> into a native D4 loot filter:
-/// a gold Recolor rule per incomplete slot that highlights any item with more of the ranked target
-/// affixes than the equipped piece, optionally a cyan Greater-Affix companion rule that catches items
-/// with the SAME target-affix count but more Greater Affixes, plus a Target Uniques rule and a Hide All
-/// fallback. Weapon/offhand slots resolve their class-aware role to a SET of item types (one multi-type
-/// <see cref="ItemTypeCondition"/>); rules whose conditions are byte-identical collapse to a single rule
-/// (e.g. Barbarian dual-1H hands). Base rules rank above Greater companions so the bonus GA rules are the
-/// first to drop under the 25-rule cap. Completed slots (equipped item already meets the goal) are
-/// dropped. No LLM involvement.</summary>
+/// <summary>Deterministically turns a <see cref="SlotDiffResult"/> into a native D4 loot filter, emitting
+/// exactly one Recolor rule per needy slot: a GOLD rule for a slot that is not yet maxed on its target
+/// affixes (highlights any item holding the SAME OR MORE ranked target affixes than the equipped piece),
+/// or a CYAN rule for a slot already maxed on target affixes (highlights items with at least as many
+/// Greater Affixes as the equipped piece — the only upgrade a static filter can still catch). Plus a
+/// Target Uniques rule and a Hide All fallback. Weapon/offhand slots resolve their class-aware role to a
+/// SET of item types (one multi-type <see cref="ItemTypeCondition"/>); rules whose conditions are
+/// byte-identical collapse to a single rule (e.g. Barbarian dual-1H hands). Gold rules rank above cyan
+/// rules so the lower-value maxed-GA rules are the first to drop under the 25-rule cap. Completed slots
+/// (equipped item already meets the goal) are dropped. No LLM involvement.</summary>
 /// <param name="nameResolver">The shared fuzzy name resolver.</param>
 /// <param name="roleMap">The class-aware weapon role map.</param>
 public sealed class ProgressionFilterGenerator(NameResolver nameResolver, WeaponRoleMap roleMap)
@@ -63,10 +64,11 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver, Weapon
 
         // Build rules for EVERY needy slot first (slot order), then collapse byte-identical rules, then
         // apply the 25-rule cap. Collapsing first means dual-1H hands sharing a shape don't each burn budget.
-        // Each slot can contribute up to two rules: an affix-count "base" rule and a Greater-Affix companion.
-        // The two tiers are kept separate so base rules rank ABOVE greater rules in the final ruleset — under
-        // the cap the bonus GA rules are dropped first, and an item that both adds an affix AND a GA still
-        // matches its higher-priority base rule (gold) rather than the GA rule (cyan).
+        // Each slot contributes exactly ONE rule, keyed on IsMaxedOnTargets: a gold "same-or-more target
+        // affixes" rule while the equipped piece can still gain a target affix, or a cyan "same-or-more
+        // Greater Affixes" rule once it is maxed on target affixes for its rarity. The two tiers are kept
+        // in separate lists so gold rules rank ABOVE cyan rules in the final ruleset — under the cap the
+        // lower-value maxed-GA rules are dropped first.
         var baseRules = new List<FilterRule>();
         var greaterRules = new List<FilterRule>();
         foreach (var slot in needy)
@@ -77,36 +79,43 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver, Weapon
                 warnings.Add($"Ambiguous item type for {slot.Slot} — emitting affix-only rule");
             }
 
-            // Highlight any item that improves on what's equipped: require one more of the ranked
-            // target affixes than the equipped piece already has (min 1 for an empty/no-gear slot).
-            // SlotRuleBuilder clamps the required count to the affix count, so a maxed-out slot yields a
-            // rule that matches items with every target affix — i.e. any item equal to the equipped piece.
-            var requiredCount = Math.Max(1, slot.MatchedAffixCount + 1);
-
-            var rule = SlotRuleBuilder.BuildMultiType(
-                slot.Slot.ToString(), Visibility.Recolor, ColorImprovement, typeHashes,
-                slot.TargetAffixIds, greaterAffixIds: [], requiredCount: requiredCount);
-
-            if (rule is null)
+            FilterRule? rule;
+            if (!slot.IsMaxedOnTargets)
             {
-                warnings.Add($"No conditions for {slot.Slot}");
-                continue;
-            }
+                // Gold: highlight any item with the SAME OR MORE ranked target affixes than equipped
+                // (min 1 for an empty/zero-match slot). SlotRuleBuilder clamps required to the affix
+                // count, so a fully-matched-but-not-capped slot still yields a satisfiable rule.
+                var requiredCount = Math.Max(1, slot.MatchedAffixCount);
+                rule = SlotRuleBuilder.BuildMultiType(
+                    slot.Slot.ToString(), Visibility.Recolor, ColorImprovement, typeHashes,
+                    slot.TargetAffixIds, greaterAffixIds: [], requiredCount: requiredCount);
 
-            baseRules.Add(rule);
-
-            // GA-aware upgrade: an item with the SAME target-affix count as the equipped piece but strictly
-            // more Greater Affixes is an upgrade the base rule above misses (it requires one MORE affix). Emit
-            // a companion rule only when there is a real equipped item to beat AND it still has room to gain a
-            // GA among its matched targets (matchedGreater < matched) — otherwise the rule is unsatisfiable or
-            // redundant. See BuildGreaterRule for the chosen rule shape.
-            if (slot.EquippedItem is not null && slot.MatchedGreaterAffixCount < slot.MatchedAffixCount)
-            {
-                var greaterRule = BuildGreaterRule(slot, typeHashes);
-                if (greaterRule is not null)
+                if (rule is null)
                 {
-                    greaterRules.Add(greaterRule);
+                    warnings.Add($"No conditions for {slot.Slot}");
+                    continue;
                 }
+
+                baseRules.Add(rule);
+            }
+            else
+            {
+                // Cyan: equipped is maxed on target affixes for its rarity — the only catchable upgrade
+                // is more Greater Affixes. Require the same target-affix count plus at least as many GAs
+                // as equipped (min 1). GreaterAffixCondition counts GAs across all affixes (D4 primitive),
+                // so this is a deliberate approximation of "more GAs on the target affixes".
+                rule = SlotRuleBuilder.BuildMultiType(
+                    slot.Slot + " (Greater)", Visibility.Recolor, ColorGreater, typeHashes,
+                    slot.TargetAffixIds, greaterAffixIds: [], requiredCount: slot.EffectiveTargetCap);
+
+                if (rule is null)
+                {
+                    warnings.Add($"No conditions for {slot.Slot}");
+                    continue;
+                }
+
+                rule.Conditions.Add(new GreaterAffixCondition(Math.Max(1, slot.MatchedGreaterAffixCount)));
+                greaterRules.Add(rule);
             }
         }
 
@@ -153,23 +162,6 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver, Weapon
             TotalRuleCount = ruleset.Rules.Count,
             BudgetExceeded = budgetExceeded,
         };
-    }
-
-    // Builds the Greater-Affix companion rule for a slot: the SAME target-affix count as the equipped piece
-    // (min = matched count) plus a global Greater Affix Check (Type 4) requiring one more GA than the equipped
-    // piece currently has. The native filter's per-affix "greater" flag (AffixCondition.GreaterEntries) can
-    // only force SPECIFIC named affixes to be greater — it cannot express "any (matchedGreater+1) of the
-    // targets are greater" — so the count-based Greater Affix Check, D4's own primitive for "at least N
-    // greater affixes", is the correct shape (see docs/filter-format.md types 4 and 6). It counts GAs across
-    // ALL affixes, not just targets, so it is a deliberate approximation of "more GAs on target affixes".
-    private FilterRule? BuildGreaterRule(SlotDiff slot, IReadOnlyList<uint> typeHashes)
-    {
-        var rule = SlotRuleBuilder.BuildMultiType(
-            slot.Slot + " (Greater)", Visibility.Recolor, ColorGreater, typeHashes,
-            slot.TargetAffixIds, greaterAffixIds: [], requiredCount: slot.MatchedAffixCount);
-
-        rule?.Conditions.Add(new GreaterAffixCondition(slot.MatchedGreaterAffixCount + 1));
-        return rule;
     }
 
     // Ordered, delimited digest of a rule's conditions — the "shape" used to collapse duplicate rules.

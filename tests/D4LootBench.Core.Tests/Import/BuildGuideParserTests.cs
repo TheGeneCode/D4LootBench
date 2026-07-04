@@ -164,19 +164,151 @@ public sealed class BuildGuideParserTests
         seal.SlotLabel.ShouldBe("Seal");
     }
 
+    [Fact]
+    public void Maxroll_DropsTrailingTemperedAffix()
+    {
+        // Maxroll lists the tempered affix as the last positional line; a drop never pre-rolls it, so
+        // the parser excludes it from the target set — three affix lines yield two targets.
+        const string paste = """
+            Boots
+            Movement Speed
+            Strength
+            Maximum Life
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var boots = guide.Slots.Single(s => s.SlotLabel == "Boots");
+        boots.Affixes.Select(a => a.RawName).ShouldBe(["Movement Speed", "Strength"]);
+        boots.Affixes.ShouldNotContain(a => a.RawName == "Maximum Life");
+    }
+
+    [Fact]
+    public void Maxroll_SingleAffixSlot_KeepsIt()
+    {
+        // The sole-affix guard prevents dropping a one-line slot's only target.
+        const string paste = """
+            Boots
+            Movement Speed
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var boots = guide.Slots.Single(s => s.SlotLabel == "Boots");
+        boots.Affixes.Count.ShouldBe(1);
+        boots.Affixes[0].RawName.ShouldBe("Movement Speed");
+    }
+
+    [Fact]
+    public void Maxroll_TalismanSlot_Unaffected()
+    {
+        // A Seal talisman slot is emitted with an empty affix list directly (never via EmitSlot's
+        // temper strip), so the drop logic must neither touch it nor error on its empty list.
+        var guide = new MaxrollParser().Parse(MaxrollFixture);
+
+        var seal = guide.Slots.Single(s => s.IsTalismanSlot);
+        seal.SlotLabel.ShouldBe("Seal");
+        seal.Affixes.ShouldBeEmpty();
+    }
+
+    // ── Maxroll: trailing-drop x Unique Effect sentinel interaction ──────────
+
+    [Fact]
+    public void Maxroll_UniqueSentinel_TwoAffixesBeforeSentinel_DropsLastPrecedingAffix()
+    {
+        // EmitSlot only fires on the NEXT slot keyword (or EOF); the "Unique Effect" sentinel just
+        // switches state to UniqueBonus and discards the bonus-description lines. The affix list the
+        // temper-drop guard sees at EmitSlot time is therefore the same list gathered before the
+        // sentinel — the drop reaches back through the sentinel and removes the line immediately
+        // preceding "Unique Effect", not a "last line of the whole slot" concept. This documents that
+        // current, easy-to-miss behavior for a unique with two pre-sentinel affix lines.
+        const string paste = """
+            Helm
+            Harlequin Crest
+            Lucky Hit Chance
+            Cooldown Reduction
+            Unique Effect
+            +2 to All Skills
+            Chest Armor
+            Maximum Life
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var helm = guide.Slots.Single(s => s.SlotLabel == "Helm");
+        helm.HasUniqueSentinel.ShouldBeTrue();
+        helm.Affixes.Select(a => a.RawName).ShouldBe(["Lucky Hit Chance"]);
+        helm.Affixes.ShouldNotContain(a => a.RawName == "Cooldown Reduction");
+    }
+
+    [Fact]
+    public void Maxroll_UniqueSentinel_SingleAffixBeforeSentinel_GuardKeepsSoleAffix()
+    {
+        // Sole-affix guard applies identically on the unique path: a unique with exactly one
+        // pre-sentinel affix line must not lose its only target.
+        const string paste = """
+            Helm
+            Harlequin Crest
+            Lucky Hit Chance
+            Unique Effect
+            +2 to All Skills
+            Chest Armor
+            Maximum Life
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var helm = guide.Slots.Single(s => s.SlotLabel == "Helm");
+        helm.HasUniqueSentinel.ShouldBeTrue();
+        helm.Affixes.Select(a => a.RawName).ShouldBe(["Lucky Hit Chance"]);
+    }
+
+    [Fact]
+    public void Maxroll_UniqueSentinel_NoAffixesBeforeSentinel_EmptyAffixListNoCrash()
+    {
+        // A unique whose guide entry lists no rollable affixes at all before "Unique Effect" — the
+        // count is 0 (not > 1), so the guard is a no-op; must not throw and must yield an empty list.
+        const string paste = """
+            Helm
+            Harlequin Crest
+            Unique Effect
+            +2 to All Skills
+            Chest Armor
+            Maximum Life
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var helm = guide.Slots.Single(s => s.SlotLabel == "Helm");
+        helm.HasUniqueSentinel.ShouldBeTrue();
+        helm.Affixes.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Maxroll_ExactlyTwoAffixLines_DropsToOneTarget()
+    {
+        // The 1-vs-2 affix boundary for a plain (non-unique) slot: exactly two affix lines is the
+        // smallest input that still triggers the drop (count > 1), leaving exactly one target.
+        const string paste = """
+            Boots
+            Movement Speed
+            Maximum Life
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        var boots = guide.Slots.Single(s => s.SlotLabel == "Boots");
+        boots.Affixes.Select(a => a.RawName).ShouldBe(["Movement Speed"]);
+    }
+
     // ── Maxroll: no-item-name (low-level) slots ──────────────────────────────
 
     [Fact]
     public void Maxroll_WithResolver_NoItemNameSlot_KeepsFirstAffix()
     {
         // Low-level guide: the slot header is followed directly by ranked affixes (no item/aspect name).
-        // The top-ranked affix must NOT be swallowed as an item name.
+        // The top-ranked affix must NOT be swallowed as an item name. The Boots block lists 7 affix
+        // lines; the trailing one is the tempered affix and is dropped, leaving 6.
         var guide = new MaxrollParser(NewResolver()).Parse(NoItemNameFixture);
 
         var boots = guide.Slots.First(s => s.SlotLabel == "Boots");
         boots.ItemName.ShouldBeNull();
         boots.Affixes[0].RawName.ShouldBe("Movement Speed");
-        boots.Affixes.Count.ShouldBe(7);
+        boots.Affixes.Count.ShouldBe(6);
     }
 
     [Fact]
