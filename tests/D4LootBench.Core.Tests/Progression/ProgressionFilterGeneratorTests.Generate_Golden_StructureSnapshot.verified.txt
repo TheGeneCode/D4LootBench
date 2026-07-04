@@ -23,7 +23,7 @@
     {
       Name: Helm,
       Visibility: Recolor,
-      Color: 4294947840,
+      Color: 4289418426,
       Conditions: [
         {
           TypeIds: [
@@ -42,15 +42,16 @@
       ],
       IsEnabled: true,
       ColorChannels: {
-        Item1: 255,
-        Item2: 180,
+        Item1: 171,
+        Item2: 84,
+        Item3: 186,
         Item4: 255
       }
     },
     {
       Name: Gloves,
       Visibility: Recolor,
-      Color: 4294947840,
+      Color: 4289418426,
       Conditions: [
         {
           TypeIds: [
@@ -68,15 +69,16 @@
       ],
       IsEnabled: true,
       ColorChannels: {
-        Item1: 255,
-        Item2: 180,
+        Item1: 171,
+        Item2: 84,
+        Item3: 186,
         Item4: 255
       }
     },
     {
       Name: Boots,
       Visibility: Recolor,
-      Color: 4294947840,
+      Color: 4289418426,
       Conditions: [
         {
           TypeIds: [
@@ -93,8 +95,9 @@
       ],
       IsEnabled: true,
       ColorChannels: {
-        Item1: 255,
-        Item2: 180,
+        Item1: 171,
+        Item2: 84,
+        Item3: 186,
         Item4: 255
       }
     },

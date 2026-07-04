@@ -30,4 +30,15 @@ public sealed class DatabaseInitTests
             throw tie.InnerException ?? tie;
         Assert.Null(ex);
     }
+
+    [Fact]
+    public void UniqueItemDatabase_InitializesWithoutThrowing()
+    {
+        // No prior test in the suite touched UniqueItemDatabase's static ctor directly (only indirectly
+        // via FilterCodecTests) — a gap given DeriveClasses/HardcodedTypeClasses were recently edited.
+        var ex = Record.Exception(() => { var _ = UniqueItemDatabase.All.Count; });
+        if (ex is TypeInitializationException tie)
+            throw tie.InnerException ?? tie;
+        Assert.Null(ex);
+    }
 }

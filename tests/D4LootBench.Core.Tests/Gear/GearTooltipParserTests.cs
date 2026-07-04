@@ -130,8 +130,8 @@ public sealed class GearTooltipParserTests
     [Fact]
     public void Parse_FlailWeapon_MapsToWeaponSlot()
     {
-        // Flail (Paladin) is not yet in the filterable item-type catalog, so slot detection must fall
-        // back to the weapon-keyword scan rather than reporting Unknown.
+        // Flail is now in the filterable item-type catalog, so the catalog scan matches it directly
+        // (still mapped to GearSlot.Weapon via the weapon-keyword arm of MapItemTypeToSlot).
         var result = NewParser().Parse(LoadFixture("flail-weapon.txt"));
 
         result.Item.Slot.ShouldBe(GearSlot.Weapon);

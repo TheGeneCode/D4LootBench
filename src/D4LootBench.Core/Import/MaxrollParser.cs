@@ -20,6 +20,9 @@ public sealed partial class MaxrollParser(NameResolver? affixResolver = null) : 
         "Helm", "Chest Armor", "Gloves", "Pants", "Boots",
         "Amulet", "Left Ring", "Right Ring",
         "Mainhand", "Offhand",
+        // Barbarian two-handed arsenal slots (Maxroll labels them by weapon expertise, not "Mainhand").
+        // GoalBuildFactory.MapSlot routes these to the class-aware Bludgeoning/Slicing roles.
+        "Bludgeoning Weapon", "Slicing Weapon",
         "Seal", "Weapon"
     };
 

@@ -107,8 +107,8 @@ public sealed class ProgressionWizardViewModelTests
         vm.GenerateCommand.Execute(null);
 
         // Corrected slot flowed into the diff: the corrected item fills the Gloves slot and is maxed on its
-        // targets, so the slot emits at most a cyan "Gloves (Greater)" rule — never a gold "Gloves" rule. A
-        // gold "Gloves" rule (empty slot → same-or-more from zero) would appear only if the edit had not
+        // targets, so the slot emits at most a cyan "Gloves (Greater)" rule — never a pink "Gloves" rule. A
+        // pink "Gloves" rule (empty slot → same-or-more from zero) would appear only if the edit had not
         // reached the session.
         vm.GeneratedRuleset.ShouldNotBeNull();
         vm.GeneratedRuleset!.Rules.ShouldNotContain(r => r.Name == "Gloves");

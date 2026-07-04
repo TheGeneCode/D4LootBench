@@ -48,7 +48,7 @@ The **character class** picker makes weapon rules class-aware. Leaving it on **A
 The generated filter is built from a **slot-drop model** that highlights upgrades:
 
 - Each slot with a catchable upgrade gets **one Recolor rule**, colored by how close your equipped piece is:
-  - **Gold** while the slot still has room for more of its target affixes — highlights any item with the **same or more** target affixes than your equipped piece already has (an empty slot needs just one target affix). This surfaces every genuine upgrade, not only "perfect" items.
+  - **Purple** while the slot still has room for more of its target affixes — highlights any item with the **same or more** target affixes than your equipped piece already has (an empty slot needs just one target affix). This surfaces every genuine upgrade, not only "perfect" items.
   - **Cyan** once the slot is **maxed** on its target affixes (as many as the item's rarity can roll) — the only remaining upgrade is more **Greater Affixes**, so the rule highlights items that match the same target affixes with at least as many Greater Affixes.
 - A slot emits **no rule at all** — it drops out of the filter — only once your equipped item is **maxed on its target affixes _and_ already holds the most Greater Affixes** a static filter can detect. Only the slots you can still improve get rules.
 - A **Target Uniques** rule and a **Hide All** fallback bookend the filter. D4 enforces a **25-rule cap**; if more slots need rules than the cap allows, the lowest-priority slots are dropped first and a warning is shown.

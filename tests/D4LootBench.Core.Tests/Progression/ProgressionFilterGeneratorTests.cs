@@ -65,9 +65,9 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     [Fact]
-    public void Generate_NonMaxedSlot_EmitsGoldSameOrMoreRule()
+    public void Generate_NonMaxedSlot_EmitsPinkSameOrMoreRule()
     {
-        // Equipped item has 2 of 4 targets and is not yet maxed → a single gold rule highlighting items
+        // Equipped item has 2 of 4 targets and is not yet maxed → a single pink rule highlighting items
         // with the SAME OR MORE (2+) target affixes. No GreaterAffixCondition and no (Greater) rule.
         var diff = Diff(new SlotDiff
         {
@@ -83,7 +83,7 @@ public sealed class ProgressionFilterGeneratorTests
 
         var rule = RuleNamed(result, "Helm")!;
         rule.Visibility.ShouldBe(Visibility.Recolor);
-        rule.Color.ShouldBe(FilterRule.PackColor(255, 180, 0));
+        rule.Color.ShouldBe(FilterColors.LightPurple);
         rule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2);
         rule.Conditions.OfType<GreaterAffixCondition>().ShouldBeEmpty();
         RuleNamed(result, "Helm (Greater)").ShouldBeNull();
@@ -94,7 +94,7 @@ public sealed class ProgressionFilterGeneratorTests
     public void Generate_MaxedZeroGa_EmitsCyanGaRule()
     {
         // Slot maxed on 3 of 3 targets, none greater → a single cyan (Greater) rule: the same 3 affixes
-        // plus at least one Greater Affix. No gold rule is emitted for a maxed slot.
+        // plus at least one Greater Affix. No pink rule is emitted for a maxed slot.
         var diff = Diff(MaxedNeedsRule(GearSlot.Ring, 3, 0, 3, 1u, 2u, 3u));
 
         var result = NewGenerator().Generate(diff);
@@ -122,9 +122,9 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     [Fact]
-    public void Generate_GoldRanksAboveCyan()
+    public void Generate_PinkRanksAboveCyan()
     {
-        // A mix of non-maxed (gold) and maxed (cyan) needy slots: every gold rule precedes every cyan rule
+        // A mix of non-maxed (pink) and maxed (cyan) needy slots: every pink rule precedes every cyan rule
         // so the lower-value maxed-GA rules are the first to drop under the cap.
         var diff = Diff(
             new SlotDiff
@@ -140,28 +140,28 @@ public sealed class ProgressionFilterGeneratorTests
         var result = NewGenerator().Generate(diff);
 
         var slotRules = result.Ruleset.Rules.Where(r => r.Visibility == Visibility.Recolor).ToList();
-        var lastGold = slotRules.FindLastIndex(r => r.Color == FilterRule.PackColor(255, 180, 0));
+        var lastPink = slotRules.FindLastIndex(r => r.Color == FilterColors.LightPurple);
         var firstCyan = slotRules.FindIndex(r => r.Color == FilterRule.PackColor(0, 220, 255));
-        lastGold.ShouldBeLessThan(firstCyan);
+        lastPink.ShouldBeLessThan(firstCyan);
     }
 
     [Fact]
     public void Generate_OverCap_DropsCyanFirst()
     {
-        // 20 distinct gold (non-maxed) + 20 distinct cyan (maxed) exceed the 24-rule capacity; gold ranks
-        // first, so all 20 gold survive and every dropped rule is a cyan (Greater) one.
-        var gold = Enumerable.Range(0, 20)
+        // 20 distinct pink (non-maxed) + 20 distinct cyan (maxed) exceed the 24-rule capacity; pink ranks
+        // first, so all 20 pink survive and every dropped rule is a cyan (Greater) one.
+        var pink = Enumerable.Range(0, 20)
             .Select(i => NeedsRule(GearSlot.Helm, i, (uint)(1000 + i), 2u))
             .ToArray();
         var cyan = Enumerable.Range(0, 20)
             .Select(i => MaxedNeedsRule(GearSlot.Ring, 1, 0, 1, (uint)(2000 + i)))
             .ToArray();
 
-        var result = NewGenerator().Generate(Diff(gold.Concat(cyan).ToArray()));
+        var result = NewGenerator().Generate(Diff(pink.Concat(cyan).ToArray()));
 
         result.BudgetExceeded.ShouldBeTrue();
         result.Warnings.Where(w => w.Contains("dropped")).ShouldAllBe(w => w.Contains("(Greater)"));
-        result.Ruleset.Rules.Count(r => r.Color == FilterRule.PackColor(255, 180, 0)).ShouldBe(20);
+        result.Ruleset.Rules.Count(r => r.Color == FilterColors.LightPurple).ShouldBe(20);
     }
 
     [Fact]
@@ -301,6 +301,123 @@ public sealed class ProgressionFilterGeneratorTests
             .Select(ids => string.Join(",", ids)).Distinct().Count().ShouldBe(2);
     }
 
+    // ---- Interchangeable slot pools: rings (all classes) and Barbarian 1H weapon hands compare to the
+    // WORST equipped member of the pool instead of emitting one divergent rule per physical instance. ----
+
+    [Fact]
+    public void Generate_TwoRings_IdenticalGoal_WorstRing_OneRule()
+    {
+        // Two equipped rings sharing one goal (ordinal-stripped fallback): ordinal 0 matches only affix 1,
+        // ordinal 1 matches affixes 1+2. The pool must key to the WORST ring (1 match) — a single "Ring" rule.
+        var loadout = EquippedLoadout.FromItems(
+            [Item(GearSlot.Ring, [Affix(1u)]), Item(GearSlot.Ring, [Affix(1u), Affix(2u)])],
+            PlayerClass.Sorcerer, RoleMap());
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
+        {
+            [new SlotKey(GearSlot.Ring)] = new() { TargetAffixIds = [1u, 2u, 3u] },
+        });
+
+        var diff = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped).Diff(loadout, goal);
+        var result = NewGenerator().Generate(diff, PlayerClass.Sorcerer);
+
+        var ringRules = result.Ruleset.Rules.Where(r => r.Name == "Ring").ToList();
+        ringRules.ShouldHaveSingleItem();
+        ringRules[0].Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_TwoRings_DistinctGoals_TwoRules_BothRingGated()
+    {
+        // Distinct per-ring goals (explicit per-ordinal, no fallback) still share the Ring item-type gate,
+        // but split into two rules — one per distinct target-affix list — named "Ring" and "Ring 2".
+        var loadout = EquippedLoadout.FromItems(
+            [Item(GearSlot.Ring, [Affix(1u)]), Item(GearSlot.Ring, [Affix(3u)])],
+            PlayerClass.Sorcerer, RoleMap());
+        var goal = new GoalBuild(new Dictionary<SlotKey, SlotGoal>
+        {
+            [new SlotKey(GearSlot.Ring, 0)] = new() { TargetAffixIds = [1u, 2u] },
+            [new SlotKey(GearSlot.Ring, 1)] = new() { TargetAffixIds = [3u, 4u] },
+        });
+
+        var diff = new SlotDiffEngine(MeetsGoalThreshold.RelativeToEquipped).Diff(loadout, goal);
+        var result = NewGenerator().Generate(diff, PlayerClass.Sorcerer);
+
+        var first = RuleNamed(result, "Ring")!;
+        var second = RuleNamed(result, "Ring 2")!;
+        first.Conditions.OfType<ItemTypeCondition>().ShouldHaveSingleItem();
+        second.Conditions.OfType<ItemTypeCondition>().ShouldHaveSingleItem();
+        first.Conditions.OfType<AffixCondition>().Single().AffixIds.ShouldBe<IReadOnlyList<uint>>([1u, 2u]);
+        second.Conditions.OfType<AffixCondition>().Single().AffixIds.ShouldBe<IReadOnlyList<uint>>([3u, 4u]);
+    }
+
+    [Fact]
+    public void Generate_BarbHands_DifferentMatchCounts_OneRuleWorst()
+    {
+        // Barbarian dual 1H hands with the SAME target affixes but different matched counts (2 vs 1) pool
+        // together (same class-aware 1H type set) and key to the WORST hand's matched count.
+        var diff = Diff(
+            new SlotDiff
+            {
+                Slot = new SlotKey(GearSlot.Weapon, 0, WeaponSlotRole.Mainhand),
+                Status = SlotDiffStatus.NeedsRule,
+                TargetAffixIds = [1u, 2u],
+                MatchedAffixCount = 2,
+            },
+            new SlotDiff
+            {
+                Slot = new SlotKey(GearSlot.Offhand, 0, WeaponSlotRole.Offhand),
+                Status = SlotDiffStatus.NeedsRule,
+                TargetAffixIds = [1u, 2u],
+                MatchedAffixCount = 1,
+            });
+
+        var result = NewGenerator().Generate(diff, PlayerClass.Barbarian);
+
+        var recolor = result.Ruleset.Rules.Where(r => r.Visibility == Visibility.Recolor).ToList();
+        recolor.ShouldHaveSingleItem();
+        result.SlotRuleCount.ShouldBe(1);
+        recolor[0].Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_MaxedRingPair_CyanWorstGa()
+    {
+        // Two maxed rings sharing targets/cap but different GA counts (2 vs 0) pool into ONE cyan rule
+        // keyed to the WORST (lowest) GA count.
+        var diff = Diff(
+            MaxedNeedsRule(GearSlot.Ring, 3, 2, 3, 1u, 2u, 3u),
+            new SlotDiff
+            {
+                Slot = new SlotKey(GearSlot.Ring, 1),
+                Status = SlotDiffStatus.NeedsRule,
+                TargetAffixIds = [1u, 2u, 3u],
+                MatchedAffixCount = 3,
+                MatchedGreaterAffixCount = 0,
+                EffectiveTargetCap = 3,
+                IsMaxedOnTargets = true,
+            });
+
+        var result = NewGenerator().Generate(diff);
+
+        result.Ruleset.Rules.Count(r => r.Name.EndsWith("(Greater)", StringComparison.Ordinal)).ShouldBe(1);
+        RuleNamed(result, "Ring (Greater)")!.Conditions.OfType<GreaterAffixCondition>().Single()
+            .MinimumCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Generate_SingleRing_UnchangedName()
+    {
+        // A single maxed ring (no pool partner) keeps today's exact name and values — guards the golden-
+        // snapshot invariant that a singleton pool is byte-identical to pre-pooling output.
+        var diff = Diff(MaxedNeedsRule(GearSlot.Ring, 3, 0, 3, 1u, 2u, 3u));
+
+        var result = NewGenerator().Generate(diff);
+
+        var cyan = RuleNamed(result, "Ring (Greater)")!;
+        cyan.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(3);
+        cyan.Conditions.OfType<GreaterAffixCondition>().Single().MinimumCount.ShouldBe(1);
+    }
+
     [Fact]
     public void Generate_NoNeedySlots_OnlyHideAll()
     {
@@ -341,7 +458,7 @@ public sealed class ProgressionFilterGeneratorTests
     }
 
     // Fixed 4-needy (real item types) + 1 target unique — deterministic snapshot input. Helm/Gloves/Boots
-    // are non-maxed (matched 0) so they exercise the gold same-or-more rule (require 1 affix). The Ring slot
+    // are non-maxed (matched 0) so they exercise the pink same-or-more rule (require 1 affix). The Ring slot
     // is MAXED on all 3 of its targets with NONE greater, so it exercises the cyan maxed-GA rule (require
     // the same 3 affixes + at least one Greater Affix).
     private static SlotDiffResult GoldenDiff() => new()

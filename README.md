@@ -51,7 +51,7 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 
 ### Build a progression filter
 
-Recolors any dropped item that improves on your currently-equipped gear for a goal build. Each slot that still has a catchable upgrade gets one rule: **gold** highlights items with the same-or-more of the slot's target affixes than you have equipped, and once a slot is maxed on its target affixes the rule turns **cyan** to catch items with more Greater Affixes. A slot drops out of the filter entirely only once your equipped item is maxed on its target affixes *and* already holds the most Greater Affixes a static filter can detect.
+Recolors any dropped item that improves on your currently-equipped gear for a goal build. Each slot that still has a catchable upgrade gets one rule: **purple** highlights items with the same-or-more of the slot's target affixes than you have equipped, and once a slot is maxed on its target affixes the rule turns **cyan** to catch items with more Greater Affixes. A slot drops out of the filter entirely only once your equipped item is maxed on its target affixes *and* already holds the most Greater Affixes a static filter can detect.
 
 1. Click **Progression…** in the toolbar
 2. **Read gear** — screenshot each equipped item's tooltip in-game (<kbd>Win+Shift+S</kbd>, "Advanced Tooltip Information" ON) and click **Paste Screenshot**, or **Open Image…** for a saved file

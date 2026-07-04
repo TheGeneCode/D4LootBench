@@ -245,3 +245,40 @@ catchable Greater Affixes.
     machinery and the `BuildGreaterRule` helper are gone.
 - The wizard's `Generate()` now passes `MeetsGoalThreshold.RelativeToEquipped` (was `Exact`).
 - Golden Verify snapshots updated: the Ring fixture is now a maxed slot, exercising the cyan path.
+
+**Follow-up:** the non-maxed slot tier's color was swapped from gold to **light pink**
+(`#FFB6C1`) in both `ProgressionFilterGenerator` and `BuildGuideFilterGenerator` — cosmetic only, no
+behavior change. Golden snapshots and the "gold" naming in tests/docs were updated to match. Later the
+same tier was recolored again from light pink to **light purple** (`FilterColors.LightPurple`,
+`#AB54BA`) — pink read too light in-game; same cosmetic-only treatment, golden snapshots refreshed.
+
+---
+
+## Interchangeable Slot Pools ✅ — Ring/1H-Weapon Pooling + Flail Item Type
+
+Design context: `plans/interchangeable-slot-pools.md`.
+
+The two Ring slots (and a Barbarian's two 1H weapon hands) are physically interchangeable, but the
+generator diffed each physical instance independently and emitted one rule per instance keyed to
+*that instance's own* match count — so two rings sharing a goal but with different equipped match
+counts produced two divergent rules instead of one keyed to the *worse* ring, missing real upgrades
+to the weaker piece.
+
+- `ProgressionFilterGenerator.Generate` now buckets needy slots into **pools**: any Ring slot, or any
+  weapon/offhand slot with a resolved `WeaponSlotRole`, sharing the same item-type gate. Non-poolable
+  slots (armor, roleless/ambiguous weapons) stay singleton, so behavior for them is unchanged.
+- Within a pool, members split further by distinct target-affix-list (so two different ring goals
+  still get two rules), and each resulting group emits **one** rule keyed to the **worst** member —
+  `min(MatchedAffixCount)` in the pink regime, `min(MatchedGreaterAffixCount)` in cyan. A pool with a
+  single member reproduces today's exact output byte-for-byte (golden snapshots unchanged).
+  A stricter "cross-evaluate one ring's goal against another ring's affix list" model was considered
+  and rejected — it would flag a mediocre ring of one type as an upgrade to a well-matched ring of a
+  different type (false positive), while the chosen per-goal-list model never misses a genuine upgrade.
+- Rule naming: pooled Rings → `"Ring"` / `"Ring 2"` (ignoring ordinal); pooled same-role weapon hands →
+  the role name; a mixed Mainhand+Offhand pool (Barbarian dual 1H) → `"1H Weapon"`.
+- Added **Flail** (`0x00234A98`) to the filterable item-type catalog (Barbarian/Warlock/Necromancer/
+  Paladin/Druid), so `WeaponRoleMap` gates Barbarian 1H weapon rules on it automatically. Broadened
+  `UniqueItemDatabase`'s `1HFlail`/`2HFlail` hardcoded class lists (`["Paladin"]`→5 classes) as
+  defensive future-proofing — currently a no-op for catalog data, since all 3 catalog Flail uniques
+  carry an explicit class segment in their internal name that `DeriveClasses` resolves before reaching
+  the hardcoded fallback; the broadened list only matters for a future class-segment-less Flail unique.

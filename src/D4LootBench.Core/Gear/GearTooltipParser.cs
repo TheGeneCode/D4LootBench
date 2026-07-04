@@ -164,10 +164,10 @@ public sealed partial class GearTooltipParser(IFilterDataService data)
             }
         }
 
-        // Fallback: newer weapon types (Flail, Glaive, Quarterstaff) aren't yet in the filterable
-        // item-type catalog, so the catalog scan above misses them. Recognize the bare weapon word so
-        // the slot is still Weapon; the recovered word becomes the concrete ItemTypeName used for
-        // weapon SlotKey keying.
+        // Fallback: newer weapon types (Glaive, Quarterstaff) aren't yet in the filterable item-type
+        // catalog, so the catalog scan above misses them (Flail is catalogued and matched there directly).
+        // Recognize the bare weapon word so the slot is still Weapon; the recovered word becomes the
+        // concrete ItemTypeName used for weapon SlotKey keying.
         foreach (var line in lines)
         {
             foreach (var keyword in WeaponKeywords)

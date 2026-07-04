@@ -102,11 +102,11 @@ Unknown skills display as `Unknown (0x...)` but filters decode fully.
 ## Gap 4: Item Type Affixes (Very Low Priority)
 
 ### Status
-- **Coverage:** 27 item types (complete)
+- **Coverage:** 28 item types (complete)
 - **Issue:** Which affixes can roll on which item types?
 
 ### What We Have
-- All 27 item types (Axe, Bow, Chest Armor, Ring, etc.) with hashes and names
+- All 28 item types (Axe, Bow, Chest Armor, Ring, Flail, etc.) with hashes and names
 - Full codec support
 
 ### What's Missing
@@ -247,7 +247,7 @@ conditional-damage affixes remain, pending an upstream data drop that exposes th
 ✅ **COMPLETE** — All critical gaps closed:
 - Unique items: 901 (99.2% resolved)
 - Talisman sets: 50 (100% resolved)
-- Item types: 27 (100% resolved)
+- Item types: 28 (100% resolved)
 - Skills: 242 (97% coverage — all real skills; only unreleased PH placeholders omitted)
 - Affixes: 251 (all standard S04 item affixes covered, including 102 named skill ranks + 52 passives)
 

@@ -11,7 +11,7 @@ namespace D4LootBench.Ai.Import;
 /// </summary>
 public sealed class BuildGuideFilterGenerator(NameResolver nameResolver)
 {
-    private static readonly uint ColorSlot = FilterRule.PackColor(255, 180, 0);  // gold
+    private static readonly uint ColorSlot = FilterColors.LightPurple; // light purple
     private static readonly uint ColorUnique = FilterRule.PackColor(160, 32, 240); // purple
     private static readonly uint ColorCharms = FilterRule.PackColor(50, 200, 50); // green
     private static readonly uint ColorHideAll = FilterRule.PackColor(0, 0, 0); // black

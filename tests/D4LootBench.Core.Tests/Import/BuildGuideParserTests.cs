@@ -165,6 +165,33 @@ public sealed class BuildGuideParserTests
     }
 
     [Fact]
+    public void Maxroll_BarbarianTwoHandWeaponHeaders_DelimitDistinctSlots()
+    {
+        // Regression: "Bludgeoning Weapon"/"Slicing Weapon" are the Maxroll labels for a Barbarian's
+        // two-handed arsenal slots. They must delimit their own slots (GoalBuildFactory then routes them
+        // to the Bludgeoning/Slicing roles → Two-Handed item types). Previously they were not in the
+        // slot-keyword set, so they were absorbed as affix lines of the preceding armor slot and no
+        // weapon slot was emitted at all.
+        const string paste = """
+            Boots
+            Movement Speed
+            Strength
+            Bludgeoning Weapon
+            Strength
+            Critical Strike Damage
+            Slicing Weapon
+            Dexterity
+            Vulnerable Damage
+            """;
+        var guide = new MaxrollParser(NewResolver()).Parse(paste);
+
+        guide.Slots.Select(s => s.SlotLabel).ShouldBe(["Boots", "Bludgeoning Weapon", "Slicing Weapon"]);
+        // The weapon headers did not leak into the preceding armor slot's affix list.
+        guide.Slots.Single(s => s.SlotLabel == "Boots")
+            .Affixes.ShouldNotContain(a => a.RawName.Contains("Weapon"));
+    }
+
+    [Fact]
     public void Maxroll_DropsTrailingTemperedAffix()
     {
         // Maxroll lists the tempered affix as the last positional line; a drop never pre-rolls it, so

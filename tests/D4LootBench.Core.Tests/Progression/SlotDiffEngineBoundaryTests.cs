@@ -252,7 +252,7 @@ public class SlotDiffEngineBoundaryTests
     public void DuplicateTargetAffix_RequiredCountReflectsDistinctMatches_EndToEnd()
     {
         // Regression: a build helm listing "Maximum Life" twice (B here) plus a piece equipped with 2 of the
-        // distinct targets must dedupe to a matched count of 2, so the gold same-or-more rule requires 2 (not
+        // distinct targets must dedupe to a matched count of 2, so the pink same-or-more rule requires 2 (not
         // 3). Before the dedup fix, the duplicate double-counted the match, inflating the matched count — and
         // thus the required count — by one.
         var item = Helm([ProgressionTestFactory.Affix(A), ProgressionTestFactory.Affix(B)]);
@@ -265,7 +265,7 @@ public class SlotDiffEngineBoundaryTests
         var generator = new ProgressionFilterGenerator(resolver, new WeaponRoleMap(resolver));
         var result = generator.Generate(new SlotDiffResult { Slots = [diff] });
 
-        // The slot is not maxed (2 of 4 effective cap), so it emits a single gold "Helm" rule requiring the
+        // The slot is not maxed (2 of 4 effective cap), so it emits a single pink "Helm" rule requiring the
         // same-or-more matched count (2). No "(Greater)" rule is emitted for a non-maxed slot.
         var helmRule = result.Ruleset.Rules.Single(r => r.Name == "Helm");
         helmRule.Conditions.OfType<AffixCondition>().Single().MinimumCount.ShouldBe(2);

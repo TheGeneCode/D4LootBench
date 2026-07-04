@@ -137,6 +137,8 @@ For non-unique items, affixes continue until the next slot name keyword. Maxroll
 | Left Ring / Right Ring | Ring |
 | Mainhand | Weapon (subtype TBD by class) |
 | Offhand | Offhand / Focus (subtype TBD) |
+| Bludgeoning Weapon | Barbarian two-handed arsenal slot → Bludgeoning role (Two-Handed Mace) |
+| Slicing Weapon | Barbarian two-handed arsenal slot → Slicing role (Two-Handed Sword / Axe / Polearm) |
 | Seal | Talisman item — contributes to "show all charms" rule |
 | Charm 1–6 | Talisman entries — show all, no affix conditions; affix lines discarded |
 

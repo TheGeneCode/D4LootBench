@@ -2481,6 +2481,19 @@
       ]
     },
     {
+      "displayName": "Flail",
+      "hash": "0x00234A98",
+      "internalName": "Flail",
+      "category": "Weapons",
+      "classes": [
+        "Barbarian",
+        "Warlock",
+        "Necromancer",
+        "Paladin",
+        "Druid"
+      ]
+    },
+    {
       "displayName": "Staff",
       "hash": "0x0006D153",
       "internalName": "Staff",

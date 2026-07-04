@@ -4,21 +4,25 @@ using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Models;
 
-/// <summary>Deterministically turns a <see cref="SlotDiffResult"/> into a native D4 loot filter, emitting
-/// exactly one Recolor rule per needy slot: a GOLD rule for a slot that is not yet maxed on its target
-/// affixes (highlights any item holding the SAME OR MORE ranked target affixes than the equipped piece),
-/// or a CYAN rule for a slot already maxed on target affixes (highlights items with at least as many
-/// Greater Affixes as the equipped piece — the only upgrade a static filter can still catch). Plus a
-/// Target Uniques rule and a Hide All fallback. Weapon/offhand slots resolve their class-aware role to a
-/// SET of item types (one multi-type <see cref="ItemTypeCondition"/>); rules whose conditions are
-/// byte-identical collapse to a single rule (e.g. Barbarian dual-1H hands). Gold rules rank above cyan
-/// rules so the lower-value maxed-GA rules are the first to drop under the 25-rule cap. Completed slots
-/// (equipped item already meets the goal) are dropped. No LLM involvement.</summary>
+/// <summary>Deterministically turns a <see cref="SlotDiffResult"/> into a native D4 loot filter. Needy
+/// slots are grouped into POOLS of genuinely interchangeable slots — the two Ring slots (all classes) and
+/// a Barbarian's two 1H weapon hands — then each pool is split by distinct target-affix list, and each
+/// resulting group emits exactly ONE rule gated on the pool's shared item-type set and keyed to the WORST
+/// equipped member of the group: a PINK rule while any member is not yet maxed on its target affixes
+/// (highlights any item holding the SAME OR MORE ranked target affixes than the worst member), or a CYAN
+/// rule once every member is maxed (highlights items with at least as many Greater Affixes as the worst
+/// member — the only upgrade a static filter can still catch). Non-pooled slots (armor, a lone ring, a
+/// lone weapon role) reduce to today's one-rule-per-slot behavior. Plus a Target Uniques rule and a Hide
+/// All fallback. Weapon/offhand slots resolve their class-aware role to a SET of item types (one
+/// multi-type <see cref="ItemTypeCondition"/>); rules whose conditions are byte-identical collapse to a
+/// single rule. Pink rules rank above cyan rules so the lower-value maxed-GA rules are the first to drop
+/// under the 25-rule cap. Completed slots (equipped item already meets the goal) are dropped. No LLM
+/// involvement.</summary>
 /// <param name="nameResolver">The shared fuzzy name resolver.</param>
 /// <param name="roleMap">The class-aware weapon role map.</param>
 public sealed class ProgressionFilterGenerator(NameResolver nameResolver, WeaponRoleMap roleMap)
 {
-    private static readonly uint ColorImprovement = FilterRule.PackColor(255, 180, 0); // gold — an affix-count upgrade
+    private static readonly uint ColorImprovement = FilterColors.LightPurple; // light purple — an affix-count upgrade
     private static readonly uint ColorGreater = FilterRule.PackColor(0, 220, 255);      // cyan — a Greater-Affix upgrade
     private static readonly uint ColorUnique = FilterRule.PackColor(160, 32, 240);      // purple
     private static readonly uint ColorHideAll = FilterRule.PackColor(0, 0, 0);          // black
@@ -64,13 +68,22 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver, Weapon
 
         // Build rules for EVERY needy slot first (slot order), then collapse byte-identical rules, then
         // apply the 25-rule cap. Collapsing first means dual-1H hands sharing a shape don't each burn budget.
-        // Each slot contributes exactly ONE rule, keyed on IsMaxedOnTargets: a gold "same-or-more target
+        // Each slot contributes exactly ONE rule, keyed on IsMaxedOnTargets: a pink "same-or-more target
         // affixes" rule while the equipped piece can still gain a target affix, or a cyan "same-or-more
         // Greater Affixes" rule once it is maxed on target affixes for its rarity. The two tiers are kept
-        // in separate lists so gold rules rank ABOVE cyan rules in the final ruleset — under the cap the
+        // in separate lists so pink rules rank ABOVE cyan rules in the final ruleset — under the cap the
         // lower-value maxed-GA rules are dropped first.
         var baseRules = new List<FilterRule>();
         var greaterRules = new List<FilterRule>();
+
+        // 1) Resolve each needy slot's type gate once (preserving order), emitting the ambiguity warning
+        // exactly as before, and bucket into ordered pools. Poolable = a genuinely interchangeable slot
+        // with a real gate: any Ring, or any weapon/offhand ROLE slot (e.g. a Barbarian's two 1H hands).
+        // Everything else (armor slots, roleless/ambiguous weapons, empty gates) is its own singleton pool
+        // so nothing merges by accident.
+        var pools = new List<(string Key, List<(SlotDiff Slot, IReadOnlyList<uint> Types)> Members)>();
+        var poolIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+
         foreach (var slot in needy)
         {
             var typeHashes = ResolveTypeHashes(slot.Slot, cls);
@@ -79,43 +92,94 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver, Weapon
                 warnings.Add($"Ambiguous item type for {slot.Slot} — emitting affix-only rule");
             }
 
-            FilterRule? rule;
-            if (!slot.IsMaxedOnTargets)
+            var poolable = typeHashes.Count > 0
+                && (slot.Slot.Slot == GearSlot.Ring || slot.Slot.Role != WeaponSlotRole.None);
+            var key = poolable
+                ? "P:" + string.Join(",", typeHashes)
+                : "S:" + slot.Slot + "|" + string.Join(",", typeHashes);
+
+            if (!poolIndex.TryGetValue(key, out var idx))
             {
-                // Gold: highlight any item with the SAME OR MORE ranked target affixes than equipped
-                // (min 1 for an empty/zero-match slot). SlotRuleBuilder clamps required to the affix
-                // count, so a fully-matched-but-not-capped slot still yields a satisfiable rule.
-                var requiredCount = Math.Max(1, slot.MatchedAffixCount);
-                rule = SlotRuleBuilder.BuildMultiType(
-                    slot.Slot.ToString(), Visibility.Recolor, ColorImprovement, typeHashes,
-                    slot.TargetAffixIds, greaterAffixIds: [], requiredCount: requiredCount);
-
-                if (rule is null)
-                {
-                    warnings.Add($"No conditions for {slot.Slot}");
-                    continue;
-                }
-
-                baseRules.Add(rule);
+                idx = pools.Count;
+                poolIndex[key] = idx;
+                pools.Add((key, []));
             }
-            else
-            {
-                // Cyan: equipped is maxed on target affixes for its rarity — the only catchable upgrade
-                // is more Greater Affixes. Require the same target-affix count plus at least as many GAs
-                // as equipped (min 1). GreaterAffixCondition counts GAs across all affixes (D4 primitive),
-                // so this is a deliberate approximation of "more GAs on the target affixes".
-                rule = SlotRuleBuilder.BuildMultiType(
-                    slot.Slot + " (Greater)", Visibility.Recolor, ColorGreater, typeHashes,
-                    slot.TargetAffixIds, greaterAffixIds: [], requiredCount: slot.EffectiveTargetCap);
 
-                if (rule is null)
+            pools[idx].Members.Add((slot, typeHashes));
+        }
+
+        // 2) Within each pool, group members by goal-affix-list signature (order-sensitive), preserving
+        // first-encounter order. Emit ONE rule per (pool, affix-list) group, keyed to the WORST member —
+        // min(MatchedAffixCount) in the pink regime, min(MatchedGreaterAffixCount) in the cyan regime —
+        // so a genuine upgrade to the weaker member of an interchangeable pair is never missed. A pool
+        // with a single member reduces to exactly today's per-slot behavior.
+        foreach (var pool in pools)
+        {
+            var groups = new List<List<(SlotDiff Slot, IReadOnlyList<uint> Types)>>();
+            var groupIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var member in pool.Members)
+            {
+                var sig = string.Join(",", member.Slot.TargetAffixIds);
+                if (!groupIndex.TryGetValue(sig, out var gi))
                 {
-                    warnings.Add($"No conditions for {slot.Slot}");
-                    continue;
+                    gi = groups.Count;
+                    groupIndex[sig] = gi;
+                    groups.Add([]);
                 }
 
-                rule.Conditions.Add(new GreaterAffixCondition(Math.Max(1, slot.MatchedGreaterAffixCount)));
-                greaterRules.Add(rule);
+                groups[gi].Add(member);
+            }
+
+            for (var g = 0; g < groups.Count; g++)
+            {
+                var members = groups[g];
+                var typeHashes = members[0].Types;
+                var targetAffixIds = members[0].Slot.TargetAffixIds;
+                var baseName = PoolLabel(members.Select(m => m.Slot).ToList());
+                if (g > 0)
+                {
+                    baseName = $"{baseName} {g + 1}"; // distinct-goal pools: "Ring", "Ring 2", ...
+                }
+
+                FilterRule? rule;
+                if (members.Any(m => !m.Slot.IsMaxedOnTargets))
+                {
+                    // Pink: highlight any item with the SAME OR MORE ranked target affixes than the WORST
+                    // equipped member (min 1 for an empty/zero-match slot). SlotRuleBuilder clamps required
+                    // to the affix count, so a fully-matched-but-not-capped slot still yields a satisfiable
+                    // rule. An empty/unmaxed member counts, so the whole group stays in the pink regime.
+                    var requiredCount = Math.Max(1, members.Min(m => m.Slot.MatchedAffixCount));
+                    rule = SlotRuleBuilder.BuildMultiType(
+                        baseName, Visibility.Recolor, ColorImprovement, typeHashes,
+                        targetAffixIds, greaterAffixIds: [], requiredCount: requiredCount);
+
+                    if (rule is null)
+                    {
+                        warnings.Add($"No conditions for {baseName}");
+                        continue;
+                    }
+
+                    baseRules.Add(rule);
+                }
+                else
+                {
+                    // Cyan: every member maxed on targets — the only catchable upgrade is more Greater
+                    // Affixes. Require the same target-affix count plus at least as many GAs as the WORST
+                    // member (min 1), so the rule catches an upgrade to either equipped piece.
+                    var effectiveCap = members.Min(m => m.Slot.EffectiveTargetCap);
+                    rule = SlotRuleBuilder.BuildMultiType(
+                        baseName + " (Greater)", Visibility.Recolor, ColorGreater, typeHashes,
+                        targetAffixIds, greaterAffixIds: [], requiredCount: effectiveCap);
+
+                    if (rule is null)
+                    {
+                        warnings.Add($"No conditions for {baseName}");
+                        continue;
+                    }
+
+                    rule.Conditions.Add(new GreaterAffixCondition(Math.Max(1, members.Min(m => m.Slot.MatchedGreaterAffixCount))));
+                    greaterRules.Add(rule);
+                }
             }
         }
 
@@ -217,6 +281,24 @@ public sealed class ProgressionFilterGenerator(NameResolver nameResolver, Weapon
         return name is not null && nameResolver.TryResolveItemType(name, out var hash, out _)
             ? [hash]
             : [];
+    }
+
+    // Display label for a (pool, affix-list) group. Single-member groups keep today's exact name
+    // (SlotKey.ToString()); multi-member pools get a shared label.
+    private static string PoolLabel(IReadOnlyList<SlotDiff> members)
+    {
+        if (members.All(m => m.Slot.Slot == GearSlot.Ring))
+        {
+            return "Ring";
+        }
+
+        if (members.All(m => m.Slot.Role != WeaponSlotRole.None))
+        {
+            var roles = members.Select(m => m.Slot.Role).Distinct().ToList();
+            return roles.Count == 1 ? roles[0].ToString() : "1H Weapon"; // Barb Mainhand+Offhand → "1H Weapon"
+        }
+
+        return members[0].Slot.ToString(); // singleton armor/roleless slot: "Helm", "Weapon", "Ring#2", ...
     }
 }
 

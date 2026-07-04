@@ -193,6 +193,33 @@ public sealed class WeaponRoleMapTests
     }
 
     [Fact]
+    public void WeaponRoleMap_barbarian_1h_includes_flail()
+    {
+        Map.AllowedTypeHashes(WeaponSlotRole.Mainhand, PlayerClass.Barbarian).ShouldContain(Hash("Flail"));
+        Map.AllowedTypeHashes(WeaponSlotRole.Offhand, PlayerClass.Barbarian).ShouldContain(Hash("Flail"));
+    }
+
+    [Fact]
+    public void WeaponRoleMap_roleForItemType_flail_is_mainhand()
+    {
+        // Complements WeaponRoleMap_barbarian_1h_includes_flail (which tests the role→hash-set direction)
+        // with the concrete-item→role direction: an equipped Flail must classify as Mainhand for a
+        // Barbarian (one-handed, not Bludgeoning/Slicing/two-handed/offhand-internal).
+        Map.RoleForItemType("Flail", PlayerClass.Barbarian).ShouldBe(WeaponSlotRole.Mainhand);
+    }
+
+    [Theory]
+    [InlineData(PlayerClass.Rogue)]
+    [InlineData(PlayerClass.Sorcerer)]
+    [InlineData(PlayerClass.Spiritborn)]
+    public void WeaponRoleMap_flail_excluded_for_classes_outside_catalog_list(PlayerClass cls)
+    {
+        // d4-data.json's Flail entry lists classes = Barbarian/Warlock/Necromancer/Paladin/Druid only —
+        // Rogue/Sorcerer/Spiritborn must never see Flail in their Mainhand gate.
+        Map.AllowedTypeHashes(WeaponSlotRole.Mainhand, cls).ShouldNotContain(Hash("Flail"));
+    }
+
+    [Fact]
     public void WeaponRoleMap_mainhand_allclass_is_union_across_classes()
     {
         // PlayerClass.All => ClassName returns null => ClassMatch is unconditionally true, so the result

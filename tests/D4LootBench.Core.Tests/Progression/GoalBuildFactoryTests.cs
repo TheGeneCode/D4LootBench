@@ -157,12 +157,17 @@ public sealed class GoalBuildFactoryTests
         result.Warnings.ShouldBeEmpty();
     }
 
-    [Fact]
-    public void GoalBuildFactory_maps_bludgeoning_and_slicing_headers_to_barb_roles()
+    [Theory]
+    // Short-form labels plus the full "… Weapon" headers the Maxroll parser actually emits for a
+    // Barbarian's two-handed arsenal slots — both must route to the Bludgeoning/Slicing roles.
+    [InlineData("Bludgeoning", "Slicing")]
+    [InlineData("Bludgeoning Weapon", "Slicing Weapon")]
+    public void GoalBuildFactory_maps_bludgeoning_and_slicing_headers_to_barb_roles(
+        string bludgeoningLabel, string slicingLabel)
     {
         var guide = Guide(
-            Slot("Bludgeoning", ["Strength"]),
-            Slot("Slicing", ["Dexterity"]));
+            Slot(bludgeoningLabel, ["Strength"]),
+            Slot(slicingLabel, ["Dexterity"]));
 
         var result = NewFactory().Create(guide, MeetsGoalThreshold.NOf(1), PlayerClass.Barbarian);
 
