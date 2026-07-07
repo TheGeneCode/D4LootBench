@@ -15,6 +15,9 @@ public enum ProgressionStep
     /// <summary>Paste the goal build guide and pick a threshold.</summary>
     Goal,
 
+    /// <summary>Manage the optional override / overridden-by static rule blocks merged around better-gear.</summary>
+    StaticRules,
+
     /// <summary>Show the generated share code.</summary>
     Result,
 }

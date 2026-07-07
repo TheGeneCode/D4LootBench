@@ -120,7 +120,7 @@
             <!-- ══ Step 1 · Read Gear ══════════════════════════════════ -->
             <DockPanel Visibility="{Binding CurrentStep, Converter={StaticResource StepVis}, ConverterParameter=ReadGear}">
                 <TextBlock DockPanel.Dock="Top"
-                           Text="Step 1 of 4 — Read your equipped gear"
+                           Text="Step 1 of 5 — Read your equipped gear"
                            FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
                 <TextBlock DockPanel.Dock="Top"
                            Text="Screenshot a gear tooltip in-game (Win+Shift+S), then paste it here — or open a saved image. Enable Advanced Tooltip Information in D4."
@@ -173,7 +173,7 @@
             <!-- ══ Step 2 · Review ═════════════════════════════════════ -->
             <DockPanel Visibility="{Binding CurrentStep, Converter={StaticResource StepVis}, ConverterParameter=Review}">
                 <TextBlock DockPanel.Dock="Top"
-                           Text="Step 2 of 4 — Review &amp; correct"
+                           Text="Step 2 of 5 — Review &amp; correct"
                            FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
                 <TextBlock DockPanel.Dock="Top"
                            Text="Fix any misread slot, power, rarity, or affix. Tick greater affixes by hand — OCR cannot detect them."
@@ -258,7 +258,7 @@
             <!-- ══ Step 3 · Goal ═══════════════════════════════════════ -->
             <DockPanel Visibility="{Binding CurrentStep, Converter={StaticResource StepVis}, ConverterParameter=Goal}">
                 <TextBlock DockPanel.Dock="Top"
-                           Text="Step 3 of 4 — Paste your goal build"
+                           Text="Step 3 of 5 — Paste your goal build"
                            FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
                 <TextBlock DockPanel.Dock="Top"
                            Text="Paste the gear section of a build guide (Mobalytics, Maxroll, Icy Veins). The filter recolors any item that improves on your equipped gear; a slot drops out once your item already has every target affix."
@@ -281,8 +281,8 @@
                             HorizontalAlignment="Right" Margin="0,10,0,0">
                     <Button Content="◀ Back" Height="28" Padding="14,0" Margin="0,0,8,0"
                             Command="{Binding BackToReviewCommand}" />
-                    <Button Content="Generate ▶" Height="28" Padding="14,0"
-                            Command="{Binding GenerateCommand}" />
+                    <Button Content="Next: Static Rules ▶" Height="28" Padding="14,0"
+                            Command="{Binding NextToStaticRulesCommand}" />
                 </StackPanel>
 
                 <TextBox Text="{Binding PastedText, UpdateSourceTrigger=PropertyChanged}"
@@ -297,10 +297,86 @@
                          Padding="6" />
             </DockPanel>
 
-            <!-- ══ Step 4 · Result ═════════════════════════════════════ -->
+            <!-- ══ Step 4 · Static Rules ═══════════════════════════════ -->
+            <DockPanel Visibility="{Binding CurrentStep, Converter={StaticResource StepVis}, ConverterParameter=StaticRules}">
+                <TextBlock DockPanel.Dock="Top"
+                           Text="Step 4 of 5 — Static rule blocks (optional)"
+                           FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <TextBlock DockPanel.Dock="Top"
+                           Text="Wrap the generated better-gear rules with your own static rules. Override rules take priority over better-gear (e.g. always show mythic uniques); overridden-by rules sit below it, above the final catch-all (e.g. never show rares). Import each block from a filter share code on your clipboard, or skip this step to generate better-gear only."
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                           Margin="0,0,0,10" />
+
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                            HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Button Content="◀ Back" Height="28" Padding="14,0" Margin="0,0,8,0"
+                            Command="{Binding BackToGoalCommand}" />
+                    <Button Content="Generate ▶" Height="28" Padding="14,0"
+                            Command="{Binding GenerateCommand}" />
+                </StackPanel>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <!-- Override block: takes priority OVER better-gear (placed first). -->
+                        <Border BorderThickness="1" CornerRadius="3" Padding="8" Margin="0,0,0,8"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
+                            <StackPanel>
+                                <TextBlock Text="Override block — takes priority over better-gear"
+                                           FontWeight="SemiBold" Margin="0,0,0,2" />
+                                <TextBlock Text="Placed above the better-gear rules. Example: always show mythic uniques."
+                                           TextWrapping="Wrap" FontSize="11"
+                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                           Margin="0,0,0,6" />
+                                <TextBlock Margin="0,0,0,6">
+                                    <Run Text="Rules in this block: " />
+                                    <Run Text="{Binding OverrideRuleCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Import from clipboard" Height="28" Padding="12,0" Margin="0,0,8,0"
+                                            Command="{Binding ImportOverrideBlockCommand}" />
+                                    <Button Content="Clear" Height="28" Padding="12,0"
+                                            Command="{Binding ClearOverrideBlockCommand}" />
+                                    <Button Content="Edit…" Height="28" Padding="12,0" Margin="8,0,0,0"
+                                            Command="{Binding EditOverrideBlockCommand}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Overridden-by block: better-gear takes priority OVER these (placed below better-gear). -->
+                        <Border BorderThickness="1" CornerRadius="3" Padding="8" Margin="0,0,0,8"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
+                            <StackPanel>
+                                <TextBlock Text="Overridden-by block — better-gear takes priority over these"
+                                           FontWeight="SemiBold" Margin="0,0,0,2" />
+                                <TextBlock Text="Placed below the better-gear rules, above the final catch-all. Example: never show rares."
+                                           TextWrapping="Wrap" FontSize="11"
+                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                           Margin="0,0,0,6" />
+                                <TextBlock Margin="0,0,0,6">
+                                    <Run Text="Rules in this block: " />
+                                    <Run Text="{Binding OverriddenByRuleCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Import from clipboard" Height="28" Padding="12,0" Margin="0,0,8,0"
+                                            Command="{Binding ImportOverriddenByBlockCommand}" />
+                                    <Button Content="Clear" Height="28" Padding="12,0"
+                                            Command="{Binding ClearOverriddenByBlockCommand}" />
+                                    <Button Content="Edit…" Height="28" Padding="12,0" Margin="8,0,0,0"
+                                            Command="{Binding EditOverriddenByBlockCommand}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+
+            <!-- ══ Step 5 · Result ═════════════════════════════════════ -->
             <DockPanel Visibility="{Binding CurrentStep, Converter={StaticResource StepVis}, ConverterParameter=Result}">
                 <TextBlock DockPanel.Dock="Top"
-                           Text="Step 4 of 4 — Your progression filter"
+                           Text="Step 5 of 5 — Your progression filter"
                            FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
                 <TextBlock DockPanel.Dock="Top"
                            Text="Copy the share code and paste it into D4's loot filter menu, or open it in the editor to fine-tune."

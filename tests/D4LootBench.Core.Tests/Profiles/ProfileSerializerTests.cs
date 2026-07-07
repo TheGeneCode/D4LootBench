@@ -77,7 +77,41 @@ public sealed class ProfileSerializerTests
         json.ShouldContain("0x001d5d01");
         json.ShouldContain("Barbarian");
         json.ShouldContain("Legendary");
-        json.ShouldContain("\"schemaVersion\": 1");
+        json.ShouldContain("\"schemaVersion\": 2");
+    }
+
+    [Fact]
+    public void RoundTrip_PreservesBlockCodes()
+    {
+        var original = Sample() with { OverrideBlockCode = "AAAA", OverriddenByBlockCode = "BBBB" };
+
+        var round = ProfileSerializer.Deserialize(ProfileSerializer.Serialize(original));
+
+        round.OverrideBlockCode.ShouldBe("AAAA");
+        round.OverriddenByBlockCode.ShouldBe("BBBB");
+    }
+
+    [Fact]
+    public void Deserialize_V1FileWithoutBlockFields_DefaultsToNull()
+    {
+        var json = """
+        {"schemaVersion":1,"id":"11111111-1111-1111-1111-111111111111","name":"Legacy V1","createdUtc":"2026-01-01T00:00:00Z","modifiedUtc":"2026-01-01T00:00:00Z","playerClass":"All","guideFormat":"Auto","guideText":"","gear":[]}
+        """;
+
+        var profile = ProfileSerializer.Deserialize(json);
+
+        profile.OverrideBlockCode.ShouldBeNull();
+        profile.OverriddenByBlockCode.ShouldBeNull();
+        profile.Name.ShouldBe("Legacy V1");
+        profile.Gear.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Serialize_StampsSchemaVersion2()
+    {
+        var json = ProfileSerializer.Serialize(Sample());
+
+        json.ShouldContain("\"schemaVersion\": 2");
     }
 
     [Fact]
@@ -238,6 +272,91 @@ public sealed class ProfileSerializerTests
 
         round.Name.ShouldBe(name);
         round.GuideText.ShouldBe("Line1\nLine2\r\n日本語");
+    }
+
+    [Fact]
+    public void RoundTrip_NullBlockCodes_PreservesNull()
+    {
+        var original = Sample(); // OverrideBlockCode/OverriddenByBlockCode default to null.
+
+        var round = ProfileSerializer.Deserialize(ProfileSerializer.Serialize(original));
+
+        round.OverrideBlockCode.ShouldBeNull();
+        round.OverriddenByBlockCode.ShouldBeNull();
+    }
+
+    [Fact]
+    public void RoundTrip_EmptyStringBlockCodes_PreservesEmptyString_DistinctFromNull()
+    {
+        var original = Sample() with { OverrideBlockCode = "", OverriddenByBlockCode = null };
+
+        var round = ProfileSerializer.Deserialize(ProfileSerializer.Serialize(original));
+
+        round.OverrideBlockCode.ShouldBe("");
+        round.OverriddenByBlockCode.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Deserialize_V2FileWithExplicitNullBlockCodes_DefaultsToNull()
+    {
+        var json = """
+        {"schemaVersion":2,"id":"11111111-1111-1111-1111-111111111111","name":"Explicit Null","createdUtc":"2026-01-01T00:00:00Z","modifiedUtc":"2026-01-01T00:00:00Z","playerClass":"All","guideFormat":"Auto","guideText":"","gear":[],"overrideBlockCode":null,"overriddenByBlockCode":null}
+        """;
+
+        var profile = ProfileSerializer.Deserialize(json);
+
+        profile.OverrideBlockCode.ShouldBeNull();
+        profile.OverriddenByBlockCode.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Deserialize_FutureSchemaVersion_IgnoredAndDeserializesFine()
+    {
+        // SchemaVersion is a write-only marker today — FromStored never branches on it, so an
+        // unrecognized future (or garbage) version number must not block loading.
+        var json = """
+        {"schemaVersion":99,"id":"11111111-1111-1111-1111-111111111111","name":"Future","createdUtc":"2026-01-01T00:00:00Z","modifiedUtc":"2026-01-01T00:00:00Z","playerClass":"All","guideFormat":"Auto","guideText":"","gear":[],"overrideBlockCode":"CODE1","overriddenByBlockCode":"CODE2"}
+        """;
+
+        var profile = ProfileSerializer.Deserialize(json);
+
+        profile.Name.ShouldBe("Future");
+        profile.OverrideBlockCode.ShouldBe("CODE1");
+        profile.OverriddenByBlockCode.ShouldBe("CODE2");
+    }
+
+    [Fact]
+    public void RoundTrip_LongBlockCode_PreservesExactText()
+    {
+        var longCode = new string('A', 5000) + "==";
+        var original = Sample() with { OverrideBlockCode = longCode };
+
+        var round = ProfileSerializer.Deserialize(ProfileSerializer.Serialize(original));
+
+        round.OverrideBlockCode.ShouldBe(longCode);
+    }
+
+    [Fact]
+    public void RoundTrip_NonBase64GarbageBlockCode_PreservesOpaqueString()
+    {
+        // ProfileSerializer treats the block codes as opaque strings — it does not validate base64
+        // shape (that responsibility belongs to FilterCodec.Decode at consumption time).
+        var original = Sample() with { OverrideBlockCode = "not valid base64!! \"quote\" \\backslash" };
+
+        var round = ProfileSerializer.Deserialize(ProfileSerializer.Serialize(original));
+
+        round.OverrideBlockCode.ShouldBe("not valid base64!! \"quote\" \\backslash");
+    }
+
+    [Fact]
+    public void RoundTrip_OneNullOneSetBlockCode_PreservesEachIndependently()
+    {
+        var original = Sample() with { OverrideBlockCode = null, OverriddenByBlockCode = "ONLY_THIS_ONE==" };
+
+        var round = ProfileSerializer.Deserialize(ProfileSerializer.Serialize(original));
+
+        round.OverrideBlockCode.ShouldBeNull();
+        round.OverriddenByBlockCode.ShouldBe("ONLY_THIS_ONE==");
     }
 
     private static string ValidJsonWith(string playerClassAssignment)

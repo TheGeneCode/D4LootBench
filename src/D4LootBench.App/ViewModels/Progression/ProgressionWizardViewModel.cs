@@ -22,9 +22,12 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     private readonly GoalBuildFactory _goalFactory;
     private readonly SlotDiffEngine _diffEngine;
     private readonly ProgressionFilterGenerator _generator;
+    private readonly ProgressionFilterMerger _merger;
     private readonly WeaponRoleMap _roleMap;
     private readonly ProfileStore _profileStore;
     private readonly Action<string> _setClipboard;
+    private readonly Func<string> _getClipboard;
+    private readonly Func<FilterRuleset, string, string?> _editBlock;
     private readonly Func<string, bool> _confirm;
 
     private readonly List<GearParseResult> _parsed = [];
@@ -67,6 +70,12 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     [ObservableProperty]
     private string _saveAsName = ""; // Result step: name for "Save as profile"
 
+    [ObservableProperty]
+    private string _overrideBlockCode = "";
+
+    [ObservableProperty]
+    private string _overriddenByBlockCode = "";
+
     /// <summary>Initializes a new instance of the <see cref="ProgressionWizardViewModel"/> class.</summary>
     /// <param name="reader">The gear reader seam.</param>
     /// <param name="parser">The tooltip parser.</param>
@@ -74,9 +83,14 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     /// <param name="goalFactory">The goal-build factory.</param>
     /// <param name="diffEngine">The slot-diff engine.</param>
     /// <param name="generator">The progression filter generator.</param>
+    /// <param name="merger">The static-block merge engine that wraps better-gear with the override/overridden-by blocks.</param>
     /// <param name="roleMap">The weapon slot-role map, used to classify equipped weapons per class.</param>
     /// <param name="profileStore">The file-backed profile store for saved progression sessions.</param>
     /// <param name="setClipboard">Clipboard write; defaults to the WPF clipboard, overridable for tests.</param>
+    /// <param name="getClipboard">Clipboard read; defaults to the WPF clipboard, overridable for tests.</param>
+    /// <param name="editBlock">Static-block editor seam: given a block's ruleset and a dialog title, opens the
+    /// modal rule editor and returns the edited block's share code, or <c>null</c> on Cancel. Defaults to a
+    /// no-op returning <c>null</c> so headless construction (and tests) work without a WPF window.</param>
     /// <param name="confirm">Destructive-action confirmation seam; defaults to a WPF Yes/No message box.</param>
     public ProgressionWizardViewModel(
         IGearReader reader,
@@ -85,9 +99,12 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         GoalBuildFactory goalFactory,
         SlotDiffEngine diffEngine,
         ProgressionFilterGenerator generator,
+        ProgressionFilterMerger merger,
         WeaponRoleMap roleMap,
         ProfileStore profileStore,
         Action<string>? setClipboard = null,
+        Func<string>? getClipboard = null,
+        Func<FilterRuleset, string, string?>? editBlock = null,
         Func<string, bool>? confirm = null)
     {
         _reader = reader;
@@ -96,9 +113,12 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         _goalFactory = goalFactory;
         _diffEngine = diffEngine;
         _generator = generator;
+        _merger = merger;
         _roleMap = roleMap;
         _profileStore = profileStore;
         _setClipboard = setClipboard ?? System.Windows.Clipboard.SetText;
+        _getClipboard = getClipboard ?? System.Windows.Clipboard.GetText;
+        _editBlock = editBlock ?? ((_, _) => null);
         _confirm = confirm ?? (msg => System.Windows.MessageBox.Show(
             msg,
             "D4LootBench",
@@ -128,6 +148,32 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
 
     /// <summary>Gets the generated ruleset after a successful generate; read for an optional "open in editor".</summary>
     public FilterRuleset? GeneratedRuleset { get; private set; }
+
+    /// <summary>Gets the rule count of the override block (0 when empty or undecodable), for the UI.</summary>
+    public int OverrideRuleCount => CountRules(OverrideBlockCode);
+
+    /// <summary>Gets the rule count of the overridden-by block (0 when empty or undecodable), for the UI.</summary>
+    public int OverriddenByRuleCount => CountRules(OverriddenByBlockCode);
+
+    private static int CountRules(string code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return 0;
+        }
+
+        try
+        {
+            return FilterCodec.Decode(code).Rules.Count;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static IReadOnlyList<FilterRule> DecodeBlock(string code)
+        => string.IsNullOrWhiteSpace(code) ? [] : FilterCodec.Decode(code).Rules;
 
     /// <summary>Reads one gear tooltip image, parses it, and appends a review draft. The view supplies the
     /// PNG stream (clipboard image or file). Safe to call repeatedly, one item per screenshot.</summary>
@@ -218,12 +264,24 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
             var diff = _diffEngine.Diff(loadout, goal.GoalBuild);
             var filter = _generator.Generate(diff, SelectedClass, "Progression Filter");
 
-            GeneratedRuleset = filter.Ruleset;
-            ShareCode = FilterCodec.Encode(filter.Ruleset);
-            Warnings = [.. loadoutWarnings, .. goal.Warnings, .. filter.Warnings];
+            // Wrap the better-gear ruleset with the optional static blocks; the exported ShareCode is the
+            // merged code so regenerating never loses the user's override / overridden-by rules.
+            var merged = _merger.Merge(
+                DecodeBlock(OverrideBlockCode),
+                filter.Ruleset,
+                DecodeBlock(OverriddenByBlockCode),
+                "Progression Filter");
+
+            GeneratedRuleset = merged.Ruleset;
+            ShareCode = FilterCodec.Encode(merged.Ruleset);
+
+            var validationErrors = merged.Ruleset.Validate();
+            Warnings = [.. loadoutWarnings, .. goal.Warnings, .. filter.Warnings, .. merged.Warnings, .. validationErrors];
             SetStatus(
-                $"Generated {filter.TotalRuleCount} rule(s) for {diff.SlotsNeedingRules.Count} slot(s) needing upgrades.",
-                error: false);
+                validationErrors.Count > 0
+                    ? $"Generated with {validationErrors.Count} validation error(s) — review before importing."
+                    : $"Generated {merged.Ruleset.Rules.Count} merged rule(s) for {diff.SlotsNeedingRules.Count} slot(s) needing upgrades.",
+                error: validationErrors.Count > 0);
             CurrentStep = ProgressionStep.Result;
 
             // Auto-save only on a successful generate, and only when a profile is active — kept inside the
@@ -260,6 +318,114 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void ImportOverrideBlock() => ImportBlockFromClipboard(isOverride: true);
+
+    [RelayCommand]
+    private void ImportOverriddenByBlock() => ImportBlockFromClipboard(isOverride: false);
+
+    // Decodes-and-validates a share code from the clipboard into the target block. On any decode failure the
+    // block is left untouched and an error status is surfaced, so a bad paste never clobbers a good block.
+    private void ImportBlockFromClipboard(bool isOverride)
+    {
+        var code = _getClipboard().Trim();
+        if (string.IsNullOrEmpty(code))
+        {
+            SetStatus("Clipboard is empty — copy a filter share code first.", error: true);
+            return;
+        }
+
+        int count;
+        try
+        {
+            count = FilterCodec.Decode(code).Rules.Count;
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Not a valid filter share code: {ex.Message}", error: true);
+            return;
+        }
+
+        var label = isOverride ? "override" : "overridden-by";
+        if (isOverride)
+        {
+            OverrideBlockCode = code;
+        }
+        else
+        {
+            OverriddenByBlockCode = code;
+        }
+
+        SetStatus($"Imported {count} rule(s) into the {label} block.", error: false);
+    }
+
+    [RelayCommand]
+    private void ClearOverrideBlock() => OverrideBlockCode = "";
+
+    [RelayCommand]
+    private void ClearOverriddenByBlock() => OverriddenByBlockCode = "";
+
+    [RelayCommand]
+    private void EditOverrideBlock() => EditBlock(isOverride: true);
+
+    [RelayCommand]
+    private void EditOverriddenByBlock() => EditBlock(isOverride: false);
+
+    // Opens the modal rule editor (via the _editBlock seam) seeded from the block's current code — or an empty
+    // named ruleset when the block is blank — and writes the edited code back on OK. Cancel leaves it untouched,
+    // mirroring the "never clobber a good block on failure" rule that import follows.
+    private void EditBlock(bool isOverride)
+    {
+        var code = isOverride ? OverrideBlockCode : OverriddenByBlockCode;
+        var label = isOverride ? "override" : "overridden-by";
+        FilterRuleset ruleset;
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            ruleset = new FilterRuleset(isOverride ? "Override Rules" : "Overridden-By Rules", []);
+        }
+        else
+        {
+            try
+            {
+                ruleset = FilterCodec.Decode(code);
+            }
+            catch (Exception ex)
+            {
+                // A block code can reach here without having passed through ImportBlockFromClipboard's
+                // validation — e.g. restored verbatim from a persisted profile (OpenSelectedProfile) that
+                // was hand-edited or corrupted on disk. Guard the same way Import/CountRules already do:
+                // never let a bad stored code crash the app, and never clobber it since we can't decode it.
+                SetStatus($"Cannot edit the {label} block: {ex.Message}", error: true);
+                return;
+            }
+        }
+
+        var title = isOverride ? "Edit Override Rules" : "Edit Overridden-By Rules";
+
+        var result = _editBlock(ruleset, title);
+        if (result is null)
+        {
+            return; // cancelled
+        }
+
+        if (isOverride)
+        {
+            OverrideBlockCode = result;
+        }
+        else
+        {
+            OverriddenByBlockCode = result;
+        }
+
+        SetStatus($"Updated the {label} block.", error: false);
+    }
+
+    [RelayCommand]
+    private void NextToStaticRules() => CurrentStep = ProgressionStep.StaticRules;
+
+    [RelayCommand]
+    private void BackToGoal() => CurrentStep = ProgressionStep.Goal;
+
     // Clears the in-flight gear/guide/result session state without touching profile bookkeeping or
     // navigating. Callers decide where to land and whether to clear the active profile.
     private void ResetSession()
@@ -268,6 +434,8 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         _session = null;
         Items.Clear();
         PastedText = "";
+        OverrideBlockCode = "";
+        OverriddenByBlockCode = "";
         ShareCode = "";
         Warnings = [];
         GeneratedRuleset = null;
@@ -322,6 +490,8 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
             Confidence = GearParseConfidence.High,
         }));
         PastedText = SelectedProfile.GuideText;
+        OverrideBlockCode = SelectedProfile.OverrideBlockCode ?? "";
+        OverriddenByBlockCode = SelectedProfile.OverriddenByBlockCode ?? "";
         SelectedClass = SelectedProfile.PlayerClass;
         SelectedFormatOption = FormatOptions.FirstOrDefault(o => o.Format == SelectedProfile.GuideFormat)
             ?? FormatOptions[0];
@@ -475,6 +645,8 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
         GuideFormat = SelectedFormatOption.Format,
         GuideText = PastedText,
         Gear = _session?.Build() ?? [.. _parsed.Select(p => p.Item)],
+        OverrideBlockCode = string.IsNullOrWhiteSpace(OverrideBlockCode) ? null : OverrideBlockCode,
+        OverriddenByBlockCode = string.IsNullOrWhiteSpace(OverriddenByBlockCode) ? null : OverriddenByBlockCode,
     };
 
     private void AutoSaveActiveProfile()
@@ -503,6 +675,10 @@ public sealed partial class ProgressionWizardViewModel : ObservableObject
     partial void OnSaveAsNameChanged(string value) => SaveAsProfileCommand.NotifyCanExecuteChanged();
 
     partial void OnPastedTextChanged(string value) => GenerateCommand.NotifyCanExecuteChanged();
+
+    partial void OnOverrideBlockCodeChanged(string value) => OnPropertyChanged(nameof(OverrideRuleCount));
+
+    partial void OnOverriddenByBlockCodeChanged(string value) => OnPropertyChanged(nameof(OverriddenByRuleCount));
 
     partial void OnShareCodeChanged(string value)
     {

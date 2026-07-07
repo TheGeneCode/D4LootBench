@@ -30,4 +30,13 @@ public sealed record ProgressionProfile
 
     /// <summary>Gets the verified gear items (slot, type, rarity, GA flags, affix hashes).</summary>
     public IReadOnlyList<GearItem> Gear { get; init; } = [];
+
+    /// <summary>Gets the override block share code (base64) — static rules that take priority OVER the
+    /// generated better-gear rules (e.g. "always show mythics"). <c>null</c>/empty means no override block.</summary>
+    public string? OverrideBlockCode { get; init; }
+
+    /// <summary>Gets the overridden-by block share code (base64) — static rules the better-gear rules take
+    /// priority over (e.g. "never show rares"), applied below better-gear and above the final catch-all.
+    /// <c>null</c>/empty means no overridden-by block.</summary>
+    public string? OverriddenByBlockCode { get; init; }
 }

@@ -11,7 +11,7 @@ namespace D4LootBench.Core.Profiles;
 /// as <c>0x…</c> strings and enums as their names. Does not depend on <c>FilterDataContext</c>.</summary>
 public static class ProfileSerializer
 {
-    private const int CurrentSchemaVersion = 1;
+    private const int CurrentSchemaVersion = 2;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -57,7 +57,9 @@ public static class ProfileSerializer
         profile.PlayerClass,
         profile.GuideFormat,
         profile.GuideText,
-        [.. profile.Gear.Select(ToStored)]);
+        [.. profile.Gear.Select(ToStored)],
+        profile.OverrideBlockCode,
+        profile.OverriddenByBlockCode);
 
     private static StoredGearItem ToStored(GearItem item) => new(
         item.Slot,
@@ -84,6 +86,8 @@ public static class ProfileSerializer
         GuideFormat = stored.GuideFormat,
         GuideText = stored.GuideText ?? "",
         Gear = [.. (stored.Gear ?? []).Select(FromStored)],
+        OverrideBlockCode = stored.OverrideBlockCode,
+        OverriddenByBlockCode = stored.OverriddenByBlockCode,
     };
 
     private static GearItem FromStored(StoredGearItem stored) => new()
@@ -114,7 +118,9 @@ public static class ProfileSerializer
         [property: JsonPropertyName("playerClass")] PlayerClass PlayerClass,
         [property: JsonPropertyName("guideFormat")] BuildGuideFormat GuideFormat,
         [property: JsonPropertyName("guideText")] string GuideText,
-        [property: JsonPropertyName("gear")] List<StoredGearItem> Gear);
+        [property: JsonPropertyName("gear")] List<StoredGearItem> Gear,
+        [property: JsonPropertyName("overrideBlockCode")] string? OverrideBlockCode = null,
+        [property: JsonPropertyName("overriddenByBlockCode")] string? OverriddenByBlockCode = null);
 
     private sealed record StoredGearItem(
         [property: JsonPropertyName("slot")] GearSlot Slot,

@@ -1,7 +1,9 @@
 using D4LootBench.App.ViewModels.Progression;
+using D4LootBench.Core.Codec;
 using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Import;
+using D4LootBench.Core.Models;
 using D4LootBench.Core.Profiles;
 using D4LootBench.Core.Progression;
 using Shouldly;
@@ -471,6 +473,135 @@ public sealed class ProgressionWizardProfileTests : IDisposable
         vm.ActiveProfileName.ShouldBe("P1");
     }
 
+    [Fact]
+    public async Task SaveAndOpen_roundtrips_block_codes()
+    {
+        var store = NewStore();
+        var vm = NewVm(store, new FakeGearReader(HelmLines));
+        await vm.AddGearFromImageAsync(Stream.Null);
+        vm.NextToReviewCommand.Execute(null);
+        vm.PastedText = Guide;
+        var overrideCode = CodeWith(new FilterRule("Show Mythics", Visibility.Show, 0, []));
+        var overriddenByCode = CodeWith(new FilterRule("Hide Rares Later", Visibility.Recolor, 0, []));
+        vm.OverrideBlockCode = overrideCode;
+        vm.OverriddenByBlockCode = overriddenByCode;
+        vm.SaveAsName = "P1";
+        vm.SaveAsProfileCommand.Execute(null);
+
+        // A fresh VM sharing the same store restores both codes from disk.
+        var fresh = NewVm(store, new FakeGearReader(HelmLines));
+        fresh.SelectedProfile = fresh.Profiles.Single(p => p.Name == "P1");
+        fresh.OpenSelectedProfileCommand.Execute(null);
+
+        fresh.OverrideBlockCode.ShouldBe(overrideCode);
+        fresh.OverriddenByBlockCode.ShouldBe(overriddenByCode);
+    }
+
+    [Fact]
+    public async Task Autosave_after_generate_persists_block_codes()
+    {
+        var store = NewStore();
+        await SavedProfileAsync(store);
+        var vm = NewVm(store, new FakeGearReader(HelmLines));
+        vm.SelectedProfile = vm.Profiles[0];
+        vm.OpenSelectedProfileCommand.Execute(null); // active profile with gear + guide
+        var overrideCode = CodeWith(new FilterRule("Show Mythics", Visibility.Show, 0, []));
+        var overriddenByCode = CodeWith(new FilterRule("Hide Rares Later", Visibility.Recolor, 0, []));
+        vm.OverrideBlockCode = overrideCode;
+        vm.OverriddenByBlockCode = overriddenByCode;
+
+        vm.GenerateCommand.Execute(null);
+
+        var stored = store.LoadAll().Profiles.Single();
+        stored.OverrideBlockCode.ShouldBe(overrideCode);
+        stored.OverriddenByBlockCode.ShouldBe(overriddenByCode);
+    }
+
+    [Fact]
+    public async Task StartNewProfile_clears_block_codes()
+    {
+        var store = NewStore();
+        await SavedProfileAsync(store);
+        var vm = NewVm(store, new FakeGearReader(HelmLines));
+        vm.SelectedProfile = vm.Profiles[0];
+        vm.OpenSelectedProfileCommand.Execute(null);
+        vm.OverrideBlockCode = CodeWith(new FilterRule("Show Mythics", Visibility.Show, 0, []));
+        vm.OverriddenByBlockCode = CodeWith(new FilterRule("Hide Rares Later", Visibility.Recolor, 0, []));
+
+        vm.StartNewProfileCommand.Execute(null);
+
+        vm.OverrideBlockCode.ShouldBe("");
+        vm.OverriddenByBlockCode.ShouldBe("");
+    }
+
+    [Fact]
+    public async Task SaveAsProfile_EmptyBlockCodes_PersistAsNull()
+    {
+        // SnapshotCurrentState maps "" → null for both block codes so the on-disk schema distinguishes
+        // "never set" from "set to empty" (ProfileSerializer preserves both distinctly). This exercises
+        // that ternary through the real SaveAsProfile command path, not just a hand-built domain record.
+        var store = NewStore();
+        var vm = NewVm(store, new FakeGearReader(HelmLines));
+        await vm.AddGearFromImageAsync(Stream.Null);
+        vm.NextToReviewCommand.Execute(null);
+        vm.SaveAsName = "P1";
+
+        vm.SaveAsProfileCommand.Execute(null);
+
+        var stored = store.LoadAll().Profiles.Single();
+        stored.OverrideBlockCode.ShouldBeNull();
+        stored.OverriddenByBlockCode.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task OpenSelectedProfile_NullBlockCodes_RestoreAsEmptyString()
+    {
+        // Complements SaveAndOpen_roundtrips_block_codes (non-null case): a profile persisted with null
+        // block codes (the common case — SavedProfileAsync never sets them) must restore as "" on open,
+        // per OpenSelectedProfile's `SelectedProfile.OverrideBlockCode ?? ""` fallback.
+        var store = NewStore();
+        var seeded = await SavedProfileAsync(store);
+        seeded.OverrideBlockCode.ShouldBeNull(); // sanity: confirms the seed actually persisted as null
+        seeded.OverriddenByBlockCode.ShouldBeNull();
+        var vm = NewVm(store, new FakeGearReader(HelmLines));
+
+        vm.SelectedProfile = vm.Profiles[0];
+        vm.OpenSelectedProfileCommand.Execute(null);
+
+        vm.OverrideBlockCode.ShouldBe("");
+        vm.OverriddenByBlockCode.ShouldBe("");
+    }
+
+    [Fact]
+    public async Task Generate_WithActiveProfile_StaticBlockExceedsRuleCap_SurfacesValidationErrorButStillAdvancesAndAutoSaves()
+    {
+        // Highest-risk validation-surfacing path: an override block alone big enough to blow the 25-rule
+        // budget must still produce a merged/encoded filter, land Warnings/HasError from Validate(), AND
+        // still advance to Result and auto-save the active profile — a failed *generate* (bad guide text)
+        // must not advance/save, but an over-budget *result* is a warning state, not a hard failure.
+        var store = NewStore();
+        await SavedProfileAsync(store);
+        var vm = NewVm(store, new FakeGearReader(HelmLines));
+        vm.SelectedProfile = vm.Profiles[0];
+        vm.OpenSelectedProfileCommand.Execute(null); // active profile, lands on Review (gear present)
+        var oversizedOverride = Enumerable.Range(1, 25)
+            .Select(i => new FilterRule($"O{i}", Visibility.Show, 0, []))
+            .ToArray();
+        vm.OverrideBlockCode = CodeWith(oversizedOverride);
+
+        vm.GenerateCommand.Execute(null);
+
+        vm.HasError.ShouldBeTrue();
+        vm.StatusText.ShouldContain("validation error");
+        vm.Warnings.ShouldContain(w => w.Contains("exceeding the", StringComparison.Ordinal));
+        vm.Warnings.ShouldContain(w => w.Contains("maximum is 25", StringComparison.Ordinal));
+        vm.ShareCode.ShouldNotBeNullOrEmpty(); // still encodes/exports despite the validation error
+        vm.CurrentStep.ShouldBe(ProgressionStep.Result); // still advances
+
+        var stored = store.LoadAll().Profiles.Single();
+        stored.OverrideBlockCode.ShouldBe(vm.OverrideBlockCode); // auto-save still ran
+    }
+
     private ProfileStore NewStore(Func<DateTimeOffset>? clock = null) => new(_dir, clock);
 
     private static Func<DateTimeOffset> MonotonicClock()
@@ -493,11 +624,16 @@ public sealed class ProgressionWizardProfileTests : IDisposable
             new GoalBuildFactory(resolver, roleMap),
             new SlotDiffEngine(),
             new ProgressionFilterGenerator(resolver, roleMap),
+            new ProgressionFilterMerger(),
             roleMap,
             store,
             setClipboard: null,
             confirm: confirm ?? (_ => true));
     }
+
+    // Encodes a throwaway one-off ruleset into a share code so block-code round-trip tests have real codes.
+    private static string CodeWith(params FilterRule[] rules)
+        => FilterCodec.Encode(new FilterRuleset("Block", rules));
 
     // Persists a single verified-helm profile named P1 into the store via the real save-as flow.
     private static async Task<ProgressionProfile> SavedProfileAsync(ProfileStore store, string name = "P1")

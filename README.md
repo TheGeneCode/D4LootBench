@@ -57,8 +57,9 @@ Recolors any dropped item that improves on your currently-equipped gear for a go
 1. Click **Progression…** in the toolbar
 2. **Read gear** — screenshot each equipped item's tooltip in-game (<kbd>Win+Shift+S</kbd>, "Advanced Tooltip Information" ON) and click **Paste Screenshot**, or **Open Image…** for a saved file
 3. **Review** — correct any misread slot / item power / rarity / affix, and tick greater affixes by hand (OCR can't detect them)
-4. **Goal** — paste the gear section of a build guide, choose the format and your character class, then **Generate** (picking a class makes weapon rules class-aware — a weapon slot expands to every item type that class equips in that role; **All** keeps the class-agnostic single-type behavior)
-5. **Result** — **Copy Code** to paste into D4, or **Open in Editor** to fine-tune. Enter a name in **Save as profile** to keep this session
+4. **Goal** — paste the gear section of a build guide, choose the format and your character class, then **Next: Static Rules** (picking a class makes weapon rules class-aware — a weapon slot expands to every item type that class equips in that role; **All** keeps the class-agnostic single-type behavior)
+5. **Static Rules** *(optional)* — wrap the generated better-gear rules with your own static rules imported from a filter share code on the clipboard. An **override** block takes priority *over* better-gear (placed first — e.g. always show mythic uniques); an **overridden-by** block sits *below* better-gear, above the final catch-all (e.g. never show rares). Each card shows its rule count with **Import from clipboard** / **Clear** / **Edit…** — the last opens the full rule editor on that block so you can add or tweak its rules by hand (**OK** writes them back, **Cancel** discards). Skip the step to generate better-gear only, then **Generate**
+6. **Result** — **Copy Code** to paste into D4, or **Open in Editor** to fine-tune. Enter a name in **Save as profile** to keep this session (the static blocks are saved and restored with it)
 
 Once a session is saved as a profile, the wizard opens on a **Profiles** landing step where you can open, duplicate, rename, or delete saved profiles. Regenerating an open profile auto-saves it — so when your gear improves, open the profile, replace the changed piece, and **Generate** again without pressing any save button.
 

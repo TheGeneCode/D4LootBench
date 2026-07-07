@@ -331,3 +331,39 @@ static, so re-generation is the update mechanism.
   "‹ Profiles" nav button on ReadGear, a "Save as profile" row on Result, and an always-visible
   "Profile: {name}" status-bar indicator (collapsed when no profile is active). Profile-record bindings are
   `Mode=OneWay` (the record is immutable). Docs updated: `docs/user-guide.md` Profiles section, README bullet.
+
+## Merge Static Rule Blocks ✅ — Wrap Better-Gear with Override / Overridden-By Static Rules
+
+Design context: `strategy-merge-static-rule-blocks.md` + `merge-static-rule-blocks-phase-0{1,2,3}.md`. Native
+D4 filters are static and first-match-wins, so "progression" logic must resolve at generation time. This feature
+lets a user keep two hand-authored static rule blocks alongside the generated better-gear ruleset: an
+**override** block that wins over better-gear (e.g. always show mythics) and an **overridden-by** block that
+better-gear wins over (e.g. never show rares). Both persist with the profile and are re-merged on every regenerate.
+
+### Phase 1 — Core merge engine + persisted schema (`D4LootBench.Core`)
+
+- `ProgressionFilterMerger.Merge(overrideBlock, betterGear, overriddenByBlock, filterName)` → `MergedFilterResult
+  { Ruleset, Warnings, OverBudget }`. Index 0 = highest priority. Override Hide-Alls are dropped (would hide
+  everything below); the generator's single trailing Hide-All is stripped; the overridden-by block's *trailing*
+  Hide-All becomes the final catch-all (interior ones dropped). Invariant: **exactly one trailing `HideAll`**.
+  The 25-rule cap trims better-gear from the tail first (never static rules); `OverBudget` flags static-only overflow.
+- `ProgressionProfile` gained nullable `OverrideBlockCode` / `OverriddenByBlockCode` (**base64 share codes**, not
+  rule-JSON — keeps `ProfileSerializer` free of a `FilterDataContext` dependency). Schema bumped **v1 → v2**;
+  v1 files still deserialize via the `StoredProfile` record's `= null` positional defaults.
+
+### Phase 2 — Wizard wiring: import, merge, persist
+
+- New `StaticRules` wizard step between `Goal` and `Result` (headers relabeled "N of 5"); the **Generate** button
+  moved there, and Goal's button became **Next: Static Rules**. Two block cards each show a live rule count with
+  **Import from clipboard** / **Clear**; `<!-- Edit… button added in Phase 3 -->` placeholders mark the future editor.
+- The VM holds each block as its base64 code (`[ObservableProperty] OverrideBlockCode` / `OverriddenByBlockCode`);
+  derived `OverrideRuleCount` / `OverriddenByRuleCount` decode-on-read (0 when empty/undecodable). Import reads a new
+  `Func<string> _getClipboard` seam (mirroring `_setClipboard`), validates via `FilterCodec.Decode` in try/catch, and
+  **leaves the block untouched on any failure** (empty clipboard / not-a-filter → error status only).
+- `Generate` merges at export time: `_merger.Merge(...)` around `filter.Ruleset`; `ShareCode` is the merged code.
+  Merge warnings **and** `merged.Ruleset.Validate()` errors both surface in `Warnings`; a non-empty validation set
+  sets error status but still advances to Result and auto-saves. `SnapshotCurrentState`/`OpenSelectedProfile`/
+  `ResetSession` persist / restore / clear both codes (empty ↔ `null`). `ProgressionFilterMerger` is a DI singleton.
+- **Decision — code-as-source-of-truth:** blocks live as share codes end-to-end (import, persist, merge), never a
+  parallel decoded rule model; Phase 3's Edit… button must round-trip through the code. Verified headless: build
+  0 warnings, App + Core suites green (23 new tests across VM/profile round-trip, merge ordering, and import validation).
