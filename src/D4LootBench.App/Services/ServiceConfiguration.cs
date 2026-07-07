@@ -1,3 +1,4 @@
+using System.IO;
 using D4LootBench.Ai;
 using D4LootBench.Ai.Import;
 using D4LootBench.App.ViewModels;
@@ -6,6 +7,7 @@ using D4LootBench.App.ViewModels.Progression;
 using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Import;
+using D4LootBench.Core.Profiles;
 using D4LootBench.Core.Progression;
 using D4LootBench.Core.Validation;
 using D4LootBench.Vision;
@@ -25,6 +27,9 @@ internal static class ServiceConfiguration
 
         services.AddSingleton<LlmSettingsService>();
         services.AddSingleton<WindowSettingsService>();
+        services.AddSingleton(new ProfileStore(Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "D4LootBench", "profiles")));
         services.AddSingleton<SystemPromptBuilder>();
         services.AddSingleton<NameResolver>();
         services.AddSingleton<ILlmProvider, SettingsAwareLlmProvider>();

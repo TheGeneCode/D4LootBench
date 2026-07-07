@@ -43,6 +43,17 @@ The read is a best-effort structural guess, not ground truth. Check every card:
 
 The **character class** picker makes weapon rules class-aware. Leaving it on **All** keeps the legacy class-agnostic behavior (a weapon slot gates on a single item type); picking a class expands each weapon slot to the concrete item types that class can equip in that role — e.g. a Barbarian main-hand rule highlights every one-handed weapon type the class uses, not just one.
 
+## Profiles
+
+A **profile** saves a whole progression session so you can regenerate the filter as your gear improves, without re-reading everything. Each profile stores your **verified gear** (every reviewed item — slot, item type, power, rarity, affixes, and greater-affix flags), the **build target** (the raw build-guide text you pasted), and your **class** and **format** choices.
+
+- **Save a session.** On the **Result** step, type a name into **Save as profile** and click **Save**. This creates the profile from the current session.
+- **Auto-save.** Once a profile is open (its name shows as *Profile: {name}* in the status bar), every successful **Generate** silently overwrites it — no save button needed. The Save-as row is only for naming a brand-new profile.
+- **Manage profiles.** When at least one profile exists, the wizard opens on a **Profiles** landing step. Select an entry to see its class, item count, and last-modified date, then **Open** it (or double-click). The right-hand column has **Duplicate**, **Delete** (with a confirmation prompt), and inline **Rename**. **Start New** begins a fresh session; **Start Over** on the Result step returns here.
+- **Replace a piece as your gear evolves.** Open the profile, click **‹ Profiles → Open**, then on the gear step **Remove** the item you upgraded, **Paste Screenshot** of the new piece, and **Generate**. Because the profile is active, the regenerated filter is saved automatically.
+
+Profiles live under `%AppData%\D4LootBench\profiles\` — one JSON file per profile, safe to back up, copy between machines, or share.
+
 ## How progression works
 
 The generated filter is built from a **slot-drop model** that highlights upgrades:

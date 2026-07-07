@@ -23,6 +23,7 @@ Single `.exe`, no installer, Windows only. Copy it anywhere and run it.
 - Import any D4 loot filter share code
 - **Generate a BiS filter from a build guide** — paste a gear section from Mobalytics, Maxroll, or Icy Veins and get a working filter in seconds
 - **Build a progression filter** — read your equipped gear from screenshots, diff it against a goal build, and generate a native filter that highlights only upgrades
+  - Save any number of progression profiles (gear + build target) and regenerate as your gear evolves
 - Add, remove, reorder, and edit rules with a full visual editor
 - Edit all condition types: rarity, item power, affixes, greater affixes, codex of power, item types, unique items, talisman sets, and item properties
 - Color-code rules with a full HSV color picker
@@ -57,7 +58,9 @@ Recolors any dropped item that improves on your currently-equipped gear for a go
 2. **Read gear** — screenshot each equipped item's tooltip in-game (<kbd>Win+Shift+S</kbd>, "Advanced Tooltip Information" ON) and click **Paste Screenshot**, or **Open Image…** for a saved file
 3. **Review** — correct any misread slot / item power / rarity / affix, and tick greater affixes by hand (OCR can't detect them)
 4. **Goal** — paste the gear section of a build guide, choose the format and your character class, then **Generate** (picking a class makes weapon rules class-aware — a weapon slot expands to every item type that class equips in that role; **All** keeps the class-agnostic single-type behavior)
-5. **Result** — **Copy Code** to paste into D4, or **Open in Editor** to fine-tune
+5. **Result** — **Copy Code** to paste into D4, or **Open in Editor** to fine-tune. Enter a name in **Save as profile** to keep this session
+
+Once a session is saved as a profile, the wizard opens on a **Profiles** landing step where you can open, duplicate, rename, or delete saved profiles. Regenerating an open profile auto-saves it — so when your gear improves, open the profile, replace the changed piece, and **Generate** again without pressing any save button.
 
 > Full walkthrough, required settings, and the static-snapshot caveat: **[User Guide](docs/user-guide.md)**.
 

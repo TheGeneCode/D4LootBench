@@ -4,6 +4,7 @@ using D4LootBench.Core.Data;
 using D4LootBench.Core.Gear;
 using D4LootBench.Core.Import;
 using D4LootBench.Core.Models;
+using D4LootBench.Core.Profiles;
 using D4LootBench.Core.Progression;
 using Shouldly;
 
@@ -53,6 +54,8 @@ public sealed class ProgressionWizardViewModelTests
         var data = new FilterDataService();
         var resolver = new NameResolver(data);
         var roleMap = new WeaponRoleMap(resolver);
+        var store = new ProfileStore(Path.Combine(
+            Path.GetTempPath(), "d4lb-wizard-tests", Guid.NewGuid().ToString("N")));
         return new ProgressionWizardViewModel(
             reader,
             new GearTooltipParser(data),
@@ -61,7 +64,9 @@ public sealed class ProgressionWizardViewModelTests
             new SlotDiffEngine(),
             new ProgressionFilterGenerator(resolver, roleMap),
             roleMap,
-            clipboard);
+            store,
+            clipboard,
+            confirm: _ => true);
     }
 
     // Read failure seam: throws instead of returning OCR lines, to exercise AddGearFromImageAsync's
@@ -70,16 +75,6 @@ public sealed class ProgressionWizardViewModelTests
     {
         public Task<IReadOnlyList<string>> ReadLinesAsync(Stream image, CancellationToken cancellationToken = default)
             => throw new InvalidOperationException("OCR unavailable.");
-    }
-
-    // Returns a different line set on each call, so successive AddGearFromImageAsync calls produce
-    // distinguishable items (used to verify RemoveItem keeps Items/_parsed in index sync).
-    private sealed class SequenceGearReader(params IReadOnlyList<string>[] lineSets) : IGearReader
-    {
-        private int _index;
-
-        public Task<IReadOnlyList<string>> ReadLinesAsync(Stream image, CancellationToken cancellationToken = default)
-            => Task.FromResult(lineSets[_index++]);
     }
 
     [Fact]
@@ -440,7 +435,7 @@ public sealed class ProgressionWizardViewModelTests
         vm.ShareCode.ShouldBeEmpty();
         vm.Warnings.ShouldBeEmpty();
         vm.GeneratedRuleset.ShouldBeNull();
-        vm.CurrentStep.ShouldBe(ProgressionStep.ReadGear);
+        vm.CurrentStep.ShouldBe(ProgressionStep.Profiles); // StartOver now lands on the Profiles home
         vm.NextToReviewCommand.CanExecute(null).ShouldBeFalse();
         vm.GenerateCommand.CanExecute(null).ShouldBeFalse();
     }

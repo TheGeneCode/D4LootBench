@@ -282,3 +282,52 @@ to the weaker piece.
   defensive future-proofing — currently a no-op for catalog data, since all 3 catalog Flail uniques
   carry an explicit class segment in their internal name that `DeriveClasses` resolves before reaching
   the hardcoded fallback; the broadened list only matters for a future class-segment-less Flail unique.
+
+---
+
+## Progression Profiles ✅ — Save / Open / Manage Progression Sessions
+
+Design context: `plans/strategy-save-profiles-create-modify-delete.md` and its three phase plans
+(`save-profiles-create-modify-delete-phase-0{1,2,3}.md`). Lets a user persist a whole progression
+session (verified gear + build target) and regenerate the filter as gear improves — native filters are
+static, so re-generation is the update mechanism.
+
+### Phase 1 — Core profile store (`src/D4LootBench.Core/Profiles/`)
+
+- `ProgressionProfile` — immutable domain record: `Id` (Guid), `Name`, created/modified UTC stamps,
+  `PlayerClass`, `GuideFormat`, `GuideText`, and the verified `Gear` list.
+- `ProfileStore` — file-backed CRUD, **one JSON file per profile named `{Id:N}.json`** under an injected
+  root directory. `Save` stamps `ModifiedUtc` (and first-save `CreatedUtc`) and writes via a temp file +
+  atomic `File.Move` under a per-instance lock, so a crash or concurrent same-id write can't corrupt an
+  existing file. `LoadAll` returns profiles newest-modified-first and one warning per skipped corrupt file
+  (never throws for one bad file). `Duplicate` generates a unique `"{name} (copy[ N])"`; `Rename` keeps the
+  id and gear (display names need no filename sanitization because the filename is Id-derived).
+- `ProfileSerializer` — maps the domain record to/from an explicit **`Stored*` DTO contract** stamped with
+  `schemaVersion: 1`, decoupling the persisted schema from domain-record renames. Hashes serialize as
+  `0x…` strings (`HexUInt32Converter`), enums as names; hex-parse failures are normalized to `JsonException`
+  to honor the documented contract. Deliberately does **not** depend on `FilterDataContext`.
+
+### Phase 2 — ViewModel wiring (`ProgressionWizardViewModel`)
+
+- `ProfileStore` registered as a DI **singleton** rooted at `%AppData%\D4LootBench\profiles`.
+- New `Profiles` landing step (the wizard **home**, enum value 0). The VM lands there on open when any
+  profile exists; an empty store keeps the original first-run UX (lands on ReadGear).
+- Commands: open, start-new, go-to-profiles, save-as, delete, duplicate, rename — all headlessly unit-tested.
+  **Decision — auto-save on Generate:** a successful Generate silently overwrites the active profile
+  (`ActiveProfileName != ""`); the Save-as row only *creates* a profile. So "improve a piece and regenerate"
+  needs no explicit save. `ActiveProfileName == ""` is the "unsaved session" state.
+- Delete confirmation is an injected `Func<string,bool>` seam (defaults to a WPF Yes/No `MessageBox`), so no
+  separate dialog is needed and the command is testable.
+- **Decision — text-based build editing:** the build target is stored and re-edited as the raw pasted guide
+  text (re-imported through the existing format-aware importer), not a structured affix model — keeps the
+  edit surface identical to the original paste flow and the stored contract simple.
+
+### Phase 3 — Wizard UI + docs
+
+- **Decision — in-wizard management (no separate manager window):** a fifth `DockPanel` step in
+  `ProgressionWizardWindow.xaml` (`ListBox` of profiles + right-hand Duplicate/Delete/Rename column + a
+  Start-New/Open button row, double-click to open). All bindings are one-way/two-way against the
+  Phase-2 VM — **no new business logic and no code-behind changes**. Touchpoints on existing panels: a
+  "‹ Profiles" nav button on ReadGear, a "Save as profile" row on Result, and an always-visible
+  "Profile: {name}" status-bar indicator (collapsed when no profile is active). Profile-record bindings are
+  `Mode=OneWay` (the record is immutable). Docs updated: `docs/user-guide.md` Profiles section, README bullet.
